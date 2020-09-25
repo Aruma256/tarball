@@ -1,4 +1,4 @@
-package com.github.lotqwerty.lotblocks.keys;
+package com.github.lotqwerty.lottools.keys;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
@@ -7,10 +7,10 @@ import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 
-public class LongPickKey extends KeyBinding {
+public class ExPickKey extends KeyBinding {
 
-	public LongPickKey(int keyCode, String category) {
-		super("Long Pick", keyCode, category);
+	public ExPickKey(int keyCode, String category) {
+		super("Ex Pick", keyCode, category);
 	}
 
 	@SubscribeEvent
