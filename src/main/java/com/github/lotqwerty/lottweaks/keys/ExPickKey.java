@@ -1,21 +1,18 @@
-package com.github.lotqwerty.lottools.keys;
+package com.github.lotqwerty.lottweaks.keys;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 
-public class ExPickKey extends KeyBinding {
+public class ExPickKey extends LTKeyBase {
 
 	public ExPickKey(int keyCode, String category) {
 		super("Ex Pick", keyCode, category);
 	}
-
-	@SubscribeEvent
-	public void tick(final KeyInputEvent event) {
-		if (!this.isPressed()) {
+	
+	@Override
+	public void onKeyPress() {
+		if (this.pressTime != 1) {
 			return;
 		}
 		Minecraft mc = Minecraft.getMinecraft();

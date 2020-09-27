@@ -1,10 +1,14 @@
-package com.github.lotqwerty.lottools;
+package com.github.lotqwerty.lottweaks;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.Config.RangeDouble;
+import net.minecraftforge.common.config.Config.RangeInt;
+import net.minecraftforge.common.config.Config.Type;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -17,18 +21,17 @@ import java.util.HashMap;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
 
-import com.github.lotqwerty.lottools.keys.ExPickKey;
-import com.github.lotqwerty.lottools.keys.RotateMetaKey;
+import com.github.lotqwerty.lottweaks.keys.ExPickKey;
+import com.github.lotqwerty.lottweaks.keys.ReplaceKey;
+import com.github.lotqwerty.lottweaks.keys.RotateMetaKey;
 
-@Mod(modid = LotTools.MODID, name = LotTools.NAME, version = LotTools.VERSION)
-public class LotTools
+@Mod(modid = LotTweaks.MODID, name = LotTweaks.NAME, version = LotTweaks.VERSION)
+public class LotTweaks
 {
 	
-	// World.setBlockState(BlockPos,  Block.getStateFromMeta)
-	
-    public static final String MODID = "lottools";
-    public static final String NAME = "Lot Tools";
-    public static final String VERSION = "1.0.2";
+    public static final String MODID = "lottweaks";
+    public static final String NAME = "LotTweaks";
+    public static final String VERSION = "1.0.6";
     public static Logger logger;
     public static final HashMap<Block, Integer> META_RANGE = new HashMap<>();
     static {
@@ -88,6 +91,14 @@ public class LotTools
     	itemStack.setItemDamage(next_meta);    	
     }
 
+    @Config(modid = MODID, type = Type.INSTANCE, name = NAME)
+    public static class CONFIG {
+        @RangeDouble(min = 0.0, max = 250.0)
+        public static double REPLACE_RANGE = 50.0;
+        @RangeInt(min = 1, max = 120)
+        public static int REPLACE_INTERVAL = 1;
+    }
+    
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
@@ -100,12 +111,16 @@ public class LotTools
 			key = new RotateMetaKey(Keyboard.KEY_R, NAME);
 			MinecraftForge.EVENT_BUS.register(key);
 			ClientRegistry.registerKeyBinding(key);
+			key = new ReplaceKey(Keyboard.KEY_C, NAME);
+			MinecraftForge.EVENT_BUS.register(key);
+			ClientRegistry.registerKeyBinding(key);
         }
 	}
 
     @EventHandler
     public void init(FMLInitializationEvent event)
     {
+    	ReplacePacketHandler.init();
     }
 
 
