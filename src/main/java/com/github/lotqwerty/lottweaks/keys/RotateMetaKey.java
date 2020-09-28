@@ -1,5 +1,9 @@
 package com.github.lotqwerty.lottweaks.keys;
 
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
+
 import com.github.lotqwerty.lottweaks.LotTweaks;
 
 import net.minecraft.client.Minecraft;
@@ -12,11 +16,37 @@ import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public class RotateMetaKey extends LTKeyBase {
 
+	private final Deque<ItemStack> candidates = new LinkedList<>();
+
 	public RotateMetaKey(int keyCode, String category) {
-		super("Rotate Meta", keyCode, category);
+		super("Rotate", keyCode, category);
+	}
+	
+	@Override
+	protected void onKeyPress() {
+		if (this.pressTime != 1) {
+			return;
+		}
+		candidates.clear();
+		Minecraft mc = Minecraft.getMinecraft();
+		if (!mc.player.capabilities.isCreativeMode) {
+			return;
+		}
+		ItemStack itemStack = mc.player.inventory.getCurrentItem();
+		if (itemStack.isEmpty()) {
+			return;
+		}
+		List<ItemStack> results = LotTweaks.getAllRotateResult(itemStack);
+		if (results == null || results.size() <= 1) {
+			return;
+		}
+		candidates.addAll(results);
 	}
 
 	@SubscribeEvent
@@ -30,36 +60,34 @@ public class RotateMetaKey extends LTKeyBase {
 		int wheel = event.getDwheel();
 		if (wheel == 0) {
 			return;
-		} else {
-			changeCurrentItemMeta(wheel > 0 ? -1 : 1);
 		}
-		event.setCanceled(true);
-	}
-
-	private static void changeCurrentItemMeta(int diff) {
-		Minecraft mc = Minecraft.getMinecraft();
-		ItemStack itemStack = mc.player.inventory.getCurrentItem();
-		if (itemStack.isEmpty() || !LotTweaks.isAllowedBlock(itemStack)) {
+		if (candidates.isEmpty()) {
 			return;
 		}
-		itemStack = itemStack.copy();
-		LotTweaks.rotateMeta(itemStack, diff);
-		mc.player.inventory.setInventorySlotContents(mc.player.inventory.currentItem, itemStack);
+		if (wheel > 0) {
+			candidates.addFirst(candidates.pollLast());
+		}else {
+			candidates.addLast(candidates.pollFirst());
+		}
+		Minecraft mc = Minecraft.getMinecraft();
+		mc.player.inventory.setInventorySlotContents(mc.player.inventory.currentItem, candidates.getFirst());
         mc.playerController.sendSlotPacket(mc.player.getHeldItem(EnumHand.MAIN_HAND), 36 + mc.player.inventory.currentItem);
+		event.setCanceled(true);
 	}
 
 	@SubscribeEvent
 	public void onRenderOverlay(final RenderGameOverlayEvent.Post event) {
-		if (event.getType() != ElementType.HOTBAR || this.pressTime == 0 || !Minecraft.getMinecraft().player.isCreative()) {
+		if (event.getType() != ElementType.HOTBAR) {
+			return;
+		}
+		if (this.pressTime == 0) {
+			candidates.clear();
+			return;
+		}
+		if (!Minecraft.getMinecraft().player.isCreative()) {
 			return;
 		}
 		Minecraft mc = Minecraft.getMinecraft();
-		ItemStack itemStack = mc.player.inventory.getCurrentItem();
-		if (itemStack.isEmpty() || !LotTweaks.isAllowedBlock(itemStack)) {
-			return;
-		}
-		itemStack = itemStack.copy();
-		int meta_range = LotTweaks.getRange(itemStack);
 		ScaledResolution sr = event.getResolution();
 
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -67,17 +95,19 @@ public class RotateMetaKey extends LTKeyBase {
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         RenderHelper.enableGUIStandardItemLighting();
-		for (int i=0; i<meta_range; i++) {
+        int i = 0;
+        int size = candidates.size();
+		for (ItemStack c: candidates) {
 			int x = sr.getScaledWidth() / 2 - 90 + mc.player.inventory.currentItem * 20 + 2;
 			int y = sr.getScaledHeight() - 16 - 3;
-			double max_r = 20 + meta_range;
+			double max_r = 20 + size;
 			double r = max_r * Math.tanh((this.pressTime + event.getPartialTicks()) / 6);
 			y -= 50 + max_r;
-			double t = -((double)i) / meta_range * 2 * Math.PI + Math.PI / 2;
+			double t = -((double)i) / size * 2 * Math.PI + Math.PI / 2;
 			double dx = r * Math.cos(t);
 			double dy = r * Math.sin(t);
-			mc.getRenderItem().renderItemAndEffectIntoGUI(itemStack, (int)(x + dx), (int)(y + dy));
-			LotTweaks.rotateMeta(itemStack, 1);
+			mc.getRenderItem().renderItemAndEffectIntoGUI(c, (int)(x + dx), (int)(y + dy));
+			i++;
 		}
         RenderHelper.disableStandardItemLighting();
         GlStateManager.disableRescaleNormal();
