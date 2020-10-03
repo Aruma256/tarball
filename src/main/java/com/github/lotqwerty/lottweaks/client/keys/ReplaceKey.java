@@ -1,4 +1,4 @@
-package com.github.lotqwerty.lottweaks.keys;
+package com.github.lotqwerty.lottweaks.client.keys;
 
 import com.github.lotqwerty.lottweaks.LotTweaks;
 import com.github.lotqwerty.lottweaks.ReplacePacketHandler;
@@ -16,25 +16,35 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ReplaceKey extends LTKeyBase {
+public class ReplaceKey extends AbstractLTKey {
 
 	public ReplaceKey(int keyCode, String category) {
 		super("Replace", keyCode, category);
 	}
 
+	@Override
+	protected void onKeyPressStart() {
+	}
+
+	@Override
+	protected void onKeyReleased() {
+	}
+
+
 	@SubscribeEvent
 	public void onRenderTick(final RenderTickEvent event) {
-		if (event.getPhase() == EventPriority.NORMAL) {
-			if (this.pressTime==1 || this.pressTime > LotTweaks.CONFIG.REPLACE_INTERVAL) {
-				this.onKeyPress2();
-				if (this.pressTime==1) {
-					this.pressTime++;
-				}
+		if (event.getPhase() != EventPriority.NORMAL) {
+			return;
+		}
+		if (this.pressTime==1 || this.pressTime > LotTweaks.CONFIG.REPLACE_INTERVAL) {
+			this.execReplace();
+			if (this.pressTime==1) {
+				this.pressTime++;
 			}
 		}
 	}
 
-	private void onKeyPress2() {
+	private void execReplace() {
 		Minecraft mc = Minecraft.getMinecraft();
 		if (!mc.player.capabilities.isCreativeMode) {
 			return;
@@ -55,6 +65,5 @@ public class ReplaceKey extends LTKeyBase {
 		}
 		ReplacePacketHandler.sendReplaceMessage(target.getBlockPos(), block, itemStack.getItemDamage(), mc.world.getBlockState(target.getBlockPos()).getBlock());
 	}
-
 
 }
