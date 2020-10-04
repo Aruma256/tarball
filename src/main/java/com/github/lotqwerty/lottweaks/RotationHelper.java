@@ -140,17 +140,17 @@ public class RotationHelper {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public static void loadBlockGroups() {
+	public static boolean loadBlockGroups() {
 		BLOCK_CHAIN.clear();
-		int lineCount = 0;
-		for (String line: CONFIG.BLOCK_GROUPS) {
-			lineCount++;
-			if (line.startsWith("//")) {
-				continue;
-			}
-			List<IBlockState> states = new ArrayList<>();
-			for (String part: line.split(",")) {
-				try {
+		try {
+			int lineCount = 0;
+			for (String line: CONFIG.BLOCK_GROUPS) {
+				lineCount++;
+				if (line.startsWith("//")) {
+					continue;
+				}
+				List<IBlockState> states = new ArrayList<>();
+				for (String part: line.split(",")) {
 					String blockName;
 					int meta;
 					if (part.contains("/")) {
@@ -165,32 +165,39 @@ public class RotationHelper {
 					if (block == null || block == Blocks.AIR) {
 						LotTweaks.logger.error(String.format("Not found: '%s'", part));
 						LotTweaks.logger.error(String.format("(BLOCK_GROUPS line %d)", lineCount));
-						continue;
+						throw new BlockGroupRegistrationException();
 					}
 					IBlockState state = block.getStateFromMeta(meta);
 					states.add(state);
-				} catch (Exception e) {
-					LotTweaks.logger.error(e);
-					LotTweaks.logger.error(String.format("Failed to load: '%s'", part));
-					LotTweaks.logger.error(String.format("(BLOCK_GROUPS line %d)", lineCount));
 				}
-			}
-			if (states.size() <= 1) {
-				LotTweaks.logger.error("Failed to load group: '%s'", line);
-				LotTweaks.logger.error(String.format("(BLOCK_GROUPS line %d)", lineCount));
-				continue;
-			}
-			for (int i=0;i<states.size();i++) {
-				if (BLOCK_CHAIN.containsKey(states.get(i))) {
-					LotTweaks.logger.error("BLOCK_GROUPS value is invalid.");
+				if (states.size() <= 1) {
+					LotTweaks.logger.error("Failed to load group: '%s'", line);
 					LotTweaks.logger.error(String.format("(BLOCK_GROUPS line %d)", lineCount));
-					BLOCK_CHAIN.clear();
-					return;
+					throw new BlockGroupRegistrationException();
 				}
-				BLOCK_CHAIN.put(states.get(i), states.get((i+1)%states.size()));
+				for (int i=0;i<states.size();i++) {
+					if (BLOCK_CHAIN.containsKey(states.get(i))) {
+						LotTweaks.logger.error("BLOCK_GROUPS value is invalid.");
+						LotTweaks.logger.error(String.format("(BLOCK_GROUPS line %d)", lineCount));
+						throw new BlockGroupRegistrationException();
+					}
+					BLOCK_CHAIN.put(states.get(i), states.get((i+1)%states.size()));
+				}
+				LotTweaks.logger.debug(String.format("BLOCK_GROUPS line %d: OK", lineCount));
 			}
-			LotTweaks.logger.debug(String.format("BLOCK_GROUPS line %d: OK", lineCount));
+		} catch (BlockGroupRegistrationException e) {
+			BLOCK_CHAIN.clear();
+			return false;
+		} catch (Exception e) {
+			LotTweaks.logger.error(e);
+			BLOCK_CHAIN.clear();
+			return false;
 		}
+		return true;
+	}
+
+	@SuppressWarnings("serial")
+	private static class BlockGroupRegistrationException extends Exception {
 	}
 	
 }

@@ -15,9 +15,12 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.ChatType;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.IClientCommand;
 
-public class LotTweaksCommand  extends CommandBase implements IClientCommand {
+public class LotTweaksCommand extends CommandBase implements IClientCommand {
 
 	private static final String COMMAND_NAME = LotTweaks.MODID;
 	private static final String COMMAND_USAGE = String.format("/%s add", COMMAND_NAME);
@@ -39,10 +42,11 @@ public class LotTweaksCommand  extends CommandBase implements IClientCommand {
 		}
 		Minecraft mc = Minecraft.getMinecraft();
 		StringJoiner stringJoiner = new StringJoiner(",");
-		for(int i=0;i<InventoryPlayer.getHotbarSize();i++) {
+		int count = 0;
+		for (int i = 0; i < InventoryPlayer.getHotbarSize(); i++) {
 			ItemStack itemStack = mc.player.inventory.getStackInSlot(i);
 			if (RotationHelper.canRotate(itemStack)) {
-				throw new CommandException(String.format("Already exists (%d)", i+1),  new Object[0]);
+				throw new CommandException(String.format("Already exists (%d)", i + 1), new Object[0]);
 			}
 			System.out.println("Hello");
 			if (itemStack.isEmpty()) {
@@ -51,7 +55,7 @@ public class LotTweaksCommand  extends CommandBase implements IClientCommand {
 			Block block = Block.getBlockFromItem(itemStack.getItem());
 			int meta = itemStack.getItemDamage();
 			if (block == Blocks.AIR) {
-				throw new CommandException(String.format("Failed to get block instance. (%d)", i+1),  new Object[0]);
+				throw new CommandException(String.format("Failed to get block instance. (%d)", i + 1), new Object[0]);
 			}
 			String name = Block.REGISTRY.getNameForObject(block).toString();
 			if (meta == 0) {
@@ -59,10 +63,11 @@ public class LotTweaksCommand  extends CommandBase implements IClientCommand {
 			} else {
 				stringJoiner.add(String.format("%s/%d", name, meta));
 			}
+			count++;
 		}
 		String line = stringJoiner.toString();
 		if (line.isEmpty()) {
-			throw new CommandException(String.format("Hotbar is empty."),  new Object[0]);
+			throw new CommandException(String.format("Hotbar is empty."), new Object[0]);
 		}
 		LotTweaks.logger.debug("adding a new block-group from /lottweaks command");
 		LotTweaks.logger.debug(line);
@@ -70,8 +75,14 @@ public class LotTweaksCommand  extends CommandBase implements IClientCommand {
 		String[] newBlockGroups = new String[oldBlockGroups.length + 1];
 		System.arraycopy(oldBlockGroups, 0, newBlockGroups, 0, oldBlockGroups.length);
 		newBlockGroups[newBlockGroups.length - 1] = line;
-		LotTweaks.CONFIG.BLOCK_GROUPS = newBlockGroups;
-		LotTweaks.onConfigUpdate();
+		boolean succeeded = LotTweaks.tryBlockGroupsConfigUpdate(newBlockGroups);
+		if (succeeded) {
+			mc.ingameGUI.addChatMessage(ChatType.SYSTEM,
+					new TextComponentString(String.format("LotTweaks: added %d blocks", count)));
+		} else {
+			mc.ingameGUI.addChatMessage(ChatType.SYSTEM,
+					new TextComponentString(TextFormatting.RED + "LotTweaks: failed to add blocks"));
+		}
 	}
 
 	@Override

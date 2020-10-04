@@ -20,7 +20,7 @@ public class LotTweaks {
 
 	public static final String MODID = "lottweaks";
 	public static final String NAME = "LotTweaks";
-	public static final String VERSION = "1.1.1";
+	public static final String VERSION = "1.1.2";
 	public static Logger logger;
 
 	@Config(modid = MODID, type = Type.INSTANCE, name = NAME)
@@ -32,11 +32,25 @@ public class LotTweaks {
 		public static String[] BLOCK_GROUPS = RotationHelper.DEFAULT_BLOCK_GROUPS;
 	}
 
-	public static void onConfigUpdate() {
+	public static boolean onConfigUpdate() {
 		ConfigManager.sync(LotTweaks.MODID, Type.INSTANCE);
-		RotationHelper.loadBlockGroups();
+		boolean succeeded = RotationHelper.loadBlockGroups();
+		return succeeded;
 	}
 
+	public static boolean tryBlockGroupsConfigUpdate(String[] newBlockGroups) {
+		String[] oldBlockGroups = CONFIG.BLOCK_GROUPS;
+		CONFIG.BLOCK_GROUPS = newBlockGroups;
+		boolean succeeded = onConfigUpdate();
+		if (succeeded) {
+			return true;
+		} else {
+			CONFIG.BLOCK_GROUPS = oldBlockGroups;
+			onConfigUpdate();
+			return false;
+		}
+	}
+	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		logger = event.getModLog();
