@@ -37,9 +37,17 @@ public class LotTweaksCommand extends CommandBase implements IClientCommand {
 
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-		if (args.length != 1 || !args[0].equals("add")) {
+		if (args.length != 1) {
 			throw new WrongUsageException(getUsage(sender), new Object[0]);
 		}
+		if (args[0].equals("add")) {
+			executeAdd();
+		} else if (args[0].equals("reload")) {
+			executeReload();
+		}
+	}
+
+	private void executeAdd() throws CommandException {
 		Minecraft mc = Minecraft.getMinecraft();
 		StringJoiner stringJoiner = new StringJoiner(",");
 		int count = 0;
@@ -69,20 +77,26 @@ public class LotTweaksCommand extends CommandBase implements IClientCommand {
 		if (line.isEmpty()) {
 			throw new CommandException(String.format("Hotbar is empty."), new Object[0]);
 		}
-		LotTweaks.logger.debug("adding a new block-group from /lottweaks command");
-		LotTweaks.logger.debug(line);
-		String[] oldBlockGroups = LotTweaks.CONFIG.BLOCK_GROUPS;
+		LotTweaks.LOGGER.debug("adding a new block-group from /lottweaks command");
+		LotTweaks.LOGGER.debug(line);
+		String[] oldBlockGroups = RotationHelper.BLOCK_GROUPS;
 		String[] newBlockGroups = new String[oldBlockGroups.length + 1];
 		System.arraycopy(oldBlockGroups, 0, newBlockGroups, 0, oldBlockGroups.length);
 		newBlockGroups[newBlockGroups.length - 1] = line;
-		boolean succeeded = LotTweaks.tryBlockGroupsConfigUpdate(newBlockGroups);
+		boolean succeeded = RotationHelper.tryToUpdateBlockGroupsFromCommand(newBlockGroups);
 		if (succeeded) {
+			RotationHelper.writeToFile();
 			mc.ingameGUI.addChatMessage(ChatType.SYSTEM,
 					new TextComponentString(String.format("LotTweaks: added %d blocks", count)));
 		} else {
 			mc.ingameGUI.addChatMessage(ChatType.SYSTEM,
 					new TextComponentString(TextFormatting.RED + "LotTweaks: failed to add blocks"));
 		}
+	}
+
+	private void executeReload() throws CommandException {
+		RotationHelper.loadFromFile();
+		RotationHelper.loadBlockGroups();
 	}
 
 	@Override

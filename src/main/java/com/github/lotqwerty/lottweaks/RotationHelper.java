@@ -1,11 +1,14 @@
 package com.github.lotqwerty.lottweaks;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Scanner;
 import java.util.StringJoiner;
-
-import com.github.lotqwerty.lottweaks.LotTweaks.CONFIG;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -13,6 +16,8 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 
 public class RotationHelper {
+
+	protected static final String BLOCKGROUP_CONFFILE = "LotTweaks-BlockGroups.txt";
 
 	public static final HashMap<IBlockState, IBlockState> BLOCK_CHAIN = new HashMap<>();
 
@@ -89,7 +94,9 @@ public class RotationHelper {
 		"//CONCRETE_POWDER",
 		toRotateStr("minecraft:concrete_powder", 16),
 	};
-	
+
+	public static String[] BLOCK_GROUPS = DEFAULT_BLOCK_GROUPS;
+
 	private static String toRotateStr(String name, int max) {
 		StringJoiner joiner = new StringJoiner(",");
 		for (int i=0;i<max;i++) {
@@ -134,7 +141,7 @@ public class RotationHelper {
 			state = BLOCK_CHAIN.get(state);
 			counter++;
 			if (counter >= 50000) {
-				LotTweaks.logger.error("infinite loop!");
+				LotTweaks.LOGGER.error("infinite loop!");
 				return null;
 			}
 		}
@@ -146,7 +153,7 @@ public class RotationHelper {
 		BLOCK_CHAIN.clear();
 		try {
 			int lineCount = 0;
-			for (String line: CONFIG.BLOCK_GROUPS) {
+			for (String line: BLOCK_GROUPS) {
 				lineCount++;
 				if (line.startsWith("//")) {
 					continue;
@@ -165,37 +172,88 @@ public class RotationHelper {
 					}
 					Block block = Block.getBlockFromName(blockName);
 					if (block == null || block == Blocks.AIR) {
-						LotTweaks.logger.error(String.format("Not found: '%s'", part));
-						LotTweaks.logger.error(String.format("(BLOCK_GROUPS line %d)", lineCount));
+						LotTweaks.LOGGER.error(String.format("Not found: '%s'", part));
+						LotTweaks.LOGGER.error(String.format("(BLOCK_GROUPS line %d)", lineCount));
 						throw new BlockGroupRegistrationException();
 					}
 					IBlockState state = block.getStateFromMeta(meta);
 					states.add(state);
 				}
 				if (states.size() <= 1) {
-					LotTweaks.logger.error("Failed to load group: '%s'", line);
-					LotTweaks.logger.error(String.format("(BLOCK_GROUPS line %d)", lineCount));
+					LotTweaks.LOGGER.error("Failed to load group: '%s'", line);
+					LotTweaks.LOGGER.error(String.format("(BLOCK_GROUPS line %d)", lineCount));
 					throw new BlockGroupRegistrationException();
 				}
 				for (int i=0;i<states.size();i++) {
 					if (BLOCK_CHAIN.containsKey(states.get(i))) {
-						LotTweaks.logger.error("BLOCK_GROUPS value is invalid.");
-						LotTweaks.logger.error(String.format("(BLOCK_GROUPS line %d)", lineCount));
+						LotTweaks.LOGGER.error("BLOCK_GROUPS value is invalid.");
+						LotTweaks.LOGGER.error(String.format("(BLOCK_GROUPS line %d)", lineCount));
 						throw new BlockGroupRegistrationException();
 					}
 					BLOCK_CHAIN.put(states.get(i), states.get((i+1)%states.size()));
 				}
-				LotTweaks.logger.debug(String.format("BLOCK_GROUPS line %d: OK", lineCount));
+				LotTweaks.LOGGER.debug(String.format("BLOCK_GROUPS line %d: OK", lineCount));
 			}
 		} catch (BlockGroupRegistrationException e) {
 			BLOCK_CHAIN.clear();
 			return false;
 		} catch (Exception e) {
-			LotTweaks.logger.error(e);
+			LotTweaks.LOGGER.error(e);
 			BLOCK_CHAIN.clear();
 			return false;
 		}
 		return true;
+	}
+
+	public static boolean tryToUpdateBlockGroupsFromCommand(String[] newBlockGroups) {
+		String[] oldBlockGroups = BLOCK_GROUPS;
+		BLOCK_GROUPS = newBlockGroups;
+		boolean succeeded = loadBlockGroups();
+		if (succeeded) {
+			return true;
+		} else {
+			BLOCK_GROUPS = oldBlockGroups;
+			return false;
+		}
+	}
+
+	public static void loadFromFile() {
+		File file = new File(new File("config"), BLOCKGROUP_CONFFILE);
+		try {
+			if (!file.exists()) {
+				LotTweaks.LOGGER.debug("Config file does not exist.");
+				writeToFile();
+			} else {
+				ArrayList<String> list = new ArrayList<String>();
+				Scanner scanner = new Scanner(file);
+				while (scanner.hasNextLine()) {
+					list.add(scanner.nextLine());
+				}
+				scanner.close();
+				BLOCK_GROUPS = list.toArray(new String[list.size()]);
+			}
+		} catch (IOException e) {
+			LotTweaks.LOGGER.error("Failed to load config from file");
+			e.printStackTrace();
+		}
+	}
+
+	public static void writeToFile() {
+		LotTweaks.LOGGER.debug("Write config to file.");
+		File file = new File(new File("config"), BLOCKGROUP_CONFFILE);
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+			for (String line: BLOCK_GROUPS) {
+				writer.append(line);
+				writer.newLine();
+			}
+			writer.close();
+		} catch (IOException e) {
+			LotTweaks.LOGGER.error("Failed to write config to file");
+			e.printStackTrace();
+			return;
+		}
+		LotTweaks.LOGGER.debug("Finished.");
 	}
 
 	@SuppressWarnings("serial")

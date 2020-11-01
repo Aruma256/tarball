@@ -19,7 +19,7 @@ public final class LTRenderer {
 	}
 
 	private static void circular(Collection<ItemStack> stacks, int x, int y, float rt) {
-		double max_r = 20 + stacks.size();
+		double max_r = 20 + stacks.size() * 1.2;
 		double r = max_r * Math.tanh((rt) / 6);
 		//
 		int i = 0;

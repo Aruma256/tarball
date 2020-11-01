@@ -9,6 +9,7 @@ import net.minecraftforge.common.config.Config.Type;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -22,41 +23,28 @@ public class LotTweaks {
 
 	public static final String MODID = "lottweaks";
 	public static final String NAME = "LotTweaks";
-	public static final String VERSION = "1.1.3";
-	public static Logger logger;
+	public static final String VERSION = "1.2.0";
+	public static Logger LOGGER;
+
+	private static final String HAS_BEEN_MOVED = String.format("'BLOCK_GROUPS' config has been moved to '%s'", RotationHelper.BLOCKGROUP_CONFFILE);
 
 	@Config(modid = MODID, type = Type.INSTANCE, name = NAME)
 	public static class CONFIG {
+		public static String[] BLOCK_GROUPS = {HAS_BEEN_MOVED};
 		@RangeDouble(min = 0.0, max = 250.0)
 		public static double REPLACE_RANGE = 50.0;
 		@RangeInt(min = 1, max = 120)
 		public static int REPLACE_INTERVAL = 1;
 		public static boolean REQUIRE_OP_TO_USE_REPLACE = false;
-		public static String[] BLOCK_GROUPS = RotationHelper.DEFAULT_BLOCK_GROUPS;
 	}
 
-	public static boolean onConfigUpdate() {
+	public static void onConfigUpdate() {
 		ConfigManager.sync(LotTweaks.MODID, Type.INSTANCE);
-		boolean succeeded = RotationHelper.loadBlockGroups();
-		return succeeded;
 	}
 
-	public static boolean tryBlockGroupsConfigUpdate(String[] newBlockGroups) {
-		String[] oldBlockGroups = CONFIG.BLOCK_GROUPS;
-		CONFIG.BLOCK_GROUPS = newBlockGroups;
-		boolean succeeded = onConfigUpdate();
-		if (succeeded) {
-			return true;
-		} else {
-			CONFIG.BLOCK_GROUPS = oldBlockGroups;
-			onConfigUpdate();
-			return false;
-		}
-	}
-	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		logger = event.getModLog();
+		LOGGER = event.getModLog();
 		if (event.getSide() == Side.CLIENT) {
 			LotTweaksClient.init();
 		}
@@ -64,9 +52,21 @@ public class LotTweaks {
 
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
+		if (CONFIG.BLOCK_GROUPS.length > 0 && !CONFIG.BLOCK_GROUPS[0].equals(HAS_BEEN_MOVED)) {
+			RotationHelper.BLOCK_GROUPS = CONFIG.BLOCK_GROUPS;
+			RotationHelper.writeToFile();
+		}
+		RotationHelper.loadFromFile();
 		RotationHelper.loadBlockGroups();
 		LTPacketHandler.init();
 		MinecraftForge.EVENT_BUS.register(new AdjustRangeHelper());
 	}
 
+	@EventHandler
+	public void onLoadComplete(FMLLoadCompleteEvent event) {
+		if (CONFIG.BLOCK_GROUPS.length > 0 && !CONFIG.BLOCK_GROUPS[0].equals(HAS_BEEN_MOVED)) {
+			CONFIG.BLOCK_GROUPS = new String[]{HAS_BEEN_MOVED};
+			onConfigUpdate();
+		}
+	}
 }
