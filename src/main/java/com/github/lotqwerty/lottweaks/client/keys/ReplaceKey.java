@@ -8,6 +8,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -63,7 +64,11 @@ public class ReplaceKey extends AbstractLTKey {
 		if (itemStack.isEmpty() || block == Blocks.AIR) {
 			return;
 		}
-		ReplacePacketHandler.sendReplaceMessage(target.getBlockPos(), block, itemStack.getItemDamage(), mc.world.getBlockState(target.getBlockPos()).getBlock());
+		float hitX = (float) (target.hitVec.x - target.getBlockPos().getX());
+		float hitY = (float) (target.hitVec.y - target.getBlockPos().getY());
+		float hitZ = (float) (target.hitVec.z - target.getBlockPos().getZ());
+		IBlockState newBlockState = block.getStateForPlacement(mc.world, target.getBlockPos(), target.sideHit, hitX, hitY, hitZ, itemStack.getItemDamage(), mc.player, EnumHand.MAIN_HAND);
+		ReplacePacketHandler.sendReplaceMessage(target.getBlockPos(), block, block.getMetaFromState(newBlockState), mc.world.getBlockState(target.getBlockPos()).getBlock());
 	}
 
 }
