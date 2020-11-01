@@ -1,9 +1,12 @@
-package com.github.lotqwerty.lottweaks.common;
+package com.github.lotqwerty.lottweaks.network;
 
 import com.github.lotqwerty.lottweaks.LotTweaks;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -22,12 +25,20 @@ public class LTPacketHandler {
 	private static final SimpleNetworkWrapper INSTANCE = NetworkRegistry.INSTANCE.newSimpleChannel(LotTweaks.MODID);
 
 	public static void init() {
-		INSTANCE.registerMessage(ReplaceMessageHandler.class, ReplaceMessage.class, 0, Side.SERVER);
+		int id = 0;
+		INSTANCE.registerMessage(ReplaceMessageHandler.class, ReplaceMessage.class, id++, Side.SERVER);
+		INSTANCE.registerMessage(AdjustRangeMessageHandler.class, AdjustRangeMessage.class, id++, Side.SERVER);
 	}
 
 	public static void sendReplaceMessage(BlockPos pos, Block block, int meta, Block checkBlock) {
 		INSTANCE.sendToServer(new ReplaceMessage(pos, block, meta, checkBlock));
 	}
+
+	public static void sendReachRangeMessage(double dist) {
+		INSTANCE.sendToServer(new AdjustRangeMessage(dist));
+	}
+
+	//Replace
 
 	public static class ReplaceMessage implements IMessage {
 
@@ -104,4 +115,50 @@ public class LTPacketHandler {
 		}
 	}
 
+	// AdjustRange
+
+	public static class AdjustRangeMessage implements IMessage {
+
+		private double dist;
+
+		public AdjustRangeMessage(double dist) {
+			this.dist = dist;
+		}
+
+		public AdjustRangeMessage() {
+		}
+
+		@Override
+		public void toBytes(ByteBuf buf) {
+			buf.writeDouble(this.dist);
+		}
+
+		@Override
+		public void fromBytes(ByteBuf buf) {
+			this.dist = buf.readDouble();
+		}
+
+	}
+
+	public static class AdjustRangeMessageHandler implements IMessageHandler<AdjustRangeMessage, IMessage> {
+
+		@Override
+		public IMessage onMessage(AdjustRangeMessage message, MessageContext ctx) {
+			final EntityPlayerMP player = ctx.getServerHandler().player;
+			double dist = message.dist;
+			if (dist < 0 || 256 < dist) {
+				return null;
+			}
+			player.getServerWorld().addScheduledTask(() -> {
+				IAttributeInstance instance = player.getEntityAttribute(EntityPlayer.REACH_DISTANCE);
+				for (AttributeModifier modifier: instance.getModifiers()) {
+					if (modifier.getName().equals(LotTweaks.MODID)) {
+						instance.removeModifier(modifier);
+					}
+				}
+				instance.applyModifier(new AttributeModifier(LotTweaks.MODID, dist, 0));
+			});
+			return null;
+		}
+	}
 }

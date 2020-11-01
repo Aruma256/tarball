@@ -4,6 +4,7 @@ import org.lwjgl.input.Keyboard;
 
 import com.github.lotqwerty.lottweaks.LotTweaks;
 import com.github.lotqwerty.lottweaks.client.keys.ExPickKey;
+import com.github.lotqwerty.lottweaks.client.keys.AdjustRangeKey;
 import com.github.lotqwerty.lottweaks.client.keys.ReplaceKey;
 import com.github.lotqwerty.lottweaks.client.keys.RotateKey;
 
@@ -28,6 +29,9 @@ public class LotTweaksClient
 		MinecraftForge.EVENT_BUS.register(key);
 		ClientRegistry.registerKeyBinding(key);
 		key = new ReplaceKey(Keyboard.KEY_C, LotTweaks.NAME);
+		MinecraftForge.EVENT_BUS.register(key);
+		ClientRegistry.registerKeyBinding(key);
+		key = new AdjustRangeKey(Keyboard.KEY_U, LotTweaks.NAME);
 		MinecraftForge.EVENT_BUS.register(key);
 		ClientRegistry.registerKeyBinding(key);
 		//

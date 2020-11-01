@@ -1,5 +1,6 @@
 package com.github.lotqwerty.lottweaks;
 
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.common.config.Config.RangeDouble;
@@ -14,7 +15,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 
 import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
-import com.github.lotqwerty.lottweaks.common.LTPacketHandler;
+import com.github.lotqwerty.lottweaks.network.LTPacketHandler;
 
 @Mod(modid = LotTweaks.MODID, name = LotTweaks.NAME, version = LotTweaks.VERSION)
 public class LotTweaks {
@@ -65,6 +66,7 @@ public class LotTweaks {
 	public void init(FMLInitializationEvent event) {
 		RotationHelper.loadBlockGroups();
 		LTPacketHandler.init();
+		MinecraftForge.EVENT_BUS.register(new AdjustRangeHelper());
 	}
 
 }

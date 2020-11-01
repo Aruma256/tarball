@@ -1,7 +1,7 @@
 package com.github.lotqwerty.lottweaks.client.keys;
 
 import com.github.lotqwerty.lottweaks.LotTweaks;
-import com.github.lotqwerty.lottweaks.common.LTPacketHandler;
+import com.github.lotqwerty.lottweaks.network.LTPacketHandler;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
