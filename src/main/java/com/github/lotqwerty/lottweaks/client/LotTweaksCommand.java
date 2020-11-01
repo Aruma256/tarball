@@ -97,6 +97,15 @@ public class LotTweaksCommand extends CommandBase implements IClientCommand {
 	private void executeReload() throws CommandException {
 		RotationHelper.loadFromFile();
 		RotationHelper.loadBlockGroups();
+		Minecraft mc = Minecraft.getMinecraft();
+		int groupCount = RotationHelper.BLOCK_CHAIN.size();
+		if (groupCount > 0) {
+			mc.ingameGUI.addChatMessage(ChatType.SYSTEM,
+					new TextComponentString("LotTweaks: reload succeeded!"));
+		} else {
+			mc.ingameGUI.addChatMessage(ChatType.SYSTEM,
+					new TextComponentString(TextFormatting.RED + "LotTweaks: failed to reload config file (0 blocks loaded)"));
+		}
 	}
 
 	@Override
