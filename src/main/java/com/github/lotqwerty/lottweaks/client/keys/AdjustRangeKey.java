@@ -39,7 +39,7 @@ public class AdjustRangeKey extends AbstractLTKey {
 		// Update dist
 		Minecraft mc = Minecraft.getMinecraft();
 		RayTraceResult rayTraceResult = mc.getRenderViewEntity().rayTrace(255.0, event.getPartialTicks());
-		if (rayTraceResult == null) {
+		if (rayTraceResult == null || rayTraceResult.typeOfHit == RayTraceResult.Type.MISS) {
 			return;
 		}
 		double dist = mc.player.getPositionVector().distanceTo(rayTraceResult.hitVec);
