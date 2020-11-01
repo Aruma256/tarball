@@ -14,6 +14,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 
 import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
+import com.github.lotqwerty.lottweaks.common.LTPacketHandler;
 
 @Mod(modid = LotTweaks.MODID, name = LotTweaks.NAME, version = LotTweaks.VERSION)
 public class LotTweaks {
@@ -63,7 +64,7 @@ public class LotTweaks {
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		RotationHelper.loadBlockGroups();
-		ReplacePacketHandler.init();
+		LTPacketHandler.init();
 	}
 
 }

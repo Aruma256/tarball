@@ -1,4 +1,6 @@
-package com.github.lotqwerty.lottweaks;
+package com.github.lotqwerty.lottweaks.common;
+
+import com.github.lotqwerty.lottweaks.LotTweaks;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
@@ -15,33 +17,33 @@ import net.minecraftforge.fml.relauncher.Side;
 
 //https://mcforge.readthedocs.io/en/1.12.x/networking/simpleimpl/
 
-public class ReplacePacketHandler {
+public class LTPacketHandler {
 
 	private static final SimpleNetworkWrapper INSTANCE = NetworkRegistry.INSTANCE.newSimpleChannel(LotTweaks.MODID);
 
 	public static void init() {
-		INSTANCE.registerMessage(MyMessageHandler.class, MyMessage.class, 0, Side.SERVER);
+		INSTANCE.registerMessage(ReplaceMessageHandler.class, ReplaceMessage.class, 0, Side.SERVER);
 	}
 
 	public static void sendReplaceMessage(BlockPos pos, Block block, int meta, Block checkBlock) {
-		INSTANCE.sendToServer(new MyMessage(pos, block, meta, checkBlock));
+		INSTANCE.sendToServer(new ReplaceMessage(pos, block, meta, checkBlock));
 	}
 
-	public static class MyMessage implements IMessage {
+	public static class ReplaceMessage implements IMessage {
 
 		private BlockPos pos;
 		private Block block;
 		private int meta;
 		private Block checkBlock;
 
-		public MyMessage(BlockPos pos, Block block, int meta, Block checkBlock) {
+		public ReplaceMessage(BlockPos pos, Block block, int meta, Block checkBlock) {
 			this.pos = pos;
 			this.block = block;
 			this.meta = meta;
 			this.checkBlock = checkBlock;
 		}
 
-		public MyMessage() {
+		public ReplaceMessage() {
 		}
 
 		@Override
@@ -63,11 +65,11 @@ public class ReplacePacketHandler {
 		}
 	}
 
-	public static class MyMessageHandler implements IMessageHandler<MyMessage, IMessage> {
+	public static class ReplaceMessageHandler implements IMessageHandler<ReplaceMessage, IMessage> {
 
 		@SuppressWarnings("deprecation")
 		@Override
-		public IMessage onMessage(MyMessage message, MessageContext ctx) {
+		public IMessage onMessage(ReplaceMessage message, MessageContext ctx) {
 			final EntityPlayerMP player = ctx.getServerHandler().player;
 			final BlockPos pos = message.pos;
 			final Block block = message.block;

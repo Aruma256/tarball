@@ -1,7 +1,7 @@
 package com.github.lotqwerty.lottweaks.client.keys;
 
 import com.github.lotqwerty.lottweaks.LotTweaks;
-import com.github.lotqwerty.lottweaks.ReplacePacketHandler;
+import com.github.lotqwerty.lottweaks.common.LTPacketHandler;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -68,7 +68,7 @@ public class ReplaceKey extends AbstractLTKey {
 		float hitY = (float) (target.hitVec.y - target.getBlockPos().getY());
 		float hitZ = (float) (target.hitVec.z - target.getBlockPos().getZ());
 		IBlockState newBlockState = block.getStateForPlacement(mc.world, target.getBlockPos(), target.sideHit, hitX, hitY, hitZ, itemStack.getItemDamage(), mc.player, EnumHand.MAIN_HAND);
-		ReplacePacketHandler.sendReplaceMessage(target.getBlockPos(), block, block.getMetaFromState(newBlockState), mc.world.getBlockState(target.getBlockPos()).getBlock());
+		LTPacketHandler.sendReplaceMessage(target.getBlockPos(), block, block.getMetaFromState(newBlockState), mc.world.getBlockState(target.getBlockPos()).getBlock());
 	}
 
 }
