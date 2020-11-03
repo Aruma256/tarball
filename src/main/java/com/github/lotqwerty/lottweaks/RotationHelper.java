@@ -118,6 +118,17 @@ public class RotationHelper {
 		return BLOCK_CHAIN.containsKey(block.getStateFromMeta(meta));
 	}
 	
+	private static ItemStack toItemStack(IBlockState state) {
+		try {
+			ItemStack stack = state.getBlock().getPickBlock(state, null, null, null, null);
+			if (stack != null && !stack.isEmpty()) {
+				return stack;
+			}
+		} catch (Exception e) {
+		}
+		return new ItemStack(state.getBlock(), 1, state.getBlock().damageDropped(state));
+	}
+
 	@SuppressWarnings("deprecation")
 	public static List<ItemStack> getAllRotateResult(ItemStack itemStack){
 		List<ItemStack> stacks = new ArrayList<>();
@@ -137,7 +148,7 @@ public class RotationHelper {
 		IBlockState state = BLOCK_CHAIN.get(srcState);
 		int counter = 0;
 		while (state != srcState) {
-			stacks.add(new ItemStack(state.getBlock(), 1, state.getBlock().getMetaFromState(state)));
+			stacks.add(toItemStack(state));
 			state = BLOCK_CHAIN.get(state);
 			counter++;
 			if (counter >= 50000) {
