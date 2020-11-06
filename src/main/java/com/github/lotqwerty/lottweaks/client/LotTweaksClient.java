@@ -22,13 +22,13 @@ public class LotTweaksClient
 {
 	public static void init() {
     	KeyBinding key;
-    	key = new ExPickKey(Keyboard.KEY_F, LotTweaks.NAME);
+		key = new ExPickKey(Keyboard.KEY_V, LotTweaks.NAME);
 		MinecraftForge.EVENT_BUS.register(key);
 		ClientRegistry.registerKeyBinding(key);
 		key = new RotateKey(Keyboard.KEY_R, LotTweaks.NAME);
 		MinecraftForge.EVENT_BUS.register(key);
 		ClientRegistry.registerKeyBinding(key);
-		key = new ReplaceKey(Keyboard.KEY_C, LotTweaks.NAME);
+		key = new ReplaceKey(Keyboard.KEY_G, LotTweaks.NAME);
 		MinecraftForge.EVENT_BUS.register(key);
 		ClientRegistry.registerKeyBinding(key);
 		key = new AdjustRangeKey(Keyboard.KEY_U, LotTweaks.NAME);
