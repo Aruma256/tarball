@@ -24,6 +24,7 @@ public class RotateKey extends AbstractItemSelectKey {
 	
 	@Override
 	protected void onKeyPressStart() {
+		super.onKeyPressStart();
 		candidates.clear();
 		Minecraft mc = Minecraft.getMinecraft();
 		if (!mc.player.capabilities.isCreativeMode) {
@@ -92,7 +93,7 @@ public class RotateKey extends AbstractItemSelectKey {
 		int x = sr.getScaledWidth() / 2 - 90 + Minecraft.getMinecraft().player.inventory.currentItem * 20 + 2;
 		int y = sr.getScaledHeight() - 16 - 3;
 		y -= 50 + (20 + candidates.size());
-		LTRenderer.renderItemStacks(candidates, x, y, this.pressTime + event.getPartialTicks());
+		LTRenderer.renderItemStacks(candidates, x, y, pressTime, event.getPartialTicks(), lastRotateTime, rotateDirection);
 	}
 
 }

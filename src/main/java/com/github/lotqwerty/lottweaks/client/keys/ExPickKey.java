@@ -47,6 +47,7 @@ public class ExPickKey extends AbstractItemSelectKey {
 
 	@Override
 	protected void onKeyPressStart() {
+		super.onKeyPressStart();
 		candidates.clear();
 		Minecraft mc = Minecraft.getMinecraft();
 		RayTraceResult rayTraceResult;
@@ -133,7 +134,7 @@ public class ExPickKey extends AbstractItemSelectKey {
 		ScaledResolution sr = event.getResolution();
 		int x = sr.getScaledWidth() / 2 - 8;
 		int y = sr.getScaledHeight() / 2 - 8;
-		LTRenderer.renderItemStacks(candidates, x, y, this.pressTime + event.getPartialTicks());
+		LTRenderer.renderItemStacks(candidates, x, y, pressTime, event.getPartialTicks(), lastRotateTime, rotateDirection);
 	}
 
 	
