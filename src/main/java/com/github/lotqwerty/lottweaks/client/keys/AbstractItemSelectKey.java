@@ -5,7 +5,7 @@ import java.util.LinkedList;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Hand;
 
 public abstract class AbstractItemSelectKey extends AbstractLTKey{
 
@@ -39,9 +39,9 @@ public abstract class AbstractItemSelectKey extends AbstractLTKey{
 	}
 
 	protected void updateCurrentItemStack(ItemStack itemStack) {
-		Minecraft mc = Minecraft.getMinecraft();
+		Minecraft mc = Minecraft.getInstance();
 		mc.player.inventory.setInventorySlotContents(mc.player.inventory.currentItem, itemStack);
-        mc.playerController.sendSlotPacket(mc.player.getHeldItem(EnumHand.MAIN_HAND), 36 + mc.player.inventory.currentItem);
+        mc.playerController.sendSlotPacket(mc.player.getHeldItem(Hand.MAIN_HAND), 36 + mc.player.inventory.currentItem);
 	}
 
 	@Override

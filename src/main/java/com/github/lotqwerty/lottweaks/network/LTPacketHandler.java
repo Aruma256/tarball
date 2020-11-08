@@ -1,37 +1,51 @@
 package com.github.lotqwerty.lottweaks.network;
 
+import java.util.function.Supplier;
+
 import com.github.lotqwerty.lottweaks.LotTweaks;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
+import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
 
-//https://mcforge.readthedocs.io/en/1.12.x/networking/simpleimpl/
+//https://mcforge.readthedocs.io/en/1.16.x/networking/simpleimpl/
 
 public class LTPacketHandler {
 
-	private static final SimpleNetworkWrapper INSTANCE = NetworkRegistry.INSTANCE.newSimpleChannel(LotTweaks.MODID);
+	private static final String PROTOCOL_VERSION = "3";
+	private static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
+		new ResourceLocation(LotTweaks.MODID),
+		() -> PROTOCOL_VERSION,
+	    PROTOCOL_VERSION::equals,
+	    PROTOCOL_VERSION::equals
+	);
 
 	public static void init() {
 		int id = 0;
-		INSTANCE.registerMessage(ReplaceMessageHandler.class, ReplaceMessage.class, id++, Side.SERVER);
-		INSTANCE.registerMessage(AdjustRangeMessageHandler.class, AdjustRangeMessage.class, id++, Side.SERVER);
+		INSTANCE.messageBuilder(ReplaceMessage.class, id++)
+			.encoder(ReplaceMessage::toBytes)
+			.decoder(ReplaceMessage::new)
+			.consumer(ReplaceMessage::handle)
+			.add();
+		INSTANCE.messageBuilder(AdjustRangeMessage.class, id++)
+			.encoder(AdjustRangeMessage::toBytes)
+			.decoder(AdjustRangeMessage::new)
+			.consumer(AdjustRangeMessage::handle)
+			.add();
 	}
 
-	public static void sendReplaceMessage(BlockPos pos, Block block, int meta, Block checkBlock) {
-		INSTANCE.sendToServer(new ReplaceMessage(pos, block, meta, checkBlock));
+	public static void sendReplaceMessage(BlockPos pos, BlockState state, BlockState checkState) {
+		INSTANCE.sendToServer(new ReplaceMessage(pos, state, checkState));
 	}
 
 	public static void sendReachRangeMessage(double dist) {
@@ -40,84 +54,63 @@ public class LTPacketHandler {
 
 	//Replace
 
-	public static class ReplaceMessage implements IMessage {
+	public static class ReplaceMessage {
 
-		private BlockPos pos;
-		private Block block;
-		private int meta;
-		private Block checkBlock;
+		private final BlockPos pos;
+		private final BlockState state;
+		private final BlockState checkState;
 
-		public ReplaceMessage(BlockPos pos, Block block, int meta, Block checkBlock) {
+		public ReplaceMessage(BlockPos pos, BlockState state, BlockState checkState) {
 			this.pos = pos;
-			this.block = block;
-			this.meta = meta;
-			this.checkBlock = checkBlock;
+			this.state = state;
+			this.checkState = checkState;
 		}
 
-		public ReplaceMessage() {
+		public ReplaceMessage(PacketBuffer buf) {
+			this(buf.readBlockPos(), Block.getStateById(buf.readInt()), Block.getStateById(buf.readInt()));
 		}
 
-		@Override
-		public void toBytes(ByteBuf buf) {
-			buf.writeInt(this.pos.getX());
-			buf.writeInt(this.pos.getY());
-			buf.writeInt(this.pos.getZ());
-			buf.writeInt(Block.getIdFromBlock(this.block));
-			buf.writeInt(this.meta);
-			buf.writeInt(Block.getIdFromBlock(this.checkBlock));
+		public void toBytes(PacketBuffer buf) {
+			buf.writeBlockPos(this.pos);
+			buf.writeInt(Block.getStateId(state));
+			buf.writeInt(Block.getStateId(checkState));
 		}
 
-		@Override
-		public void fromBytes(ByteBuf buf) {
-			this.pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
-			this.block = Block.getBlockById(buf.readInt());
-			this.meta = buf.readInt();
-			this.checkBlock = Block.getBlockById(buf.readInt());
-		}
-	}
-
-	public static class ReplaceMessageHandler implements IMessageHandler<ReplaceMessage, IMessage> {
-
-		@SuppressWarnings("deprecation")
-		@Override
-		public IMessage onMessage(ReplaceMessage message, MessageContext ctx) {
-			final EntityPlayerMP player = ctx.getServerHandler().player;
-			final BlockPos pos = message.pos;
-			final Block block = message.block;
-			final int meta = message.meta;
-			final Block checkBlock = message.checkBlock;
+		public void handle(Supplier<NetworkEvent.Context> ctx) {
+			ctx.get().setPacketHandled(true);
+			final ServerPlayerEntity player = ctx.get().getSender();
 			if (!player.isCreative()) {
-				return null;
+				return;
 			}
 			if (player.getServerWorld().isRemote) {
 				// kore iru ??
-				return null;
+				return;
 			}
-			if (LotTweaks.CONFIG.REQUIRE_OP_TO_USE_REPLACE && FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getOppedPlayers().getEntry(player.getGameProfile())==null) {
-				return null;
+			if (LotTweaks.CONFIG.REQUIRE_OP_TO_USE_REPLACE && player.getServer().getPlayerList().getOppedPlayers().getEntry(player.getGameProfile())==null) {
+				return;
 			}
 			// validation
-			if (block == Blocks.AIR) {
-				return null;
+			if (state.getBlock() == Blocks.AIR) {
+				return;
 			}
-			double dist = Math.sqrt(player.getDistanceSq(pos));
+			double dist = Math.sqrt(player.getDistanceSq(pos.getX(), pos.getY(), pos.getZ()));
 			if (dist > LotTweaks.CONFIG.REPLACE_RANGE) {
-				return null;
+				return;
 			}
-			if (player.getServerWorld().getBlockState(pos).getBlock() != checkBlock) {
-				return null;
+			if (player.getServerWorld().getBlockState(pos) != checkState) {
+				return;
 			}
 			//
-			player.getServerWorld().addScheduledTask(() -> {
-				player.getServerWorld().setBlockState(pos, block.getStateFromMeta(meta), 2);
+			ctx.get().enqueueWork(() -> {
+				player.getServerWorld().setBlockState(pos, state, 2);
 			});
-			return null;
+			return;
 		}
 	}
 
 	// AdjustRange
 
-	public static class AdjustRangeMessage implements IMessage {
+	public static class AdjustRangeMessage {
 
 		private double dist;
 
@@ -125,40 +118,30 @@ public class LTPacketHandler {
 			this.dist = dist;
 		}
 
-		public AdjustRangeMessage() {
+		public AdjustRangeMessage(PacketBuffer buf) {
+			this(buf.readDouble());
 		}
 
-		@Override
-		public void toBytes(ByteBuf buf) {
+		public void toBytes(PacketBuffer buf) {
 			buf.writeDouble(this.dist);
 		}
 
-		@Override
-		public void fromBytes(ByteBuf buf) {
-			this.dist = buf.readDouble();
-		}
-
-	}
-
-	public static class AdjustRangeMessageHandler implements IMessageHandler<AdjustRangeMessage, IMessage> {
-
-		@Override
-		public IMessage onMessage(AdjustRangeMessage message, MessageContext ctx) {
-			final EntityPlayerMP player = ctx.getServerHandler().player;
-			double dist = message.dist;
+		public void handle(Supplier<NetworkEvent.Context> ctx) {
+			ctx.get().setPacketHandled(true);
+			final ServerPlayerEntity player = ctx.get().getSender();
 			if (dist < 0 || 256 < dist) {
-				return null;
+				return;
 			}
-			player.getServerWorld().addScheduledTask(() -> {
-				IAttributeInstance instance = player.getEntityAttribute(EntityPlayer.REACH_DISTANCE);
-				for (AttributeModifier modifier: instance.getModifiers()) {
+			ctx.get().enqueueWork(() -> {
+				ModifiableAttributeInstance instance = player.getAttribute(ForgeMod.REACH_DISTANCE.get());
+				for (AttributeModifier modifier: instance.getModifierListCopy()) {
 					if (modifier.getName().equals(LotTweaks.MODID)) {
 						instance.removeModifier(modifier);
 					}
 				}
-				instance.applyModifier(new AttributeModifier(LotTweaks.MODID, dist, 0));
+				instance.applyPersistentModifier(new AttributeModifier(LotTweaks.MODID, dist, AttributeModifier.Operation.ADDITION));
 			});
-			return null;
+			return;
 		}
 	}
 }

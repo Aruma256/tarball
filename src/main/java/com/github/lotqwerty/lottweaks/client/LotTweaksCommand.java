@@ -6,76 +6,79 @@ import com.github.lotqwerty.lottweaks.LotTweaks;
 import com.github.lotqwerty.lottweaks.RotationHelper;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.command.WrongUsageException;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.init.Blocks;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.ChatType;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.client.IClientCommand;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.ClientChatEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.registries.ForgeRegistries;
 
-public class LotTweaksCommand extends CommandBase implements IClientCommand {
+@OnlyIn(Dist.CLIENT)
+public class LotTweaksCommand {
 
-	private static final String COMMAND_NAME = LotTweaks.MODID;
-	private static final String COMMAND_USAGE = String.format("/%s add", COMMAND_NAME);
+	private static final String COMMAND_NAME = '/' + LotTweaks.MODID;
+	private static final String COMMAND_USAGE = String.format("/%s <arg : 'add' or 'reload'>", COMMAND_NAME);
 
-	@Override
-	public String getName() {
-		return COMMAND_NAME;
+	private static void displayMessage(ITextComponent textComponent) {
+		Minecraft.getInstance().ingameGUI.func_238450_a_(ChatType.SYSTEM, textComponent, null);
 	}
 
-	@Override
-	public String getUsage(ICommandSender sender) {
-		return COMMAND_USAGE;
-	}
-
-	@Override
-	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-		if (args.length != 1) {
-			throw new WrongUsageException(getUsage(sender), new Object[0]);
+	@SubscribeEvent
+	public void onClientSendChat(final ClientChatEvent event) {
+		String msg = event.getMessage();
+		if (!msg.startsWith(COMMAND_NAME)) {
+			return;
 		}
-		if (args[0].equals("add")) {
-			executeAdd();
-		} else if (args[0].equals("reload")) {
-			executeReload();
+		event.setCanceled(true);
+		try {
+			String[] part = msg.split(" ");
+			if (part.length != 2) {
+				throw new CommandException(new StringTextComponent(TextFormatting.RED + COMMAND_USAGE));
+			}
+			if (part[1].equals("add")){
+				executeAdd();
+			} else if (part[1].equals("reload")){
+				executeReload();
+			} else {
+				throw new CommandException(new StringTextComponent(TextFormatting.RED + COMMAND_USAGE));
+			}
+		} catch (CommandException e) {
+			displayMessage(e.getComponent());
 		}
 	}
-
+	
+	
 	private void executeAdd() throws CommandException {
-		Minecraft mc = Minecraft.getMinecraft();
+		Minecraft mc = Minecraft.getInstance();
 		StringJoiner stringJoiner = new StringJoiner(",");
 		int count = 0;
-		for (int i = 0; i < InventoryPlayer.getHotbarSize(); i++) {
+		for (int i = 0; i < PlayerInventory.getHotbarSize(); i++) {
 			ItemStack itemStack = mc.player.inventory.getStackInSlot(i);
 			if (RotationHelper.canRotate(itemStack)) {
-				throw new CommandException(String.format("Already exists (%d)", i + 1), new Object[0]);
+				throw new CommandException(new StringTextComponent(String.format("Already exists (%d)", i + 1)));
 			}
-			System.out.println("Hello");
 			if (itemStack.isEmpty()) {
 				break;
 			}
 			Block block = Block.getBlockFromItem(itemStack.getItem());
-			int meta = itemStack.getItemDamage();
 			if (block == Blocks.AIR) {
-				throw new CommandException(String.format("Failed to get block instance. (%d)", i + 1), new Object[0]);
+				throw new CommandException(new StringTextComponent(String.format("Failed to get block instance. (%d)", i + 1)));
 			}
-			String name = Block.REGISTRY.getNameForObject(block).toString();
-			if (meta == 0) {
-				stringJoiner.add(name);
-			} else {
-				stringJoiner.add(String.format("%s/%d", name, meta));
-			}
+			String name = ForgeRegistries.BLOCKS.getKey(block).toString();
+			stringJoiner.add(name);
 			count++;
 		}
 		String line = stringJoiner.toString();
 		if (line.isEmpty()) {
-			throw new CommandException(String.format("Hotbar is empty."), new Object[0]);
+			throw new CommandException(new StringTextComponent(String.format("Hotbar is empty.")));
 		}
 		LotTweaks.LOGGER.debug("adding a new block-group from /lottweaks command");
 		LotTweaks.LOGGER.debug(line);
@@ -86,31 +89,22 @@ public class LotTweaksCommand extends CommandBase implements IClientCommand {
 		boolean succeeded = RotationHelper.tryToUpdateBlockGroupsFromCommand(newBlockGroups);
 		if (succeeded) {
 			RotationHelper.writeToFile();
-			mc.ingameGUI.addChatMessage(ChatType.SYSTEM,
-					new TextComponentString(String.format("LotTweaks: added %d blocks", count)));
+			displayMessage(new StringTextComponent(String.format("LotTweaks: added %d blocks", count)));
 		} else {
-			mc.ingameGUI.addChatMessage(ChatType.SYSTEM,
-					new TextComponentString(TextFormatting.RED + "LotTweaks: failed to add blocks"));
+			displayMessage(new StringTextComponent(TextFormatting.RED + "LotTweaks: failed to add blocks"));
 		}
 	}
 
 	private void executeReload() throws CommandException {
 		RotationHelper.loadFromFile();
 		RotationHelper.loadBlockGroups();
-		Minecraft mc = Minecraft.getMinecraft();
+		Minecraft mc = Minecraft.getInstance();
 		int groupCount = RotationHelper.BLOCK_CHAIN.size();
 		if (groupCount > 0) {
-			mc.ingameGUI.addChatMessage(ChatType.SYSTEM,
-					new TextComponentString("LotTweaks: reload succeeded!"));
+			displayMessage(new StringTextComponent("LotTweaks: reload succeeded!"));
 		} else {
-			mc.ingameGUI.addChatMessage(ChatType.SYSTEM,
-					new TextComponentString(TextFormatting.RED + "LotTweaks: failed to reload config file (0 blocks loaded)"));
+			displayMessage(new StringTextComponent(TextFormatting.RED + "LotTweaks: failed to reload config file (0 blocks loaded)"));
 		}
-	}
-
-	@Override
-	public boolean allowUsageWithoutPrefix(ICommandSender sender, String message) {
-		return false;
 	}
 
 }

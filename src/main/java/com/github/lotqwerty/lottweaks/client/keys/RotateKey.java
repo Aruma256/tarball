@@ -6,16 +6,15 @@ import com.github.lotqwerty.lottweaks.RotationHelper;
 import com.github.lotqwerty.lottweaks.client.renderer.LTRenderer;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.client.event.MouseEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class RotateKey extends AbstractItemSelectKey {
 
 	public RotateKey(int keyCode, String category) {
@@ -26,8 +25,8 @@ public class RotateKey extends AbstractItemSelectKey {
 	protected void onKeyPressStart() {
 		super.onKeyPressStart();
 		candidates.clear();
-		Minecraft mc = Minecraft.getMinecraft();
-		if (!mc.player.capabilities.isCreativeMode) {
+		Minecraft mc = Minecraft.getInstance();
+		if (!mc.player.isCreative()) {
 			return;
 		}
 		ItemStack itemStack = mc.player.inventory.getCurrentItem();
@@ -47,18 +46,18 @@ public class RotateKey extends AbstractItemSelectKey {
 	}
 
 	@SubscribeEvent
-	public void onMouseEvent(final MouseEvent event) {
+	public void onMouseEvent(final InputEvent.MouseScrollEvent event) {
 		if (this.pressTime == 0) {
 			return;
 		}
-		Minecraft mc = Minecraft.getMinecraft();
+		Minecraft mc = Minecraft.getInstance();
 		if (!mc.player.isCreative()) {
 			return;
 		}
 		if (event.isCanceled()) {
 			return;
 		}
-		int wheel = event.getDwheel();
+		double wheel = event.getScrollDelta();
 		if (wheel == 0) {
 			return;
 		}
@@ -83,15 +82,14 @@ public class RotateKey extends AbstractItemSelectKey {
 			candidates.clear();
 			return;
 		}
-		if (!Minecraft.getMinecraft().player.isCreative()) {
+		if (!Minecraft.getInstance().player.isCreative()) {
 			return;
 		}
 		if (candidates.isEmpty()) {
 			return;
 		}
-		ScaledResolution sr = event.getResolution();
-		int x = sr.getScaledWidth() / 2 - 90 + Minecraft.getMinecraft().player.inventory.currentItem * 20 + 2;
-		int y = sr.getScaledHeight() - 16 - 3;
+		int x = event.getWindow().getScaledWidth() / 2 - 90 + Minecraft.getInstance().player.inventory.currentItem * 20 + 2;
+		int y = event.getWindow().getScaledHeight() - 16 - 3;
 		y -= 50 + (20 + candidates.size());
 		LTRenderer.renderItemStacks(candidates, x, y, pressTime, event.getPartialTicks(), lastRotateTime, rotateDirection);
 	}

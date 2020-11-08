@@ -1,10 +1,11 @@
 package com.github.lotqwerty.lottweaks;
 
 import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
+import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.event.TickEvent.PlayerTickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class AdjustRangeHelper {
 
@@ -15,19 +16,19 @@ public class AdjustRangeHelper {
 		}
 	}
 
-	public static void clearRangeModifiers(EntityPlayer player) {
-		IAttributeInstance instance = player.getEntityAttribute(EntityPlayer.REACH_DISTANCE);
-		for (AttributeModifier modifier: instance.getModifiers()) {
+	public static void clearRangeModifiers(PlayerEntity player) {
+		ModifiableAttributeInstance instance = player.getAttribute(ForgeMod.REACH_DISTANCE.get());
+		for (AttributeModifier modifier: instance.getModifierListCopy()) {
 			if (modifier.getName().equals(LotTweaks.MODID)) {
 				instance.removeModifier(modifier);
 			}
 		}
 	}
 	
-	public static void changeRangeModifier(EntityPlayer player, double dist) {
+	public static void changeRangeModifier(PlayerEntity player, double dist) {
 		clearRangeModifiers(player);
-		IAttributeInstance instance = player.getEntityAttribute(EntityPlayer.REACH_DISTANCE);
-		instance.applyModifier(new AttributeModifier(LotTweaks.MODID, dist, 0));
+		ModifiableAttributeInstance instance = player.getAttribute(ForgeMod.REACH_DISTANCE.get());
+		instance.applyPersistentModifier(new AttributeModifier(LotTweaks.MODID, dist, AttributeModifier.Operation.ADDITION));
 	}
 	
 }

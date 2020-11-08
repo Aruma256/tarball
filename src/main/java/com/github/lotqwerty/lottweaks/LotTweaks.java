@@ -1,72 +1,48 @@
 package com.github.lotqwerty.lottweaks;
 
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Config;
-import net.minecraftforge.common.config.ConfigManager;
-import net.minecraftforge.common.config.Config.RangeDouble;
-import net.minecraftforge.common.config.Config.RangeInt;
-import net.minecraftforge.common.config.Config.Type;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
 import com.github.lotqwerty.lottweaks.network.LTPacketHandler;
 
-@Mod(modid = LotTweaks.MODID, name = LotTweaks.NAME, version = LotTweaks.VERSION)
+@Mod(LotTweaks.MODID)
 public class LotTweaks {
 
 	public static final String MODID = "lottweaks";
 	public static final String NAME = "LotTweaks";
 	public static final String VERSION = "1.2.5";
-	public static Logger LOGGER;
+	public static Logger LOGGER = LogManager.getLogger();
 
-	private static final String HAS_BEEN_MOVED = String.format("'BLOCK_GROUPS' config has been moved to '%s'", RotationHelper.BLOCKGROUP_CONFFILE);
-
-	@Config(modid = MODID, type = Type.INSTANCE, name = NAME)
 	public static class CONFIG {
-		public static String[] BLOCK_GROUPS = {HAS_BEEN_MOVED};
-		@RangeDouble(min = 0.0, max = 250.0)
 		public static double REPLACE_RANGE = 50.0;
-		@RangeInt(min = 1, max = 120)
 		public static int REPLACE_INTERVAL = 1;
 		public static boolean REQUIRE_OP_TO_USE_REPLACE = false;
 	}
 
-	public static void onConfigUpdate() {
-		ConfigManager.sync(LotTweaks.MODID, Type.INSTANCE);
+	public LotTweaks() {
+		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+		modEventBus.addListener(this::clientInit);
+		modEventBus.addListener(this::commonInit);
+		
 	}
 
-	@EventHandler
-	public void preInit(FMLPreInitializationEvent event) {
-		LOGGER = event.getModLog();
-		if (event.getSide() == Side.CLIENT) {
-			LotTweaksClient.init();
-		}
+	private void clientInit(FMLClientSetupEvent event) {
+		LotTweaksClient.init();
 	}
 
-	@EventHandler
-	public void init(FMLInitializationEvent event) {
-		if (CONFIG.BLOCK_GROUPS.length > 0 && !CONFIG.BLOCK_GROUPS[0].equals(HAS_BEEN_MOVED)) {
-			RotationHelper.BLOCK_GROUPS = CONFIG.BLOCK_GROUPS;
-			RotationHelper.writeToFile();
-		}
+	private void commonInit(FMLCommonSetupEvent event) {
 		RotationHelper.loadFromFile();
 		RotationHelper.loadBlockGroups();
 		LTPacketHandler.init();
 		MinecraftForge.EVENT_BUS.register(new AdjustRangeHelper());
 	}
 
-	@EventHandler
-	public void onLoadComplete(FMLLoadCompleteEvent event) {
-		if (CONFIG.BLOCK_GROUPS.length > 0 && !CONFIG.BLOCK_GROUPS[0].equals(HAS_BEEN_MOVED)) {
-			CONFIG.BLOCK_GROUPS = new String[]{HAS_BEEN_MOVED};
-			onConfigUpdate();
-		}
-	}
 }

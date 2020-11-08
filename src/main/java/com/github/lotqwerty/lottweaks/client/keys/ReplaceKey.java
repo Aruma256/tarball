@@ -4,19 +4,22 @@ import com.github.lotqwerty.lottweaks.LotTweaks;
 import com.github.lotqwerty.lottweaks.network.LTPacketHandler;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
-import net.minecraft.init.Blocks;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.event.TickEvent.RenderTickEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class ReplaceKey extends AbstractLTKey {
 
 	public ReplaceKey(int keyCode, String category) {
@@ -30,7 +33,6 @@ public class ReplaceKey extends AbstractLTKey {
 	@Override
 	protected void onKeyReleased() {
 	}
-
 
 	@SubscribeEvent
 	public void onRenderTick(final RenderTickEvent event) {
@@ -46,16 +48,17 @@ public class ReplaceKey extends AbstractLTKey {
 	}
 
 	private void execReplace() {
-		Minecraft mc = Minecraft.getMinecraft();
-		if (!mc.player.capabilities.isCreativeMode) {
+		Minecraft mc = Minecraft.getInstance();
+		if (!mc.player.isCreative()) {
 			return;
 		}
-		RayTraceResult target = mc.getRenderViewEntity().rayTrace(LotTweaks.CONFIG.REPLACE_RANGE, mc.getRenderPartialTicks());
-		if (target == null || target.typeOfHit != RayTraceResult.Type.BLOCK){
+		RayTraceResult target = mc.getRenderViewEntity().pick(LotTweaks.CONFIG.REPLACE_RANGE, mc.getRenderPartialTicks(), false);
+		if (target == null || target.getType() != RayTraceResult.Type.BLOCK){
         	return;
         }
-        IBlockState state = mc.world.getBlockState(target.getBlockPos());
-        if (state.getBlock().isAir(state, mc.world, target.getBlockPos()))
+		BlockPos pos = ((BlockRayTraceResult)target).getPos();
+        BlockState state = mc.world.getBlockState(pos);
+        if (state.getBlock().isAir(state, mc.world, pos))
         {
             return;
         }
@@ -64,11 +67,8 @@ public class ReplaceKey extends AbstractLTKey {
 		if (itemStack.isEmpty() || block == Blocks.AIR) {
 			return;
 		}
-		float hitX = (float) (target.hitVec.x - target.getBlockPos().getX());
-		float hitY = (float) (target.hitVec.y - target.getBlockPos().getY());
-		float hitZ = (float) (target.hitVec.z - target.getBlockPos().getZ());
-		IBlockState newBlockState = block.getStateForPlacement(mc.world, target.getBlockPos(), target.sideHit, hitX, hitY, hitZ, itemStack.getItemDamage(), mc.player, EnumHand.MAIN_HAND);
-		LTPacketHandler.sendReplaceMessage(target.getBlockPos(), block, block.getMetaFromState(newBlockState), mc.world.getBlockState(target.getBlockPos()).getBlock());
+		BlockState newBlockState = block.getStateForPlacement(new BlockItemUseContext(mc.player, Hand.MAIN_HAND, itemStack, (BlockRayTraceResult)target));
+		LTPacketHandler.sendReplaceMessage(pos, newBlockState, state);
 	}
 
 }

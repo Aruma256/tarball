@@ -4,13 +4,13 @@ import com.github.lotqwerty.lottweaks.network.LTPacketHandler;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class AdjustRangeKey extends AbstractLTKey {
 
 	public AdjustRangeKey(int keyCode, String category) {
@@ -33,22 +33,22 @@ public class AdjustRangeKey extends AbstractLTKey {
 		if (this.pressTime == 0) {
 			return;
 		}
-		if (!Minecraft.getMinecraft().player.isCreative()) {
+		if (!Minecraft.getInstance().player.isCreative()) {
 			return;
 		}
 		// Update dist
-		Minecraft mc = Minecraft.getMinecraft();
-		RayTraceResult rayTraceResult = mc.getRenderViewEntity().rayTrace(255.0, event.getPartialTicks());
-		if (rayTraceResult == null || rayTraceResult.typeOfHit == RayTraceResult.Type.MISS) {
+		Minecraft mc = Minecraft.getInstance();
+		RayTraceResult rayTraceResult = mc.getRenderViewEntity().pick(255.0, mc.getRenderPartialTicks(), false);
+		if (rayTraceResult == null || rayTraceResult.getType() == RayTraceResult.Type.MISS) {
 			return;
 		}
-		double dist = mc.player.getPositionVector().distanceTo(rayTraceResult.hitVec);
+		double dist = mc.player.getPositionVec().distanceTo(rayTraceResult.getHitVec());
 		LTPacketHandler.sendReachRangeMessage(dist);
 		// Render
 		int distInt = (int)dist;
 		String distStr = String.valueOf(distInt);
-		int x = (event.getResolution().getScaledWidth() - mc.fontRenderer.getStringWidth(distStr)) / 2;
-		int y = event.getResolution().getScaledHeight() - 70;
-		mc.fontRenderer.drawStringWithShadow(distStr, x, y, 0xFFFFFF);
+		int x = (event.getWindow().getScaledWidth() - mc.fontRenderer.getStringWidth(distStr)) / 2;
+		int y = event.getWindow().getScaledHeight() - 70;
+		mc.fontRenderer.drawStringWithShadow(event.getMatrixStack(), distStr, x, y, 0xFFFFFF);
 	}
 }

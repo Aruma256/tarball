@@ -2,21 +2,21 @@ package com.github.lotqwerty.lottweaks.client.keys;
 
 import com.github.lotqwerty.lottweaks.client.renderer.LTRenderer;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraftforge.client.event.MouseEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class ExPickKey extends AbstractItemSelectKey {
 
 	private static final BlockPos[] SEARCH_POS = {
@@ -49,17 +49,17 @@ public class ExPickKey extends AbstractItemSelectKey {
 	protected void onKeyPressStart() {
 		super.onKeyPressStart();
 		candidates.clear();
-		Minecraft mc = Minecraft.getMinecraft();
+		Minecraft mc = Minecraft.getInstance();
 		RayTraceResult rayTraceResult;
 
-		if (!mc.player.capabilities.isCreativeMode) {
+		if (!mc.player.isCreative()) {
 			rayTraceResult = mc.objectMouseOver;
 			if (rayTraceResult != null) {
 				ForgeHooks.onPickBlock(rayTraceResult, mc.player, mc.world);
 			}
 			return;
 		}
-		rayTraceResult = mc.getRenderViewEntity().rayTrace(255.0, mc.getRenderPartialTicks());
+		rayTraceResult = mc.getRenderViewEntity().pick(255.0, mc.getRenderPartialTicks(), false);
 		if (rayTraceResult == null) {
 			return;
 		}
@@ -72,10 +72,10 @@ public class ExPickKey extends AbstractItemSelectKey {
 			return;
 		}
 		addToCandidates(itemStack);
-		BlockPos pos = rayTraceResult.getBlockPos();
+		BlockPos pos = ((BlockRayTraceResult)rayTraceResult).getPos();
 		for (BlockPos posDiff : SEARCH_POS) {
 			try {
-				IBlockState state = mc.world.getBlockState(pos.add(posDiff));
+				BlockState state = mc.world.getBlockState(pos.add(posDiff));
 				itemStack = state.getBlock().getPickBlock(state, rayTraceResult, mc.world, pos, mc.player);
 				if (!itemStack.isEmpty()) {
 					addToCandidates(itemStack);
@@ -91,17 +91,17 @@ public class ExPickKey extends AbstractItemSelectKey {
 	}
 
 	@SubscribeEvent
-	public void onMouseEvent(final MouseEvent event) {
+	public void onMouseWheelEvent(final InputEvent.MouseScrollEvent event) {
 		if (this.pressTime == 0) {
 			return;
 		}
-		if (!Minecraft.getMinecraft().player.isCreative()) {
+		if (!Minecraft.getInstance().player.isCreative()) {
 			return;
 		}
 		if (event.isCanceled()) {
 			return;
 		}
-		int wheel = event.getDwheel();
+		double wheel = event.getScrollDelta();
 		if (wheel == 0) {
 			return;
 		}
@@ -125,15 +125,14 @@ public class ExPickKey extends AbstractItemSelectKey {
 		if (this.pressTime == 0) {
 			return;
 		}
-		if (!Minecraft.getMinecraft().player.isCreative()) {
+		if (!Minecraft.getInstance().player.isCreative()) {
 			return;
 		}
 		if (candidates.isEmpty()) {
 			return;
 		}
-		ScaledResolution sr = event.getResolution();
-		int x = sr.getScaledWidth() / 2 - 8;
-		int y = sr.getScaledHeight() / 2 - 8;
+		int x = event.getWindow().getScaledWidth() / 2 - 8;
+		int y = event.getWindow().getScaledHeight() / 2 - 8;
 		LTRenderer.renderItemStacks(candidates, x, y, pressTime, event.getPartialTicks(), lastRotateTime, rotateDirection);
 	}
 

@@ -2,9 +2,9 @@ package com.github.lotqwerty.lottweaks.client.renderer;
 
 import java.util.Collection;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 
 public final class LTRenderer {
@@ -28,23 +28,22 @@ public final class LTRenderer {
 			double theta = -((double)i - afterimage*direction) / stacks.size() * 2 * Math.PI + Math.PI / 2;
 			double dx = r * Math.cos(theta);
 			double dy = r * Math.sin(theta);
-			Minecraft.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI(c, (int)Math.round(x + dx), (int)Math.round(y + dy));
+			Minecraft.getInstance().getItemRenderer().renderItemAndEffectIntoGUI(c, (int)Math.round(x + dx), (int)Math.round(y + dy));
 			i++;
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	private static void glInitialize() {
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        GlStateManager.enableRescaleNormal();
-        GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        RenderHelper.enableGUIStandardItemLighting();
+        RenderSystem.enableRescaleNormal();
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
 	}
 	
+	@SuppressWarnings("deprecation")
 	private static void glFinalize() {
-        RenderHelper.disableStandardItemLighting();
-        GlStateManager.disableRescaleNormal();
-        GlStateManager.disableBlend();
+        RenderSystem.disableRescaleNormal();
+        RenderSystem.disableBlend();
 	}
 	
 }
