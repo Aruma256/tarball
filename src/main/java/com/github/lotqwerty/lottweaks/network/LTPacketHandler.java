@@ -1,12 +1,10 @@
 package com.github.lotqwerty.lottweaks.network;
 
+import com.github.lotqwerty.lottweaks.AdjustRangeHelper;
 import com.github.lotqwerty.lottweaks.LotTweaks;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -150,13 +148,7 @@ public class LTPacketHandler {
 				return null;
 			}
 			player.getServerWorld().addScheduledTask(() -> {
-				IAttributeInstance instance = player.getEntityAttribute(EntityPlayer.REACH_DISTANCE);
-				for (AttributeModifier modifier: instance.getModifiers()) {
-					if (modifier.getName().equals(LotTweaks.MODID)) {
-						instance.removeModifier(modifier);
-					}
-				}
-				instance.applyModifier(new AttributeModifier(LotTweaks.MODID, dist, 0));
+				AdjustRangeHelper.changeRangeModifier(player, dist);
 			});
 			return null;
 		}
