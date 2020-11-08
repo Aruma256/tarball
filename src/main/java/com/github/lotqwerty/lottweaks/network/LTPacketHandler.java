@@ -143,6 +143,9 @@ public class LTPacketHandler {
 		@Override
 		public IMessage onMessage(AdjustRangeMessage message, MessageContext ctx) {
 			final EntityPlayerMP player = ctx.getServerHandler().player;
+			if (!player.isCreative()) {
+				return null;
+			}
 			double dist = message.dist;
 			if (dist < 0 || 256 < dist) {
 				return null;
