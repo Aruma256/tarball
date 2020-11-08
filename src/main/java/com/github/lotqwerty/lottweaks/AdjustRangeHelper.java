@@ -27,7 +27,7 @@ public class AdjustRangeHelper {
 	public static void changeRangeModifier(EntityPlayer player, double dist) {
 		clearRangeModifiers(player);
 		IAttributeInstance instance = player.getEntityAttribute(EntityPlayer.REACH_DISTANCE);
-		instance.applyModifier(new AttributeModifier(LotTweaks.MODID, dist, 0));
+		instance.applyModifier(new AttributeModifier(LotTweaks.MODID, dist - instance.getBaseValue() + 0.5, 0));
 	}
 	
 }
