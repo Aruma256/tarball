@@ -42,7 +42,7 @@ public class AdjustRangeKey extends AbstractLTKey {
 		if (rayTraceResult == null || rayTraceResult.getType() == RayTraceResult.Type.MISS) {
 			return;
 		}
-		double dist = mc.player.getPositionVec().distanceTo(rayTraceResult.getHitVec());
+		double dist = mc.player.getEyePosition(event.getPartialTicks()).distanceTo(rayTraceResult.getHitVec());
 		LTPacketHandler.sendReachRangeMessage(dist);
 		// Render
 		int distInt = (int)dist;

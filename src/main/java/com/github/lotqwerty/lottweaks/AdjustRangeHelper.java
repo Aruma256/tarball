@@ -28,7 +28,7 @@ public class AdjustRangeHelper {
 	public static void changeRangeModifier(PlayerEntity player, double dist) {
 		clearRangeModifiers(player);
 		ModifiableAttributeInstance instance = player.getAttribute(ForgeMod.REACH_DISTANCE.get());
-		instance.applyPersistentModifier(new AttributeModifier(LotTweaks.MODID, dist, AttributeModifier.Operation.ADDITION));
+		instance.applyPersistentModifier(new AttributeModifier(LotTweaks.MODID, dist - instance.getBaseValue() + 0.5, AttributeModifier.Operation.ADDITION));
 	}
 	
 }

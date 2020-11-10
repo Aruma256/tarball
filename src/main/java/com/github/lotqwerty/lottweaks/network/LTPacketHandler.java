@@ -2,18 +2,16 @@ package com.github.lotqwerty.lottweaks.network;
 
 import java.util.function.Supplier;
 
+import com.github.lotqwerty.lottweaks.AdjustRangeHelper;
 import com.github.lotqwerty.lottweaks.LotTweaks;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
@@ -129,17 +127,14 @@ public class LTPacketHandler {
 		public void handle(Supplier<NetworkEvent.Context> ctx) {
 			ctx.get().setPacketHandled(true);
 			final ServerPlayerEntity player = ctx.get().getSender();
+			if (!player.isCreative()) {
+				return;
+			}
 			if (dist < 0 || 256 < dist) {
 				return;
 			}
 			ctx.get().enqueueWork(() -> {
-				ModifiableAttributeInstance instance = player.getAttribute(ForgeMod.REACH_DISTANCE.get());
-				for (AttributeModifier modifier: instance.getModifierListCopy()) {
-					if (modifier.getName().equals(LotTweaks.MODID)) {
-						instance.removeModifier(modifier);
-					}
-				}
-				instance.applyPersistentModifier(new AttributeModifier(LotTweaks.MODID, dist, AttributeModifier.Operation.ADDITION));
+				AdjustRangeHelper.changeRangeModifier(player, dist);
 			});
 			return;
 		}
