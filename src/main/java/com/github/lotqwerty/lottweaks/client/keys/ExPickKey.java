@@ -17,7 +17,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ExPickKey extends AbstractItemSelectKey {
+public class ExPickKey extends ItemSelectKeyBase {
 
 	private static final BlockPos[] SEARCH_POS = {
 			new BlockPos(1, 0, 0),
@@ -85,11 +85,6 @@ public class ExPickKey extends AbstractItemSelectKey {
 		}
 	}
 
-	@Override
-	protected void onKeyReleased() {
-		candidates.clear();
-	}
-
 	@SubscribeEvent
 	public void onMouseEvent(final MouseEvent event) {
 		if (this.pressTime == 0) {
@@ -136,6 +131,5 @@ public class ExPickKey extends AbstractItemSelectKey {
 		int y = sr.getScaledHeight() / 2 - 8;
 		LTRenderer.renderItemStacks(candidates, x, y, pressTime, event.getPartialTicks(), lastRotateTime, rotateDirection);
 	}
-
 	
 }

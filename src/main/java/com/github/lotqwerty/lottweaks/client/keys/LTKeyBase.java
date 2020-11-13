@@ -9,11 +9,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public abstract class AbstractLTKey extends KeyBinding {
+public class LTKeyBase extends KeyBinding {
 
 	protected int pressTime = 0;
 	
-	public AbstractLTKey(String description, int keyCode, String category) {
+	public LTKeyBase(String description, int keyCode, String category) {
 		super(description, keyCode, category);
 	}
 
@@ -30,6 +30,7 @@ public abstract class AbstractLTKey extends KeyBinding {
 				if (this.pressTime == 1) {
 					this.onKeyPressStart();
 				}
+				whilePressed();
 			} else {
 				if (this.pressTime > 0) {
 					this.onKeyReleased();
@@ -39,8 +40,13 @@ public abstract class AbstractLTKey extends KeyBinding {
 		}
 	}
 
-	protected abstract void onKeyPressStart();
+	protected void onKeyPressStart() {
+	}
 	
-	protected abstract void onKeyReleased();
+	protected void whilePressed() {
+	}
+
+	protected void onKeyReleased() {
+	}
 
 }

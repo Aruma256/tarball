@@ -17,20 +17,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ReplaceKey extends AbstractLTKey {
+public class ReplaceKey extends LTKeyBase {
 
 	public ReplaceKey(int keyCode, String category) {
 		super("Replace", keyCode, category);
 	}
-
-	@Override
-	protected void onKeyPressStart() {
-	}
-
-	@Override
-	protected void onKeyReleased() {
-	}
-
 
 	@SubscribeEvent
 	public void onRenderTick(final RenderTickEvent event) {

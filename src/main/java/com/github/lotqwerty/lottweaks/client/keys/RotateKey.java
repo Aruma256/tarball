@@ -16,7 +16,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RotateKey extends AbstractItemSelectKey {
+public class RotateKey extends ItemSelectKeyBase {
 
 	public RotateKey(int keyCode, String category) {
 		super("Rotate", keyCode, category);
@@ -39,11 +39,6 @@ public class RotateKey extends AbstractItemSelectKey {
 			return;
 		}
 		candidates.addAll(results);
-	}
-
-	@Override
-	protected void onKeyReleased() {
-		candidates.clear();
 	}
 
 	@SubscribeEvent

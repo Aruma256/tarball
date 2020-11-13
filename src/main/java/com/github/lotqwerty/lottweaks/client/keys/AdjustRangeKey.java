@@ -11,18 +11,10 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class AdjustRangeKey extends AbstractLTKey {
+public class AdjustRangeKey extends LTKeyBase {
 
 	public AdjustRangeKey(int keyCode, String category) {
 		super("AdjustRange", keyCode, category);
-	}
-
-	@Override
-	protected void onKeyPressStart() {
-	}
-
-	@Override
-	protected void onKeyReleased() {
 	}
 
 	@SubscribeEvent
