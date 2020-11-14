@@ -31,7 +31,7 @@ public class ReplaceKey extends LTKeyBase {
 		if (event.getPhase() != EventPriority.NORMAL) {
 			return;
 		}
-		if (this.pressTime==1 || this.pressTime > LotTweaks.CONFIG.REPLACE_INTERVAL) {
+		if (this.pressTime==1 || this.pressTime > LotTweaks.CONFIG.REPLACE_INTERVAL.get()) {
 			this.execReplace();
 			if (this.pressTime==1) {
 				this.pressTime++;

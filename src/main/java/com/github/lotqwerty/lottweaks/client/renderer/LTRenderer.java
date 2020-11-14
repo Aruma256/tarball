@@ -20,7 +20,7 @@ public final class LTRenderer {
 	}
 
 	private static void circular(Collection<ItemStack> stacks, int x, int y, int t, float pt, int lt, byte direction) {
-		if (LotTweaks.CONFIG.DISABLE_ANIMATIONS) {
+		if (LotTweaks.CONFIG.DISABLE_ANIMATIONS.get()) {
 			t = Integer.MAX_VALUE;
 			pt = 0;
 		}

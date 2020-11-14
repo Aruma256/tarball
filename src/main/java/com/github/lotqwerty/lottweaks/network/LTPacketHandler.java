@@ -85,7 +85,7 @@ public class LTPacketHandler {
 				// kore iru ??
 				return;
 			}
-			if (LotTweaks.CONFIG.REQUIRE_OP_TO_USE_REPLACE && player.getServer().getPlayerList().getOppedPlayers().getEntry(player.getGameProfile())==null) {
+			if (LotTweaks.CONFIG.REQUIRE_OP_TO_USE_REPLACE.get() && player.getServer().getPlayerList().getOppedPlayers().getEntry(player.getGameProfile())==null) {
 				return;
 			}
 			// validation
@@ -93,7 +93,7 @@ public class LTPacketHandler {
 				return;
 			}
 			double dist = player.getEyePosition(1.0F).distanceTo(new Vector3d(pos.getX(), pos.getY(), pos.getZ()));
-			if (dist > LotTweaks.CONFIG.MAX_RANGE) {
+			if (dist > LotTweaks.CONFIG.MAX_RANGE.get()) {
 				return;
 			}
 			if (player.getServerWorld().getBlockState(pos) != checkState) {
@@ -135,7 +135,7 @@ public class LTPacketHandler {
 				if (dist < 0) {
 					return;
 				}
-				dist = Math.min(LotTweaks.CONFIG.MAX_RANGE, dist);
+				dist = Math.min(LotTweaks.CONFIG.MAX_RANGE.get(), dist);
 				AdjustRangeHelper.changeRangeModifier(player, dist);
 			});
 			return;

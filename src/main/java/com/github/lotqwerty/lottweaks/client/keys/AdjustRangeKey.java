@@ -34,9 +34,9 @@ public class AdjustRangeKey extends LTKeyBase {
 		RayTraceResult rayTraceResult = mc.getRenderViewEntity().pick(255.0, mc.getRenderPartialTicks(), false);
 		double dist;
 		if (rayTraceResult == null || rayTraceResult.getType() == RayTraceResult.Type.MISS) {
-			dist = LotTweaks.CONFIG.MAX_RANGE;
+			dist = LotTweaks.CONFIG.MAX_RANGE.get();
 		} else {
-			dist = Math.min(LotTweaks.CONFIG.MAX_RANGE, mc.player.getEyePosition(event.getPartialTicks()).distanceTo(rayTraceResult.getHitVec()));
+			dist = Math.min(LotTweaks.CONFIG.MAX_RANGE.get(), mc.player.getEyePosition(event.getPartialTicks()).distanceTo(rayTraceResult.getHitVec()));
 		}
 		LTPacketHandler.sendReachRangeMessage(dist);
 		// Render
