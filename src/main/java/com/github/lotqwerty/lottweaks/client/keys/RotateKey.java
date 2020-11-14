@@ -15,7 +15,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 @OnlyIn(Dist.CLIENT)
-public class RotateKey extends AbstractItemSelectKey {
+public class RotateKey extends ItemSelectKeyBase {
 
 	public RotateKey(int keyCode, String category) {
 		super("Rotate", keyCode, category);
@@ -38,11 +38,6 @@ public class RotateKey extends AbstractItemSelectKey {
 			return;
 		}
 		candidates.addAll(results);
-	}
-
-	@Override
-	protected void onKeyReleased() {
-		candidates.clear();
 	}
 
 	@SubscribeEvent

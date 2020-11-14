@@ -20,18 +20,10 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 @OnlyIn(Dist.CLIENT)
-public class ReplaceKey extends AbstractLTKey {
+public class ReplaceKey extends LTKeyBase {
 
 	public ReplaceKey(int keyCode, String category) {
 		super("Replace", keyCode, category);
-	}
-
-	@Override
-	protected void onKeyPressStart() {
-	}
-
-	@Override
-	protected void onKeyReleased() {
 	}
 
 	@SubscribeEvent
@@ -52,7 +44,7 @@ public class ReplaceKey extends AbstractLTKey {
 		if (!mc.player.isCreative()) {
 			return;
 		}
-		RayTraceResult target = mc.getRenderViewEntity().pick(LotTweaks.CONFIG.REPLACE_RANGE, mc.getRenderPartialTicks(), false);
+		RayTraceResult target = mc.objectMouseOver;
 		if (target == null || target.getType() != RayTraceResult.Type.BLOCK){
         	return;
         }

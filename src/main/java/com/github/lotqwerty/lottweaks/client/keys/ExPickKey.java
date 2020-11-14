@@ -17,7 +17,7 @@ import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 @OnlyIn(Dist.CLIENT)
-public class ExPickKey extends AbstractItemSelectKey {
+public class ExPickKey extends ItemSelectKeyBase {
 
 	private static final BlockPos[] SEARCH_POS = {
 			new BlockPos(1, 0, 0),
@@ -85,11 +85,6 @@ public class ExPickKey extends AbstractItemSelectKey {
 		}
 	}
 
-	@Override
-	protected void onKeyReleased() {
-		candidates.clear();
-	}
-
 	@SubscribeEvent
 	public void onMouseWheelEvent(final InputEvent.MouseScrollEvent event) {
 		if (this.pressTime == 0) {
@@ -135,6 +130,5 @@ public class ExPickKey extends AbstractItemSelectKey {
 		int y = event.getWindow().getScaledHeight() / 2 - 8;
 		LTRenderer.renderItemStacks(candidates, x, y, pressTime, event.getPartialTicks(), lastRotateTime, rotateDirection);
 	}
-
 	
 }

@@ -1,5 +1,6 @@
 package com.github.lotqwerty.lottweaks.client.keys;
 
+import com.github.lotqwerty.lottweaks.LotTweaks;
 import com.github.lotqwerty.lottweaks.network.LTPacketHandler;
 
 import net.minecraft.client.Minecraft;
@@ -11,18 +12,10 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 @OnlyIn(Dist.CLIENT)
-public class AdjustRangeKey extends AbstractLTKey {
+public class AdjustRangeKey extends LTKeyBase {
 
 	public AdjustRangeKey(int keyCode, String category) {
 		super("AdjustRange", keyCode, category);
-	}
-
-	@Override
-	protected void onKeyPressStart() {
-	}
-
-	@Override
-	protected void onKeyReleased() {
 	}
 
 	@SubscribeEvent
@@ -39,10 +32,12 @@ public class AdjustRangeKey extends AbstractLTKey {
 		// Update dist
 		Minecraft mc = Minecraft.getInstance();
 		RayTraceResult rayTraceResult = mc.getRenderViewEntity().pick(255.0, mc.getRenderPartialTicks(), false);
+		double dist;
 		if (rayTraceResult == null || rayTraceResult.getType() == RayTraceResult.Type.MISS) {
-			return;
+			dist = LotTweaks.CONFIG.MAX_RANGE;
+		} else {
+			dist = Math.min(LotTweaks.CONFIG.MAX_RANGE, mc.player.getEyePosition(event.getPartialTicks()).distanceTo(rayTraceResult.getHitVec()));
 		}
-		double dist = mc.player.getEyePosition(event.getPartialTicks()).distanceTo(rayTraceResult.getHitVec());
 		LTPacketHandler.sendReachRangeMessage(dist);
 		// Render
 		int distInt = (int)dist;

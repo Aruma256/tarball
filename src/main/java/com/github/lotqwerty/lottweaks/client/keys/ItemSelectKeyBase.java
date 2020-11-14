@@ -7,13 +7,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 
-public abstract class AbstractItemSelectKey extends AbstractLTKey{
+public class ItemSelectKeyBase extends LTKeyBase{
 
 	protected final Deque<ItemStack> candidates = new LinkedList<>();
 	protected int lastRotateTime = -1;
 	protected byte rotateDirection = 0;
 
-	public AbstractItemSelectKey(String description, int keyCode, String category) {
+	public ItemSelectKeyBase(String description, int keyCode, String category) {
 		super(description, keyCode, category);
 	}
 
@@ -48,6 +48,11 @@ public abstract class AbstractItemSelectKey extends AbstractLTKey{
 	protected void onKeyPressStart() {
 		this.resetLastRotateTime();
 		this.rotateDirection = 0;
+	}
+
+	@Override
+	protected void onKeyReleased() {
+		candidates.clear();
 	}
 
 	private void resetLastRotateTime() {

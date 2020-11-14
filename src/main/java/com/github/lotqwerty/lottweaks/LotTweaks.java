@@ -22,9 +22,10 @@ public class LotTweaks {
 	public static Logger LOGGER = LogManager.getLogger();
 
 	public static class CONFIG {
-		public static double REPLACE_RANGE = 50.0;
+		public static int MAX_RANGE = 128;
 		public static int REPLACE_INTERVAL = 1;
 		public static boolean REQUIRE_OP_TO_USE_REPLACE = false;
+		public static boolean DISABLE_ANIMATIONS = false;
 	}
 
 	public LotTweaks() {

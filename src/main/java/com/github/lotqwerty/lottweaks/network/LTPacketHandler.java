@@ -12,6 +12,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
@@ -91,8 +92,8 @@ public class LTPacketHandler {
 			if (state.getBlock() == Blocks.AIR) {
 				return;
 			}
-			double dist = Math.sqrt(player.getDistanceSq(pos.getX(), pos.getY(), pos.getZ()));
-			if (dist > LotTweaks.CONFIG.REPLACE_RANGE) {
+			double dist = player.getEyePosition(1.0F).distanceTo(new Vector3d(pos.getX(), pos.getY(), pos.getZ()));
+			if (dist > LotTweaks.CONFIG.MAX_RANGE) {
 				return;
 			}
 			if (player.getServerWorld().getBlockState(pos) != checkState) {
@@ -130,10 +131,11 @@ public class LTPacketHandler {
 			if (!player.isCreative()) {
 				return;
 			}
-			if (dist < 0 || 256 < dist) {
-				return;
-			}
 			ctx.get().enqueueWork(() -> {
+				if (dist < 0) {
+					return;
+				}
+				dist = Math.min(LotTweaks.CONFIG.MAX_RANGE, dist);
 				AdjustRangeHelper.changeRangeModifier(player, dist);
 			});
 			return;
