@@ -52,7 +52,7 @@ public class ExPickKey extends ItemSelectKeyBase {
 		Minecraft mc = Minecraft.getMinecraft();
 		RayTraceResult rayTraceResult;
 
-		if (!mc.player.capabilities.isCreativeMode) {
+		if (!mc.player.isCreative()) {
 			rayTraceResult = mc.objectMouseOver;
 			if (rayTraceResult != null) {
 				ForgeHooks.onPickBlock(rayTraceResult, mc.player, mc.world);

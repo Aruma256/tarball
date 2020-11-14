@@ -38,7 +38,7 @@ public class ReplaceKey extends LTKeyBase {
 
 	private void execReplace() {
 		Minecraft mc = Minecraft.getMinecraft();
-		if (!mc.player.capabilities.isCreativeMode) {
+		if (!mc.player.isCreative()) {
 			return;
 		}
 		RayTraceResult target = mc.objectMouseOver;

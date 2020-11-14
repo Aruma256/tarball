@@ -27,7 +27,7 @@ public class RotateKey extends ItemSelectKeyBase {
 		super.onKeyPressStart();
 		candidates.clear();
 		Minecraft mc = Minecraft.getMinecraft();
-		if (!mc.player.capabilities.isCreativeMode) {
+		if (!mc.player.isCreative()) {
 			return;
 		}
 		ItemStack itemStack = mc.player.inventory.getCurrentItem();
