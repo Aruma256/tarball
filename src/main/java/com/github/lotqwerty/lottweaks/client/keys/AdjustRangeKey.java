@@ -1,5 +1,6 @@
 package com.github.lotqwerty.lottweaks.client.keys;
 
+import com.github.lotqwerty.lottweaks.LotTweaks;
 import com.github.lotqwerty.lottweaks.network.LTPacketHandler;
 
 import net.minecraft.client.Minecraft;
@@ -31,10 +32,12 @@ public class AdjustRangeKey extends LTKeyBase {
 		// Update dist
 		Minecraft mc = Minecraft.getMinecraft();
 		RayTraceResult rayTraceResult = mc.getRenderViewEntity().rayTrace(255.0, event.getPartialTicks());
+		double dist;
 		if (rayTraceResult == null || rayTraceResult.typeOfHit == RayTraceResult.Type.MISS) {
-			return;
+			dist = LotTweaks.CONFIG.MAX_RANGE;
+		} else {
+			dist = Math.min(LotTweaks.CONFIG.MAX_RANGE, mc.player.getPositionEyes(event.getPartialTicks()).distanceTo(rayTraceResult.hitVec));
 		}
-		double dist = mc.player.getPositionEyes(event.getPartialTicks()).distanceTo(rayTraceResult.hitVec);
 		LTPacketHandler.sendReachRangeMessage(dist);
 		// Render
 		int distInt = (int)dist;

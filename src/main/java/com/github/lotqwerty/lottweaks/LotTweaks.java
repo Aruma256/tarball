@@ -3,7 +3,6 @@ package com.github.lotqwerty.lottweaks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
-import net.minecraftforge.common.config.Config.RangeDouble;
 import net.minecraftforge.common.config.Config.RangeInt;
 import net.minecraftforge.common.config.Config.Type;
 import net.minecraftforge.fml.common.Mod;
@@ -31,8 +30,8 @@ public class LotTweaks {
 	@Config(modid = MODID, type = Type.INSTANCE, name = NAME)
 	public static class CONFIG {
 		public static String[] BLOCK_GROUPS = {HAS_BEEN_MOVED};
-		@RangeDouble(min = 0.0, max = 250.0)
-		public static double REPLACE_RANGE = 50.0;
+		@RangeInt(min = 0, max = 256)
+		public static int MAX_RANGE = 128;
 		@RangeInt(min = 1, max = 120)
 		public static int REPLACE_INTERVAL = 1;
 		public static boolean REQUIRE_OP_TO_USE_REPLACE = false;

@@ -41,7 +41,7 @@ public class ReplaceKey extends LTKeyBase {
 		if (!mc.player.capabilities.isCreativeMode) {
 			return;
 		}
-		RayTraceResult target = mc.getRenderViewEntity().rayTrace(LotTweaks.CONFIG.REPLACE_RANGE, mc.getRenderPartialTicks());
+		RayTraceResult target = mc.objectMouseOver;
 		if (target == null || target.typeOfHit != RayTraceResult.Type.BLOCK){
         	return;
         }

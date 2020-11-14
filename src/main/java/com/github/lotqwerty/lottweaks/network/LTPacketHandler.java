@@ -8,6 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -98,8 +99,8 @@ public class LTPacketHandler {
 			if (block == Blocks.AIR) {
 				return null;
 			}
-			double dist = Math.sqrt(player.getDistanceSq(pos));
-			if (dist > LotTweaks.CONFIG.REPLACE_RANGE) {
+			double dist = player.getPositionEyes(1.0F).distanceTo(new Vec3d(pos));
+			if (dist > LotTweaks.CONFIG.MAX_RANGE) {
 				return null;
 			}
 			if (player.getServerWorld().getBlockState(pos).getBlock() != checkBlock) {
@@ -146,11 +147,12 @@ public class LTPacketHandler {
 			if (!player.isCreative()) {
 				return null;
 			}
-			double dist = message.dist;
-			if (dist < 0 || 256 < dist) {
-				return null;
-			}
 			player.getServerWorld().addScheduledTask(() -> {
+				double dist = message.dist;
+				if (dist < 0) {
+					return;
+				}
+				dist = Math.min(LotTweaks.CONFIG.MAX_RANGE, dist);
 				AdjustRangeHelper.changeRangeModifier(player, dist);
 			});
 			return null;
