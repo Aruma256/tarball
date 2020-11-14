@@ -35,6 +35,7 @@ public class LotTweaks {
 		@RangeInt(min = 1, max = 120)
 		public static int REPLACE_INTERVAL = 1;
 		public static boolean REQUIRE_OP_TO_USE_REPLACE = false;
+		public static boolean DISABLE_ANIMATION = false;
 	}
 
 	public static void onConfigUpdate() {
