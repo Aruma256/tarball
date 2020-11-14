@@ -22,7 +22,7 @@ public class LotTweaks {
 
 	public static final String MODID = "lottweaks";
 	public static final String NAME = "LotTweaks";
-	public static final String VERSION = "1.2.7";
+	public static final String VERSION = "1.2.8";
 	public static Logger LOGGER;
 
 	private static final String HAS_BEEN_MOVED = String.format("'BLOCK_GROUPS' config has been moved to '%s'", RotationHelper.BLOCKGROUP_CONFFILE);
@@ -35,7 +35,7 @@ public class LotTweaks {
 		@RangeInt(min = 1, max = 120)
 		public static int REPLACE_INTERVAL = 1;
 		public static boolean REQUIRE_OP_TO_USE_REPLACE = false;
-		public static boolean DISABLE_ANIMATION = false;
+		public static boolean DISABLE_ANIMATIONS = false;
 	}
 
 	public static void onConfigUpdate() {
