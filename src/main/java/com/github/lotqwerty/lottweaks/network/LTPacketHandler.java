@@ -12,7 +12,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
@@ -92,7 +92,7 @@ public class LTPacketHandler {
 			if (state.getBlock() == Blocks.AIR) {
 				return;
 			}
-			double dist = player.getEyePosition(1.0F).distanceTo(new Vector3d(pos.getX(), pos.getY(), pos.getZ()));
+			double dist = player.getEyePosition(1.0F).distanceTo(new Vec3d(pos.getX(), pos.getY(), pos.getZ()));
 			if (dist > LotTweaks.CONFIG.MAX_RANGE.get()) {
 				return;
 			}

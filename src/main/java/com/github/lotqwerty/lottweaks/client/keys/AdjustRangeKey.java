@@ -44,6 +44,6 @@ public class AdjustRangeKey extends LTKeyBase {
 		String distStr = String.valueOf(distInt);
 		int x = (event.getWindow().getScaledWidth() - mc.fontRenderer.getStringWidth(distStr)) / 2;
 		int y = event.getWindow().getScaledHeight() - 70;
-		mc.fontRenderer.drawStringWithShadow(event.getMatrixStack(), distStr, x, y, 0xFFFFFF);
+		mc.fontRenderer.drawStringWithShadow(distStr, x, y, 0xFFFFFF);
 	}
 }

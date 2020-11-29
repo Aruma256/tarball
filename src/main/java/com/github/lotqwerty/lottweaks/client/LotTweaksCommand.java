@@ -28,7 +28,7 @@ public class LotTweaksCommand {
 	private static final String COMMAND_USAGE = String.format("/%s <arg : 'add' or 'reload'>", COMMAND_NAME);
 
 	private static void displayMessage(ITextComponent textComponent) {
-		Minecraft.getInstance().ingameGUI.func_238450_a_(ChatType.SYSTEM, textComponent, null);
+		Minecraft.getInstance().ingameGUI.addChatMessage(ChatType.SYSTEM, textComponent);
 	}
 
 	@SubscribeEvent

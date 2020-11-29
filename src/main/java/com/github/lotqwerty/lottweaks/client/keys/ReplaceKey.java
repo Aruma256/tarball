@@ -7,12 +7,14 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.TickEvent.RenderTickEvent;
@@ -59,8 +61,16 @@ public class ReplaceKey extends LTKeyBase {
 		if (itemStack.isEmpty() || block == Blocks.AIR) {
 			return;
 		}
-		BlockState newBlockState = block.getStateForPlacement(new BlockItemUseContext(mc.player, Hand.MAIN_HAND, itemStack, (BlockRayTraceResult)target));
+		BlockState newBlockState = block.getStateForPlacement(new DummyBlockItemUseContext(mc.world, mc.player, Hand.MAIN_HAND, itemStack, (BlockRayTraceResult)target));
 		LTPacketHandler.sendReplaceMessage(pos, newBlockState, state);
+	}
+	
+	protected static class DummyBlockItemUseContext extends BlockItemUseContext {
+		protected DummyBlockItemUseContext(World worldIn, PlayerEntity playerIn, Hand handIn, ItemStack stackIn,
+				BlockRayTraceResult rayTraceResultIn) {
+			super(worldIn, playerIn, handIn, stackIn, rayTraceResultIn);
+			// TODO Auto-generated constructor stub
+		}
 	}
 
 }
