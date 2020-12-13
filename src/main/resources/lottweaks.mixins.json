@@ -1,0 +1,22 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.github.lotqwerty.lottweaks.fabric.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+  	"PlacingDistanceOverwriter",
+  	"BreakingDistanceOverwriter"
+  ],
+  "client": [
+    "MouseScrollRedirector",
+    "HotbarRendererHook",
+    "VanillaPickInvoker",
+    "ClientReachDistanceOverwriter",
+    "ClientSendChatHook"
+  ],
+  "server": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

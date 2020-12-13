@@ -1,49 +1,51 @@
 package com.github.lotqwerty.lottweaks.client.keys;
 
-import com.github.lotqwerty.lottweaks.LotTweaks;
-import com.github.lotqwerty.lottweaks.network.LTPacketHandler;
+import com.github.lotqwerty.lottweaks.fabric.RenderHotbarEvent;
+import com.github.lotqwerty.lottweaks.fabric.RenderHotbarEvent.RenderHotbarListener;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.util.hit.HitResult;
 
-@OnlyIn(Dist.CLIENT)
-public class AdjustRangeKey extends LTKeyBase {
+@Environment(EnvType.CLIENT)
+public class AdjustRangeKey extends LTKeyBase implements RenderHotbarListener {
 
+	private static final float MAX_RANGE = 128;
+	public static float reachDistance = 6;
+	
 	public AdjustRangeKey(int keyCode, String category) {
 		super("AdjustRange", keyCode, category);
 	}
 
-	@SubscribeEvent
-	public void onRenderOverlay(final RenderGameOverlayEvent.Post event) {
-		if (event.getType() != ElementType.HOTBAR) {
-			return;
-		}
+	@Override
+	public void onRenderHotbar(RenderHotbarEvent event) {
+//		if (event.getType() != ElementType.HOTBAR) {
+//			return;
+//		}
 		if (this.pressTime == 0) {
 			return;
 		}
-		if (!Minecraft.getInstance().player.isCreative()) {
+		if (!MinecraftClient.getInstance().player.isCreative()) {
 			return;
 		}
 		// Update dist
-		Minecraft mc = Minecraft.getInstance();
-		RayTraceResult rayTraceResult = mc.getRenderViewEntity().pick(255.0, mc.getRenderPartialTicks(), false);
+		MinecraftClient mc = MinecraftClient.getInstance();
+		HitResult rayTraceResult = mc.getCameraEntity().raycast(255.0, mc.getTickDelta(), false);
 		double dist;
-		if (rayTraceResult == null || rayTraceResult.getType() == RayTraceResult.Type.MISS) {
-			dist = LotTweaks.CONFIG.MAX_RANGE.get();
+		if (rayTraceResult == null || rayTraceResult.getType() == HitResult.Type.MISS) {
+//			dist = LotTweaks.CONFIG.MAX_RANGE.get();
+			dist = MAX_RANGE;
 		} else {
-			dist = Math.min(LotTweaks.CONFIG.MAX_RANGE.get(), mc.player.getEyePosition(event.getPartialTicks()).distanceTo(rayTraceResult.getHitVec()));
+			dist = Math.min(MAX_RANGE, 0.5f + mc.player.getCameraPosVec(event.getPartialTicks()).distanceTo(rayTraceResult.getPos()));
 		}
-		LTPacketHandler.sendReachRangeMessage(dist);
+//		LTPacketHandler.sendReachRangeMessage(dist);
+		reachDistance = (float) dist;
 		// Render
 		int distInt = (int)dist;
 		String distStr = String.valueOf(distInt);
-		int x = (event.getWindow().getScaledWidth() - mc.fontRenderer.getStringWidth(distStr)) / 2;
+		int x = (event.getWindow().getScaledWidth() - mc.textRenderer.getWidth(distStr)) / 2;
 		int y = event.getWindow().getScaledHeight() - 70;
-		mc.fontRenderer.drawStringWithShadow(event.getMatrixStack(), distStr, x, y, 0xFFFFFF);
+		mc.textRenderer.drawWithShadow(event.getMatrixStack(), distStr, x, y, 0xFFFFFF);
 	}
 }

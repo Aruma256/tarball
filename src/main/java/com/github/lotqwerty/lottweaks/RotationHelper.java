@@ -12,8 +12,8 @@ import java.util.Scanner;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 public class RotationHelper {
 
@@ -170,13 +170,13 @@ public class RotationHelper {
 				List<Block> blocks = new ArrayList<>();
 				for (String part: line.split(",")) {
 					String blockName = part;
-					ResourceLocation resourceLocation = new ResourceLocation(blockName);
-					if (!ForgeRegistries.BLOCKS.containsKey(resourceLocation)) {
+					Identifier resourceLocation = new Identifier(blockName);
+					if (!Registry.BLOCK.containsId(resourceLocation)) {
 						LotTweaks.LOGGER.error(String.format("Not found: '%s'", part));
 						LotTweaks.LOGGER.error(String.format("(BLOCK_GROUPS line %d)", lineCount));
 						throw new BlockGroupRegistrationException();
 					}
-					Block block = ForgeRegistries.BLOCKS.getValue(resourceLocation);
+					Block block = Registry.BLOCK.get(resourceLocation);
 					if (block == null || block == Blocks.AIR) {
 						LotTweaks.LOGGER.error(String.format("Not found: '%s'", part));
 						LotTweaks.LOGGER.error(String.format("(BLOCK_GROUPS line %d)", lineCount));

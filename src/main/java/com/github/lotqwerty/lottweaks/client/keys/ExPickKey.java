@@ -1,23 +1,23 @@
 package com.github.lotqwerty.lottweaks.client.keys;
 
 import com.github.lotqwerty.lottweaks.client.renderer.LTRenderer;
+import com.github.lotqwerty.lottweaks.fabric.RenderHotbarEvent;
+import com.github.lotqwerty.lottweaks.fabric.ScrollEvent;
+import com.github.lotqwerty.lottweaks.fabric.RenderHotbarEvent.RenderHotbarListener;
+import com.github.lotqwerty.lottweaks.fabric.ScrollEvent.ScrollListener;
+import com.github.lotqwerty.lottweaks.fabric.mixin.VanillaPickInvoker;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-@OnlyIn(Dist.CLIENT)
-public class ExPickKey extends ItemSelectKeyBase {
+@Environment(EnvType.CLIENT)
+public class ExPickKey extends ItemSelectKeyBase implements ScrollListener, RenderHotbarListener {
 
 	private static final BlockPos[] SEARCH_POS = {
 			new BlockPos(1, 0, 0),
@@ -49,34 +49,35 @@ public class ExPickKey extends ItemSelectKeyBase {
 	protected void onKeyPressStart() {
 		super.onKeyPressStart();
 		candidates.clear();
-		Minecraft mc = Minecraft.getInstance();
-		RayTraceResult rayTraceResult;
-
+		MinecraftClient mc = MinecraftClient.getInstance();
+		HitResult rayTraceResult;
 		if (!mc.player.isCreative()) {
-			rayTraceResult = mc.objectMouseOver;
+			rayTraceResult = mc.crosshairTarget;
 			if (rayTraceResult != null) {
-				ForgeHooks.onPickBlock(rayTraceResult, mc.player, mc.world);
+				((VanillaPickInvoker)MinecraftClient.getInstance()).lottweaks_invokeVanillaItemPick();
 			}
 			return;
 		}
-		rayTraceResult = mc.getRenderViewEntity().pick(255.0, mc.getRenderPartialTicks(), false);
+		rayTraceResult = mc.getCameraEntity().raycast(255.0, mc.getTickDelta(), false);
 		if (rayTraceResult == null) {
 			return;
 		}
-		boolean succeeded = ForgeHooks.onPickBlock(rayTraceResult, mc.player, mc.world);
-		if (!succeeded) {
-			return;
-		}
-		ItemStack itemStack = mc.player.inventory.getCurrentItem();
+//		boolean succeeded = ForgeHooks.onPickBlock(rayTraceResult, mc.player, mc.world);
+//		if (!succeeded) {
+//			return;
+//		}
+		mc.crosshairTarget = rayTraceResult;
+		((VanillaPickInvoker)MinecraftClient.getInstance()).lottweaks_invokeVanillaItemPick();
+		ItemStack itemStack = mc.player.inventory.getMainHandStack();
 		if (itemStack.isEmpty()) {
 			return;
 		}
 		addToCandidates(itemStack);
-		BlockPos pos = ((BlockRayTraceResult)rayTraceResult).getPos();
+		BlockPos pos = ((BlockHitResult)rayTraceResult).getBlockPos();
 		for (BlockPos posDiff : SEARCH_POS) {
 			try {
 				BlockState state = mc.world.getBlockState(pos.add(posDiff));
-				itemStack = state.getBlock().getPickBlock(state, rayTraceResult, mc.world, pos, mc.player);
+				itemStack = state.getBlock().getPickStack(mc.world, pos, state);
 				if (!itemStack.isEmpty()) {
 					addToCandidates(itemStack);
 				}
@@ -85,12 +86,12 @@ public class ExPickKey extends ItemSelectKeyBase {
 		}
 	}
 
-	@SubscribeEvent
-	public void onMouseWheelEvent(final InputEvent.MouseScrollEvent event) {
+	@Override
+	public void onScroll(ScrollEvent event) {
 		if (this.pressTime == 0) {
 			return;
 		}
-		if (!Minecraft.getInstance().player.isCreative()) {
+		if (!MinecraftClient.getInstance().player.isCreative()) {
 			return;
 		}
 		if (event.isCanceled()) {
@@ -112,15 +113,15 @@ public class ExPickKey extends ItemSelectKeyBase {
 		this.updateCurrentItemStack(candidates.getFirst());
 	}
 
-	@SubscribeEvent
-	public void onRenderOverlay(final RenderGameOverlayEvent.Post event) {
-		if (event.getType() != ElementType.HOTBAR) {
-			return;
-		}
+	@Override
+	public void onRenderHotbar(RenderHotbarEvent event) {
+//		if (event.getType() != ElementType.HOTBAR) {
+//			return;
+//		}
 		if (this.pressTime == 0) {
 			return;
 		}
-		if (!Minecraft.getInstance().player.isCreative()) {
+		if (!MinecraftClient.getInstance().player.isCreative()) {
 			return;
 		}
 		if (candidates.isEmpty()) {

@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "id": "lottweaks",
+  "version": "${version}",
+
+  "name": "LotTweaks",
+  "description": "",
+  "authors": [
+    "LOTqwerty"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/lottweaks"
+  },
+
+  "license": "",
+  "icon": "",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.github.lotqwerty.lottweaks.LotTweaks"
+    ],
+    "client": [
+      "com.github.lotqwerty.lottweaks.client.LotTweaksClient"
+    ]
+  },
+  "mixins": [
+    "lottweaks.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.7.4",
+    "fabric": "*",
+    "minecraft": "1.16.x"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}

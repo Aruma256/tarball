@@ -1,15 +1,13 @@
 package com.github.lotqwerty.lottweaks.client.keys;
 
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
-import net.minecraftforge.event.TickEvent.ClientTickEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.options.KeyBinding;
 
-@OnlyIn(Dist.CLIENT)
-public class LTKeyBase extends KeyBinding {
+@Environment(EnvType.CLIENT)
+public class LTKeyBase extends KeyBinding implements ClientTickEvents.EndTick {
 
 	protected int pressTime = 0;
 	
@@ -17,15 +15,15 @@ public class LTKeyBase extends KeyBinding {
 		super(description, keyCode, category);
 	}
 
-	@SubscribeEvent
-	public void onKeyInput(final KeyInputEvent event) {
-		//キー押下をハンドル済みにする
-	}
+//	@SubscribeEvent
+//	public void onKeyInput(final KeyInputEvent event) {
+//		//
+//	}
 
-	@SubscribeEvent
-	public void onClientTick(final ClientTickEvent event) {
-		if (event.getPhase() == EventPriority.NORMAL) {
-			if (this.isKeyDown()) {
+	@Override
+	public void onEndTick(final MinecraftClient client) {
+//		if (event.getPhase() == EventPriority.NORMAL) {
+			if (this.isPressed()) {
 				this.pressTime = Math.min(12345, this.pressTime + 1);
 				if (this.pressTime == 1) {
 					this.onKeyPressStart();
@@ -37,7 +35,7 @@ public class LTKeyBase extends KeyBinding {
 					this.pressTime = 0;
 				}
 			}
-		}
+//		}
 	}
 
 	protected void onKeyPressStart() {

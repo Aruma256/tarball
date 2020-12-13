@@ -1,37 +1,36 @@
 package com.github.lotqwerty.lottweaks.client.keys;
 
 import com.github.lotqwerty.lottweaks.LotTweaks;
+import com.github.lotqwerty.lottweaks.fabric.RenderHotbarEvent;
+import com.github.lotqwerty.lottweaks.fabric.RenderHotbarEvent.RenderHotbarListener;
 import com.github.lotqwerty.lottweaks.network.LTPacketHandler;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.Minecraft;
-import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.event.TickEvent.RenderTickEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-@OnlyIn(Dist.CLIENT)
-public class ReplaceKey extends LTKeyBase {
+@Environment(EnvType.CLIENT)
+public class ReplaceKey extends LTKeyBase implements RenderHotbarListener {
 
 	public ReplaceKey(int keyCode, String category) {
 		super("Replace", keyCode, category);
 	}
 
-	@SubscribeEvent
-	public void onRenderTick(final RenderTickEvent event) {
-		if (event.getPhase() != EventPriority.NORMAL) {
-			return;
-		}
-		if (this.pressTime==1 || this.pressTime > LotTweaks.CONFIG.REPLACE_INTERVAL.get()) {
+	@Override
+	public void onRenderHotbar(RenderHotbarEvent event) {
+//		if (event.getPhase() != EventPriority.NORMAL) {
+//			return;
+//		}
+		if (this.pressTime==1 || this.pressTime > LotTweaks.CONFIG.REPLACE_INTERVAL) {
 			this.execReplace();
 			if (this.pressTime==1) {
 				this.pressTime++;
@@ -40,26 +39,26 @@ public class ReplaceKey extends LTKeyBase {
 	}
 
 	private void execReplace() {
-		Minecraft mc = Minecraft.getInstance();
+		MinecraftClient mc = MinecraftClient.getInstance();
 		if (!mc.player.isCreative()) {
 			return;
 		}
-		RayTraceResult target = mc.objectMouseOver;
-		if (target == null || target.getType() != RayTraceResult.Type.BLOCK){
+		HitResult target = mc.crosshairTarget;
+		if (target == null || target.getType() != HitResult.Type.BLOCK){
         	return;
         }
-		BlockPos pos = ((BlockRayTraceResult)target).getPos();
+		BlockPos pos = ((BlockHitResult)target).getBlockPos();
         BlockState state = mc.world.getBlockState(pos);
-        if (state.getBlock().isAir(state, mc.world, pos))
+        if (state.getBlock() == Blocks.AIR)
         {
             return;
         }
-		ItemStack itemStack = mc.player.inventory.getCurrentItem();
+		ItemStack itemStack = mc.player.inventory.getMainHandStack();
 		Block block = Block.getBlockFromItem(itemStack.getItem());
 		if (itemStack.isEmpty() || block == Blocks.AIR) {
 			return;
 		}
-		BlockState newBlockState = block.getStateForPlacement(new BlockItemUseContext(mc.player, Hand.MAIN_HAND, itemStack, (BlockRayTraceResult)target));
+		BlockState newBlockState = block.getPlacementState(new ItemPlacementContext(mc.player, Hand.MAIN_HAND, itemStack, (BlockHitResult)target));
 		LTPacketHandler.sendReplaceMessage(pos, newBlockState, state);
 	}
 
