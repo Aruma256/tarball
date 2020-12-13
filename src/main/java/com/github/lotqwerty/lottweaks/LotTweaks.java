@@ -15,6 +15,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 
 import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
+import com.github.lotqwerty.lottweaks.client.RotationHelper;
 import com.github.lotqwerty.lottweaks.network.LTPacketHandler;
 
 @Mod(modid = LotTweaks.MODID, name = LotTweaks.NAME, version = LotTweaks.VERSION)
@@ -52,21 +53,25 @@ public class LotTweaks {
 
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
-		if (CONFIG.BLOCK_GROUPS.length > 0 && !CONFIG.BLOCK_GROUPS[0].equals(HAS_BEEN_MOVED)) {
-			RotationHelper.BLOCK_GROUPS = CONFIG.BLOCK_GROUPS;
-			RotationHelper.writeToFile();
+		if (event.getSide() == Side.CLIENT) {
+			if (CONFIG.BLOCK_GROUPS.length > 0 && !CONFIG.BLOCK_GROUPS[0].equals(HAS_BEEN_MOVED)) {
+				RotationHelper.BLOCK_GROUPS = CONFIG.BLOCK_GROUPS;
+				RotationHelper.writeToFile();
+			}
+			RotationHelper.loadFromFile();
+			RotationHelper.loadBlockGroups();
 		}
-		RotationHelper.loadFromFile();
-		RotationHelper.loadBlockGroups();
 		LTPacketHandler.init();
 		MinecraftForge.EVENT_BUS.register(new AdjustRangeHelper());
 	}
 
 	@EventHandler
 	public void onLoadComplete(FMLLoadCompleteEvent event) {
-		if (CONFIG.BLOCK_GROUPS.length > 0 && !CONFIG.BLOCK_GROUPS[0].equals(HAS_BEEN_MOVED)) {
-			CONFIG.BLOCK_GROUPS = new String[]{HAS_BEEN_MOVED};
-			onConfigUpdate();
+		if (event.getSide() == Side.CLIENT) {
+			if (CONFIG.BLOCK_GROUPS.length > 0 && !CONFIG.BLOCK_GROUPS[0].equals(HAS_BEEN_MOVED)) {
+				CONFIG.BLOCK_GROUPS = new String[]{HAS_BEEN_MOVED};
+				onConfigUpdate();
+			}
 		}
 	}
 }

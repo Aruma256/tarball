@@ -1,4 +1,4 @@
-package com.github.lotqwerty.lottweaks;
+package com.github.lotqwerty.lottweaks.client;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.StringJoiner;
 
+import com.github.lotqwerty.lottweaks.LotTweaks;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -17,7 +19,7 @@ import net.minecraft.item.ItemStack;
 
 public class RotationHelper {
 
-	protected static final String BLOCKGROUP_CONFFILE = "LotTweaks-BlockGroups.txt";
+	public static final String BLOCKGROUP_CONFFILE = "LotTweaks-BlockGroups.txt";
 
 	public static final HashMap<IBlockState, IBlockState> BLOCK_CHAIN = new HashMap<>();
 
