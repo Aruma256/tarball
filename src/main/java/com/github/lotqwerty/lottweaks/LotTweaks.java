@@ -14,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
+import com.github.lotqwerty.lottweaks.client.RotationHelper;
 import com.github.lotqwerty.lottweaks.network.LTPacketHandler;
 
 @Mod(LotTweaks.MODID)
@@ -57,11 +58,11 @@ public class LotTweaks {
 
 	private void clientInit(FMLClientSetupEvent event) {
 		LotTweaksClient.init();
+		RotationHelper.loadFromFile();
+		RotationHelper.loadBlockGroups();
 	}
 
 	private void commonInit(FMLCommonSetupEvent event) {
-		RotationHelper.loadFromFile();
-		RotationHelper.loadBlockGroups();
 		LTPacketHandler.init();
 		MinecraftForge.EVENT_BUS.register(new AdjustRangeHelper());
 	}
