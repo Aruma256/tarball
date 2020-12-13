@@ -26,7 +26,7 @@ public final class LTRenderer {
 			pt = 0;
 		}
 		double max_r = 20 + stacks.size() * 1.2;
-		double r = max_r * Math.tanh((t + pt) / 6);
+		double r = max_r * Math.tanh((t + pt) / 3);
 		double afterimage = 1 - Math.tanh((t + pt - lt)/1.5);
 		//
 		int i = 0;
