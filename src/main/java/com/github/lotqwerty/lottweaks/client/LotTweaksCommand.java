@@ -3,7 +3,7 @@ package com.github.lotqwerty.lottweaks.client;
 import java.util.StringJoiner;
 
 import com.github.lotqwerty.lottweaks.LotTweaks;
-import com.github.lotqwerty.lottweaks.RotationHelper;
+import com.github.lotqwerty.lottweaks.client.RotationHelper;
 import com.github.lotqwerty.lottweaks.fabric.ClientChatEvent;
 import com.github.lotqwerty.lottweaks.fabric.ClientChatEvent.ClientChatEventListener;
 

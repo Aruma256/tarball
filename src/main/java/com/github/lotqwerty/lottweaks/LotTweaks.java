@@ -12,7 +12,7 @@ public class LotTweaks implements ModInitializer {
 
 	public static final String MODID = "lottweaks";
 	public static final String NAME = "LotTweaks";
-	public static final String VERSION = "1.2.8";
+	public static final String VERSION = "1.2.9";
 	public static Logger LOGGER = LogManager.getLogger();
 
 	public static class CONFIG {
@@ -37,8 +37,6 @@ public class LotTweaks implements ModInitializer {
 	
 	@Override
 	public void onInitialize() {
-		RotationHelper.loadFromFile();
-		RotationHelper.loadBlockGroups();
 		LTPacketHandler.init();
 //		MinecraftForge.EVENT_BUS.register(new AdjustRangeHelper());
 	}

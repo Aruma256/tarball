@@ -2,7 +2,7 @@ package com.github.lotqwerty.lottweaks.client.keys;
 
 import java.util.List;
 
-import com.github.lotqwerty.lottweaks.RotationHelper;
+import com.github.lotqwerty.lottweaks.client.RotationHelper;
 import com.github.lotqwerty.lottweaks.client.renderer.LTRenderer;
 import com.github.lotqwerty.lottweaks.fabric.RenderHotbarEvent;
 import com.github.lotqwerty.lottweaks.fabric.RenderHotbarEvent.RenderHotbarListener;

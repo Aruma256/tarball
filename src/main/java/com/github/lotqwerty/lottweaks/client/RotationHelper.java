@@ -1,4 +1,4 @@
-package com.github.lotqwerty.lottweaks;
+package com.github.lotqwerty.lottweaks.client;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
+
+import com.github.lotqwerty.lottweaks.LotTweaks;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
