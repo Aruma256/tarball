@@ -22,7 +22,7 @@ public class LotTweaks {
 
 	public static final String MODID = "lottweaks";
 	public static final String NAME = "LotTweaks";
-	public static final String VERSION = "1.2.9";
+	public static final String VERSION = "1.3.0";
 	public static Logger LOGGER = LogManager.getLogger();
 
 	public static class CONFIG {

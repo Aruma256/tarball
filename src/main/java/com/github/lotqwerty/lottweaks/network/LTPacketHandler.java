@@ -25,8 +25,8 @@ public class LTPacketHandler {
 	private static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
 		new ResourceLocation(LotTweaks.MODID),
 		() -> PROTOCOL_VERSION,
-	    PROTOCOL_VERSION::equals,
-	    PROTOCOL_VERSION::equals
+		(serverVersion) -> serverVersion.equals(NetworkRegistry.ACCEPTVANILLA) || serverVersion.equals(NetworkRegistry.ABSENT) || serverVersion.compareTo(PROTOCOL_VERSION) <= 0,
+		(clientVersion) -> true
 	);
 
 	public static void init() {
