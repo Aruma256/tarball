@@ -7,10 +7,12 @@ import net.minecraftforge.common.config.Config.RangeInt;
 import net.minecraftforge.common.config.Config.Type;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
+
+import java.util.Arrays;
 
 import org.apache.logging.log4j.Logger;
 
@@ -26,7 +28,7 @@ public class LotTweaks {
 	public static final String VERSION = "1.2.9";
 	public static Logger LOGGER;
 
-	private static final String HAS_BEEN_MOVED = String.format("'BLOCK_GROUPS' config has been moved to '%s'", RotationHelper.BLOCKGROUP_CONFFILE);
+	private static final String HAS_BEEN_MOVED = String.format("'BLOCK_GROUPS' config has been moved to '%s'", RotationHelper.BLOCKGROUP_CONFFILE_MAIN);
 
 	@Config(modid = MODID, type = Type.INSTANCE, name = NAME)
 	public static class CONFIG {
@@ -52,14 +54,14 @@ public class LotTweaks {
 	}
 
 	@EventHandler
-	public void init(FMLInitializationEvent event) {
+	public void init(FMLPostInitializationEvent event) {
 		if (event.getSide() == Side.CLIENT) {
 			if (CONFIG.BLOCK_GROUPS.length > 0 && !CONFIG.BLOCK_GROUPS[0].equals(HAS_BEEN_MOVED)) {
-				RotationHelper.BLOCK_GROUPS = CONFIG.BLOCK_GROUPS;
-				RotationHelper.writeToFile();
+				RotationHelper.BLOCK_GROUPS_STRLIST_MAIN = Arrays.asList(CONFIG.BLOCK_GROUPS);
+				RotationHelper.writeAllToFile();
 			}
-			RotationHelper.loadFromFile();
-			RotationHelper.loadBlockGroups();
+			RotationHelper.loadAllFromFile();
+			RotationHelper.loadAllBlockGroupFromStrArray();
 		}
 		LTPacketHandler.init();
 		MinecraftForge.EVENT_BUS.register(new AdjustRangeHelper());
