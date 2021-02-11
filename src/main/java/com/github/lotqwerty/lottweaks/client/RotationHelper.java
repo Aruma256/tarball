@@ -2,13 +2,16 @@ package com.github.lotqwerty.lottweaks.client;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Scanner;
 import java.util.StringJoiner;
 
 import com.github.lotqwerty.lottweaks.LotTweaks;
@@ -315,13 +318,10 @@ public class RotationHelper {
 				LotTweaks.LOGGER.debug("Config file does not exist.");
 				writeToFile(group);
 			} else {
-				List<String> list = getBlockGroupStrList(group);
-				list.clear();
-				Scanner scanner = new Scanner(file);
-				while (scanner.hasNextLine()) {
-					list.add(scanner.nextLine());
-				}
-				scanner.close();
+				List<String> listFromFile = loadFile(file);
+				List<String> listOnMemory = getBlockGroupStrList(group);
+				listOnMemory.clear();
+				listOnMemory.addAll(listFromFile);
 			}
 		} catch (IOException e) {
 			LotTweaks.LOGGER.error(String.format("Failed to load config from file (Group: %s)", group.name()));
@@ -329,6 +329,18 @@ public class RotationHelper {
 			return false;
 		}
 		return true;
+	}
+
+	private static List<String> loadFile(File file) throws IOException{
+		try {
+			return Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
+		} catch (IOException e) {
+		}
+		try {
+			return Files.readAllLines(file.toPath(), Charset.forName("Shift_JIS"));
+		} catch (IOException e) {
+		}
+		return Files.readAllLines(file.toPath(), Charset.defaultCharset());
 	}
 
 	public static void writeAllToFile() {
@@ -342,7 +354,7 @@ public class RotationHelper {
 		String filename = (group == Group.MAIN ? BLOCKGROUP_CONFFILE_MAIN : BLOCKGROUP_CONFFILE_SUB);
 		File file = new File(new File("config"), filename);
 		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
 			for (String line: getBlockGroupStrList(group)) {
 				writer.append(line);
 				writer.newLine();
