@@ -2,6 +2,7 @@ package com.github.lotqwerty.lottweaks.client.keys;
 
 import java.util.List;
 
+import com.github.lotqwerty.lottweaks.LotTweaks;
 import com.github.lotqwerty.lottweaks.client.RotationHelper;
 import com.github.lotqwerty.lottweaks.client.RotationHelper.Group;
 import com.github.lotqwerty.lottweaks.client.renderer.LTRenderer;
@@ -33,6 +34,14 @@ public class RotateKey extends ItemSelectKeyBase {
 		}
 	}
 
+	private Group getGroup() {
+		if (LotTweaks.CONFIG.SNEAK_TO_SWITCH_GROUP) {
+			return (!Minecraft.getMinecraft().player.isSneaking()) ? Group.MAIN : Group.SUB;
+		} else {
+			return this.phase==0 ? Group.MAIN : Group.SUB;
+		}
+	}
+
 	@Override
 	protected void onKeyPressStart() {
 		super.onKeyPressStart();
@@ -46,7 +55,7 @@ public class RotateKey extends ItemSelectKeyBase {
 		if (itemStack.isEmpty()) {
 			return;
 		}
-		List<ItemStack> results = RotationHelper.getAllRotateResult(itemStack, this.phase==0 ? Group.MAIN : Group.SUB);
+		List<ItemStack> results = RotationHelper.getAllRotateResult(itemStack, getGroup());
 		if (results == null || results.size() <= 1) {
 			return;
 		}
