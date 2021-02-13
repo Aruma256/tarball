@@ -17,19 +17,40 @@ import java.util.StringJoiner;
 import com.github.lotqwerty.lottweaks.LotTweaks;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 public class RotationHelper {
 
-	public static final String BLOCKGROUP_CONFFILE_MAIN = "LotTweaks-BlockGroups.txt";
-	private static final String BLOCKGROUP_CONFFILE_SUB = "LotTweaks-BlockGroups2.txt";
+	public static final String ITEMGROUP_CONFFILE_MAIN = "LotTweaks-BlockGroups.txt";
+	private static final String ITEMGROUP_CONFFILE_SUB = "LotTweaks-BlockGroups2.txt";
 
-	private static final HashMap<IBlockState, IBlockState> BLOCK_CHAIN_MAIN = new HashMap<>();
-	private static final HashMap<IBlockState, IBlockState> BLOCK_CHAIN_SUB = new HashMap<>();
+	private static class ItemState {
+		private Item item;
+		private int meta;
 
-	private static final String[] DEFAULT_BLOCK_GROUP_STRLIST_MAIN = {
+		public ItemState(Item item, int meta) {
+			this.item = item;
+			this.meta = meta;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			ItemState o = (ItemState)obj;
+			return this.item.equals(o.item) && this.meta == o.meta;
+		}
+		@Override
+		public int hashCode() {
+			return this.item.hashCode() + this.meta;
+		}
+	}
+
+	private static final HashMap<ItemState, ItemState> ITEM_CHAIN_MAIN = new HashMap<>();
+	private static final HashMap<ItemState, ItemState> ITEM_CHAIN_SUB = new HashMap<>();
+
+	private static final String[] DEFAULT_ITEM_GROUP_STRLIST_MAIN = {
 		"//VANILLA BLOCKS",
 		"//STONE",
 		toRotateStr("minecraft:stone", 7),
@@ -55,8 +76,8 @@ public class RotationHelper {
 		toRotateStr("minecraft:red_flower", 9),
 		"//Mineral Blocks",
 		"minecraft:iron_block,minecraft:gold_block,minecraft:diamond_block,minecraft:emerald_block",
-		"//DOUBLE_STONE_SLAB",
-		toRotateStr("minecraft:double_stone_slab", 10),
+//		"//DOUBLE_STONE_SLAB",
+//		toRotateStr("minecraft:double_stone_slab", 10),
 		"//STONE_SLAB except meta-2",
 		"minecraft:stone_slab/0,minecraft:stone_slab/1,minecraft:stone_slab/3,minecraft:stone_slab/4,minecraft:stone_slab/5,minecraft:stone_slab/6,minecraft:stone_slab/7",
 		"//OAK_STAIRS series (Wood Stairs)",
@@ -73,8 +94,8 @@ public class RotationHelper {
 		toRotateStr("minecraft:stonebrick", 4),
 		"//FENCE_GATE series",
 		"minecraft:fence_gate,minecraft:spruce_fence_gate,minecraft:birch_fence_gate,minecraft:jungle_fence_gate,minecraft:dark_oak_fence_gate,minecraft:acacia_fence_gate",
-		"//DOUBLE_WOODEN_SLAB",
-		toRotateStr("minecraft:double_wooden_slab", 6),
+//		"//DOUBLE_WOODEN_SLAB",
+//		toRotateStr("minecraft:double_wooden_slab", 6),
 		"//WOODEN_SLAB",
 		toRotateStr("minecraft:wooden_slab", 6),
 		"//COBBLESTONE_WALL",
@@ -103,7 +124,7 @@ public class RotationHelper {
 		toRotateStr("minecraft:concrete_powder", 16),
 	};
 
-	private static final String[] DEFAULT_BLOCK_GROUP_STRLIST_SUB = {
+	private static final String[] DEFAULT_ITEM_GROUP_STRLIST_SUB = {
 		"//WHITE",
 		toSameColors(0),
 		"//ORANGE",
@@ -138,8 +159,8 @@ public class RotationHelper {
 		toSameColors(15),
 	};
 
-	public static List<String> BLOCK_GROUPS_STRLIST_MAIN = new ArrayList<>(Arrays.asList(DEFAULT_BLOCK_GROUP_STRLIST_MAIN));
-	private static final List<String> BLOCK_GROUPS_STRLIST_SUB = new ArrayList<>(Arrays.asList(DEFAULT_BLOCK_GROUP_STRLIST_SUB));
+	public static List<String> ITEM_GROUPS_STRLIST_MAIN = new ArrayList<>(Arrays.asList(DEFAULT_ITEM_GROUP_STRLIST_MAIN));
+	private static final List<String> ITEM_GROUPS_STRLIST_SUB = new ArrayList<>(Arrays.asList(DEFAULT_ITEM_GROUP_STRLIST_SUB));
 
 	public enum Group {
 		MAIN,
@@ -159,63 +180,54 @@ public class RotationHelper {
 		return format.replace("N", String.valueOf(meta));
 	}
 
-	private static HashMap<IBlockState, IBlockState> getBlockChain(Group group) {
-		return (group == Group.MAIN) ? BLOCK_CHAIN_MAIN : BLOCK_CHAIN_SUB;
+	private static HashMap<ItemState, ItemState> getItemChain(Group group) {
+		return (group == Group.MAIN) ? ITEM_CHAIN_MAIN : ITEM_CHAIN_SUB;
 	}
 
-	private static List<String> getBlockGroupStrList(Group group) {
-		return (group == Group.MAIN) ? BLOCK_GROUPS_STRLIST_MAIN : BLOCK_GROUPS_STRLIST_SUB;
+	private static List<String> getItemGroupStrList(Group group) {
+		return (group == Group.MAIN) ? ITEM_GROUPS_STRLIST_MAIN : ITEM_GROUPS_STRLIST_SUB;
 	}
 
 	private static String getFileName(Group group) {
-		return (group == Group.MAIN) ? BLOCKGROUP_CONFFILE_MAIN : BLOCKGROUP_CONFFILE_SUB;
+		return (group == Group.MAIN) ? ITEMGROUP_CONFFILE_MAIN : ITEMGROUP_CONFFILE_SUB;
 	}
 
-	@SuppressWarnings("deprecation")
 	public static boolean canRotate(ItemStack itemStack, Group group) {
 		if (itemStack == null || itemStack.isEmpty()) {
 			return false;
 		}
-		Block block = Block.getBlockFromItem(itemStack.getItem());
-		if (block == Blocks.AIR) {
+		Item item = itemStack.getItem();
+		if (item == null || item == Items.AIR) {
 			return false;
 		}
 		int meta = itemStack.getItemDamage();
-		return getBlockChain(group).containsKey(block.getStateFromMeta(meta));
+		return getItemChain(group).containsKey(new ItemState(item, meta));
 	}
 	
-	private static ItemStack toItemStack(IBlockState state) {
-		try {
-			ItemStack stack = state.getBlock().getPickBlock(state, null, null, null, null);
-			if (stack != null && !stack.isEmpty()) {
-				return stack;
-			}
-		} catch (Exception e) {
-		}
-		return new ItemStack(state.getBlock(), 1, state.getBlock().damageDropped(state));
+	private static ItemStack toItemStack(ItemState state) {
+		return new ItemStack(state.item, 1, state.meta);
 	}
 
-	@SuppressWarnings("deprecation")
 	public static List<ItemStack> getAllRotateResult(ItemStack itemStack, Group group){
 		List<ItemStack> stacks = new ArrayList<>();
 		if (itemStack == null || itemStack.isEmpty()) {
 			return null;
 		}
-		Block block = Block.getBlockFromItem(itemStack.getItem());
-		if (block == Blocks.AIR) {
+		Item item = itemStack.getItem();
+		if (item == null || item == Items.AIR) {
 			return null;
 		}
 		int meta = itemStack.getItemDamage();
-		IBlockState srcState = block.getStateFromMeta(meta);
-		if (!getBlockChain(group).containsKey(srcState)) {
+		ItemState srcState = new ItemState(item, meta);
+		if (!getItemChain(group).containsKey(srcState)) {
 			return null;
 		}
 		stacks.add(itemStack);
-		IBlockState state = getBlockChain(group).get(srcState);
+		ItemState state = getItemChain(group).get(srcState);
 		int counter = 0;
-		while (state != srcState) {
+		while (!state.equals(srcState)) {
 			stacks.add(toItemStack(state));
-			state = getBlockChain(group).get(state);
+			state = getItemChain(group).get(state);
 			counter++;
 			if (counter >= 50000) {
 				LotTweaks.LOGGER.error("infinite loop!");
@@ -225,75 +237,86 @@ public class RotationHelper {
 		return stacks;
 	}
 
-	public static boolean loadAllBlockGroupFromStrArray() {
+	public static boolean loadAllItemGroupFromStrArray() {
 		boolean flag = true;
 		for(Group group : Group.values()) {
-			flag &= loadBlockGroupFromStrArray(group);
+			flag &= loadItemGroupFromStrArray(group);
 		}
 		return flag;
 	}
 
-	@SuppressWarnings("deprecation")
-	private static boolean loadBlockGroupFromStrArray(Group group) {
-		HashMap<IBlockState, IBlockState> newBlockChain = new HashMap<>();
+	private static boolean loadItemGroupFromStrArray(Group group) {
+		HashMap<ItemState, ItemState> newItemChain = new HashMap<>();
 		try {
 			int lineCount = 0;
-			for (String line: getBlockGroupStrList(group)) {
+			for (String line: getItemGroupStrList(group)) {
 				lineCount++;
 				if (line.isEmpty() || line.startsWith("//")) {
 					continue;
 				}
-				List<IBlockState> states = new ArrayList<>();
+				List<ItemState> states = new ArrayList<>();
 				for (String part: line.split(",")) {
-					String blockName;
+					String itemStr;
 					int meta;
 					if (part.contains("/")) {
 						String[] name_meta = part.split("/");
-						blockName = name_meta[0];
+						itemStr = name_meta[0];
 						meta = Integer.parseInt(name_meta[1]);
 					} else {
-						blockName = part;
+						itemStr = part;
 						meta = 0;
 					}
-					Block block = Block.getBlockFromName(blockName);
-					if (block == null || block == Blocks.AIR) {
-						LotTweaks.LOGGER.error(String.format("Not found: '%s'", part));
-						LotTweaks.LOGGER.error(String.format("(BLOCK_GROUPS line %d)", lineCount));
-						throw new BlockGroupRegistrationException();
+					if (itemStr.equals("minecraft:double_stone_slab") || itemStr.equals("minecraft:double_wooden_slab")) {
+						LotTweaks.LOGGER.warn(String.format("%s is no longer supported", part));
+						LotTweaks.LOGGER.warn(part);
+						continue;
 					}
-					IBlockState state = block.getStateFromMeta(meta);
+					Item item = Item.getByNameOrId(itemStr);
+					if (item == null || item == Items.AIR) {
+						Block block = Block.getBlockFromName(itemStr);
+						if (block == null || block == Blocks.AIR) {
+							LotTweaks.LOGGER.warn(String.format("Not found: '%s'", itemStr));
+							LotTweaks.LOGGER.warn(String.format("(GROUPS line %d)", lineCount));
+							throw new ItemGroupRegistrationException();
+						}
+						item = Item.getItemFromBlock(block);
+					}
+					if (item == null || item == Items.AIR) {
+						LotTweaks.LOGGER.warn(String.format("'%s' is not supported", itemStr));
+						throw new ItemGroupRegistrationException();
+					}
+					ItemState state = new ItemState(item, meta);
 					states.add(state);
 				}
 				if (states.size() <= 1) {
-					LotTweaks.LOGGER.error("Failed to load group: '%s'", line);
-					LotTweaks.LOGGER.error(String.format("(BLOCK_GROUPS line %d)", lineCount));
-					throw new BlockGroupRegistrationException();
+					LotTweaks.LOGGER.warn(String.format("group size is %d", states.size()));
+					continue;
 				}
 				for (int i=0;i<states.size();i++) {
-					if (newBlockChain.containsKey(states.get(i))) {
-						LotTweaks.LOGGER.error("BLOCK_GROUPS value is invalid.");
-						LotTweaks.LOGGER.error(String.format("(BLOCK_GROUPS line %d)", lineCount));
-						throw new BlockGroupRegistrationException();
+					if (newItemChain.containsKey(states.get(i))) {
+						LotTweaks.LOGGER.error("GROUPS value is invalid.");
+						LotTweaks.LOGGER.error(String.format("(GROUPS line %d)", lineCount));
+						throw new ItemGroupRegistrationException();
 					}
-					newBlockChain.put(states.get(i), states.get((i+1)%states.size()));
+					newItemChain.put(states.get(i), states.get((i+1)%states.size()));
 				}
-				LotTweaks.LOGGER.debug(String.format("BLOCK_GROUPS line %d: OK", lineCount));
+				LotTweaks.LOGGER.debug(String.format("GROUPS line %d: OK", lineCount));
 			}
-		} catch (BlockGroupRegistrationException e) {
+		} catch (ItemGroupRegistrationException e) {
 			return false;
 		} catch (Exception e) {
 			LotTweaks.LOGGER.error(e);
 			return false;
 		}
-		getBlockChain(group).clear();
-		getBlockChain(group).putAll(newBlockChain);
+		getItemChain(group).clear();
+		getItemChain(group).putAll(newItemChain);
 		return true;
 	}
 
-	public static boolean tryToAddBlockGroupFromCommand(String newBlockGroup, Group group) {
-		List<String> strList = getBlockGroupStrList(group);
-		strList.add(newBlockGroup);
-		boolean succeeded = loadBlockGroupFromStrArray(group);
+	public static boolean tryToAddItemGroupFromCommand(String newItemGroup, Group group) {
+		List<String> strList = getItemGroupStrList(group);
+		strList.add(newItemGroup);
+		boolean succeeded = loadItemGroupFromStrArray(group);
 		if (succeeded) {
 			writeToFile(group);
 			return true;
@@ -319,7 +342,7 @@ public class RotationHelper {
 				writeToFile(group);
 			} else {
 				List<String> listFromFile = loadFile(file);
-				List<String> listOnMemory = getBlockGroupStrList(group);
+				List<String> listOnMemory = getItemGroupStrList(group);
 				listOnMemory.clear();
 				listOnMemory.addAll(listFromFile);
 			}
@@ -351,11 +374,11 @@ public class RotationHelper {
 
 	private static void writeToFile(Group group) {
 		LotTweaks.LOGGER.debug("Write config to file.");
-		String filename = (group == Group.MAIN ? BLOCKGROUP_CONFFILE_MAIN : BLOCKGROUP_CONFFILE_SUB);
+		String filename = (group == Group.MAIN ? ITEMGROUP_CONFFILE_MAIN : ITEMGROUP_CONFFILE_SUB);
 		File file = new File(new File("config"), filename);
 		try {
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
-			for (String line: getBlockGroupStrList(group)) {
+			for (String line: getItemGroupStrList(group)) {
 				writer.append(line);
 				writer.newLine();
 			}
@@ -369,7 +392,7 @@ public class RotationHelper {
 	}
 
 	@SuppressWarnings("serial")
-	private static class BlockGroupRegistrationException extends Exception {
+	private static class ItemGroupRegistrationException extends Exception {
 	}
 	
 }

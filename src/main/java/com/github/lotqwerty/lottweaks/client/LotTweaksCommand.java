@@ -5,14 +5,14 @@ import java.util.StringJoiner;
 import com.github.lotqwerty.lottweaks.LotTweaks;
 import com.github.lotqwerty.lottweaks.client.RotationHelper.Group;
 
-import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.ChatType;
@@ -70,12 +70,12 @@ public class LotTweaksCommand extends CommandBase implements IClientCommand {
 			if (itemStack.isEmpty()) {
 				break;
 			}
-			Block block = Block.getBlockFromItem(itemStack.getItem());
+			Item item = itemStack.getItem();
 			int meta = itemStack.getItemDamage();
-			if (block == Blocks.AIR) {
-				throw new CommandException(String.format("Failed to get block instance. (%d)", i + 1), new Object[0]);
+			if (item == Items.AIR) {
+				throw new CommandException(String.format("Failed to get item instance. (%d)", i + 1), new Object[0]);
 			}
-			String name = Block.REGISTRY.getNameForObject(block).toString();
+			String name = Item.REGISTRY.getNameForObject(item).toString();
 			if (meta == 0) {
 				stringJoiner.add(name);
 			} else {
@@ -87,15 +87,15 @@ public class LotTweaksCommand extends CommandBase implements IClientCommand {
 		if (line.isEmpty()) {
 			throw new CommandException(String.format("Hotbar is empty."), new Object[0]);
 		}
-		LotTweaks.LOGGER.debug("adding a new block-group from /lottweaks command");
+		LotTweaks.LOGGER.debug("adding a new block/item-group from /lottweaks command");
 		LotTweaks.LOGGER.debug(line);
-		boolean succeeded = RotationHelper.tryToAddBlockGroupFromCommand(line, group);
+		boolean succeeded = RotationHelper.tryToAddItemGroupFromCommand(line, group);
 		if (succeeded) {
 			mc.ingameGUI.addChatMessage(ChatType.SYSTEM,
-					new TextComponentString(String.format("LotTweaks: added %d blocks", count)));
+					new TextComponentString(String.format("LotTweaks: added %d blocks/items", count)));
 		} else {
 			mc.ingameGUI.addChatMessage(ChatType.SYSTEM,
-					new TextComponentString(TextFormatting.RED + "LotTweaks: failed to add blocks"));
+					new TextComponentString(TextFormatting.RED + "LotTweaks: failed to add blocks/items"));
 		}
 	}
 
@@ -105,7 +105,7 @@ public class LotTweaksCommand extends CommandBase implements IClientCommand {
 			boolean f;
 			f = RotationHelper.loadAllFromFile();
 			if (!f) throw new CommandException("LotTweaks: failed to reload config file", new Object[0]);
-			f = RotationHelper.loadAllBlockGroupFromStrArray();
+			f = RotationHelper.loadAllItemGroupFromStrArray();
 			if (!f) throw new CommandException("LotTweaks: failed to reload blocks", new Object[0]);
 			mc.ingameGUI.addChatMessage(ChatType.SYSTEM, new TextComponentString("LotTweaks: reload succeeded!"));
 		} catch (CommandException e) {
