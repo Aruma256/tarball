@@ -53,27 +53,27 @@ public class RotationHelper {
 	private static final String[] DEFAULT_ITEM_GROUP_STRLIST_MAIN = {
 		"//VANILLA BLOCKS",
 		"//STONE",
-		toRotateStr("minecraft:stone", 7),
+		toMetaVariationsStr("minecraft:stone", 7),
 		"//DIRT",
-		toRotateStr("minecraft:dirt", 3),
+		toMetaVariationsStr("minecraft:dirt", 3),
 		"//PLANKS",
-		toRotateStr("minecraft:planks", 6),
+		toMetaVariationsStr("minecraft:planks", 6),
 		"//SAPLING",
-		toRotateStr("minecraft:sapling", 6),
+		toMetaVariationsStr("minecraft:sapling", 6),
 		"//ORE series",
 		"minecraft:gold_ore,minecraft:iron_ore,minecraft:coal_ore,minecraft:lapis_ore,minecraft:diamond_ore,minecraft:redstone_ore,minecraft:emerald_ore",
 		"//LOG + LOG2",
-		toRotateStr("minecraft:log", 4) + ',' + toRotateStr("minecraft:log2", 2),
+		toMetaVariationsStr("minecraft:log", 4) + ',' + toMetaVariationsStr("minecraft:log2", 2),
 		"//LEAVES + LEAVES2",
-		toRotateStr("minecraft:leaves", 4) + ',' + toRotateStr("minecraft:leaves2", 2),
+		toMetaVariationsStr("minecraft:leaves", 4) + ',' + toMetaVariationsStr("minecraft:leaves2", 2),
 		"//SPONGE",
-		toRotateStr("minecraft:sponge", 2),
+		toMetaVariationsStr("minecraft:sponge", 2),
 		"//SANDSTONE",
-		toRotateStr("minecraft:sandstone", 3),
+		toMetaVariationsStr("minecraft:sandstone", 3),
 		"//WOOL",
-		toRotateStr("minecraft:wool", 16),
+		toColorVariationsStr("minecraft:wool"),
 		"//RED_FLOWER",
-		toRotateStr("minecraft:red_flower", 9),
+		toMetaVariationsStr("minecraft:red_flower", 9),
 		"//Mineral Blocks",
 		"minecraft:iron_block,minecraft:gold_block,minecraft:diamond_block,minecraft:emerald_block",
 //		"//DOUBLE_STONE_SLAB",
@@ -87,76 +87,76 @@ public class RotationHelper {
 		"//FENCE series",
 		"minecraft:fence,minecraft:spruce_fence,minecraft:birch_fence,minecraft:jungle_fence,minecraft:dark_oak_fence,minecraft:acacia_fence,minecraft:nether_brick_fence",
 		"//STAINED_GLASS",
-		toRotateStr("minecraft:stained_glass", 16),
+		toColorVariationsStr("minecraft:stained_glass"),
 		"//MONSTER_EGG",
-		toRotateStr("minecraft:monster_egg", 6),
+		toMetaVariationsStr("minecraft:monster_egg", 6),
 		"//STONEBRICK",
-		toRotateStr("minecraft:stonebrick", 4),
+		toMetaVariationsStr("minecraft:stonebrick", 4),
 		"//FENCE_GATE series",
 		"minecraft:fence_gate,minecraft:spruce_fence_gate,minecraft:birch_fence_gate,minecraft:jungle_fence_gate,minecraft:dark_oak_fence_gate,minecraft:acacia_fence_gate",
 //		"//DOUBLE_WOODEN_SLAB",
 //		toRotateStr("minecraft:double_wooden_slab", 6),
 		"//WOODEN_SLAB",
-		toRotateStr("minecraft:wooden_slab", 6),
+		toMetaVariationsStr("minecraft:wooden_slab", 6),
 		"//COBBLESTONE_WALL",
-		toRotateStr("minecraft:cobblestone_wall", 2),
+		toMetaVariationsStr("minecraft:cobblestone_wall", 2),
 		"//QUARTZ_BLOCK",
-		toRotateStr("minecraft:quartz_block", 3),
+		toMetaVariationsStr("minecraft:quartz_block", 3),
 		"//STAINED_HARDENED_CLAY",
-		toRotateStr("minecraft:stained_hardened_clay", 16),
+		toColorVariationsStr("minecraft:stained_hardened_clay"),
 		"//STAINED_GLASS_PANE",
-		toRotateStr("minecraft:stained_glass_pane", 16),
+		toColorVariationsStr("minecraft:stained_glass_pane"),
 		"//PRISMARINE",
-		toRotateStr("minecraft:prismarine", 3),
+		toMetaVariationsStr("minecraft:prismarine", 3),
 		"//CARPET",
-		toRotateStr("minecraft:carpet", 16),
+		toColorVariationsStr("minecraft:carpet"),
 		"//DOUBLE_PLANT",
-		toRotateStr("minecraft:double_plant", 6),
+		toMetaVariationsStr("minecraft:double_plant", 6),
 		"//RED_SANDSTONE",
-		toRotateStr("minecraft:red_sandstone", 3),
+		toMetaVariationsStr("minecraft:red_sandstone", 3),
 		"//SHULKER_BOX series",
 		"minecraft:white_shulker_box,minecraft:orange_shulker_box,minecraft:magenta_shulker_box,minecraft:light_blue_shulker_box,minecraft:yellow_shulker_box,minecraft:lime_shulker_box,minecraft:pink_shulker_box,minecraft:gray_shulker_box,minecraft:silver_shulker_box,minecraft:cyan_shulker_box,minecraft:purple_shulker_box,minecraft:blue_shulker_box,minecraft:brown_shulker_box,minecraft:green_shulker_box,minecraft:red_shulker_box,minecraft:black_shulker_box",
 		"//GLAZED_TERRACOTTA series",
 		"minecraft:white_glazed_terracotta,minecraft:orange_glazed_terracotta,minecraft:magenta_glazed_terracotta,minecraft:light_blue_glazed_terracotta,minecraft:yellow_glazed_terracotta,minecraft:lime_glazed_terracotta,minecraft:pink_glazed_terracotta,minecraft:gray_glazed_terracotta,minecraft:silver_glazed_terracotta,minecraft:cyan_glazed_terracotta,minecraft:purple_glazed_terracotta,minecraft:blue_glazed_terracotta,minecraft:brown_glazed_terracotta,minecraft:green_glazed_terracotta,minecraft:red_glazed_terracotta,minecraft:black_glazed_terracotta",
 		"//CONCRETE",
-		toRotateStr("minecraft:concrete", 16),
+		toColorVariationsStr("minecraft:concrete"),
 		"//CONCRETE_POWDER",
-		toRotateStr("minecraft:concrete_powder", 16),
+		toColorVariationsStr("minecraft:concrete_powder"),
 	};
 
 	private static final String[] DEFAULT_ITEM_GROUP_STRLIST_SUB = {
 		"//WHITE",
-		toSameColors(0),
+		toSameColorsStr(0),
 		"//ORANGE",
-		toSameColors(1),
+		toSameColorsStr(1),
 		"//MAGENTA",
-		toSameColors(2),
+		toSameColorsStr(2),
 		"//LIGHT BLUE",
-		toSameColors(3),
+		toSameColorsStr(3),
 		"//YELLOW",
-		toSameColors(4),
+		toSameColorsStr(4),
 		"//LIME",
-		toSameColors(5),
+		toSameColorsStr(5),
 		"//PINK",
-		toSameColors(6),
+		toSameColorsStr(6),
 		"//GRAY",
-		toSameColors(7),
+		toSameColorsStr(7),
 		"//LIGHT GRAY",
-		toSameColors(8),
+		toSameColorsStr(8),
 		"//CYAN",
-		toSameColors(9),
+		toSameColorsStr(9),
 		"//PURPLE",
-		toSameColors(10),
+		toSameColorsStr(10),
 		"//BLUE",
-		toSameColors(11),
+		toSameColorsStr(11),
 		"//BROWN",
-		toSameColors(12),
+		toSameColorsStr(12),
 		"//GREEN",
-		toSameColors(13),
+		toSameColorsStr(13),
 		"//RED",
-		toSameColors(14),
+		toSameColorsStr(14),
 		"//BLACK",
-		toSameColors(15),
+		toSameColorsStr(15),
 	};
 
 	public static List<String> ITEM_GROUPS_STRLIST_MAIN = new ArrayList<>(Arrays.asList(DEFAULT_ITEM_GROUP_STRLIST_MAIN));
@@ -167,7 +167,7 @@ public class RotationHelper {
 		SUB,
 	}
 
-	private static String toRotateStr(String name, int max) {
+	private static String toMetaVariationsStr(String name, int max) {
 		StringJoiner joiner = new StringJoiner(",");
 		for (int i=0;i<max;i++) {
 			joiner.add(String.format("%s/%d", name, i));
@@ -175,7 +175,16 @@ public class RotationHelper {
 		return joiner.toString();
 	}
 
-	private static String toSameColors(int meta) {
+	private static String toColorVariationsStr(String name) {
+		StringJoiner joiner = new StringJoiner(",");
+		int[] metas = new int[] {14, 1, 4, 5, 13, 9, 3, 11, 10, 2, 6, 12, 15, 7, 8, 0};
+		for (int meta : metas) {
+			joiner.add(String.format("%s/%d", name, meta));
+		}
+		return joiner.toString();
+	}
+
+	private static String toSameColorsStr(int meta) {
 		String format = "minecraft:wool/N,minecraft:stained_glass/N,minecraft:stained_hardened_clay/N,minecraft:stained_glass_pane/N,minecraft:carpet/N,minecraft:concrete/N,minecraft:concrete_powder/N";
 		return format.replace("N", String.valueOf(meta));
 	}
