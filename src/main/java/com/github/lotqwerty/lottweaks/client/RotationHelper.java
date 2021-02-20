@@ -122,6 +122,9 @@ public class RotationHelper {
 		toColorVariationsStr("minecraft:concrete"),
 		"//CONCRETE_POWDER",
 		toColorVariationsStr("minecraft:concrete_powder"),
+		"//VANILLA ITEMS",
+		"//TOOLS",
+		"minecraft:wooden_axe,minecraft:compass,minecraft:clock",
 	};
 
 	private static final String[] DEFAULT_ITEM_GROUP_STRLIST_SUB = {
