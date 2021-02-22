@@ -33,6 +33,7 @@ public class LotTweaks {
 		public static ForgeConfigSpec.IntValue REPLACE_INTERVAL;// = 1;
 		public static ForgeConfigSpec.BooleanValue REQUIRE_OP_TO_USE_REPLACE;// = false;
 		public static ForgeConfigSpec.BooleanValue DISABLE_ANIMATIONS;// = false;
+		public static ForgeConfigSpec.BooleanValue SNEAK_TO_SWITCH_GROUP;// = false;
 
 		static {
 			MAX_RANGE = COMMON_BUILDER
@@ -43,6 +44,8 @@ public class LotTweaks {
 					.define("server.REQUIRE_OP_TO_USE_REPLACE", false);
 			DISABLE_ANIMATIONS = COMMON_BUILDER
 					.define("client.DISABLE_ANIMATIONS", false);
+			SNEAK_TO_SWITCH_GROUP = COMMON_BUILDER
+					.define("client.SNEAK_TO_SWITCH_GROUP", false);
 			//
 			COMMON_SPEC = COMMON_BUILDER.build();
 		}
@@ -58,8 +61,8 @@ public class LotTweaks {
 
 	private void clientInit(FMLClientSetupEvent event) {
 		LotTweaksClient.init();
-		RotationHelper.loadFromFile();
-		RotationHelper.loadBlockGroups();
+		RotationHelper.loadAllFromFile();
+		RotationHelper.loadAllItemGroupFromStrArray();
 	}
 
 	private void commonInit(FMLCommonSetupEvent event) {

@@ -1,16 +1,20 @@
 package com.github.lotqwerty.lottweaks.client;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.StringJoiner;
 
 import com.github.lotqwerty.lottweaks.LotTweaks;
 import com.github.lotqwerty.lottweaks.client.RotationHelper;
+import com.github.lotqwerty.lottweaks.client.RotationHelper.Group;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandException;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -39,40 +43,53 @@ public class LotTweaksCommand {
 		}
 		event.setCanceled(true);
 		try {
-			String[] part = msg.split(" ");
-			if (part.length != 2) {
+			List<String> argsList = new ArrayList<>(Arrays.asList(msg.split(" ")));
+			if (!argsList.get(0).equals(COMMAND_NAME)) {
 				throw new CommandException(new StringTextComponent(TextFormatting.RED + COMMAND_USAGE));
 			}
-			if (part[1].equals("add")){
-				executeAdd();
-			} else if (part[1].equals("reload")){
-				executeReload();
-			} else {
+			argsList.remove(0);
+			String[] args = argsList.toArray(new String[0]);
+			//
+			if (args.length < 1) {
 				throw new CommandException(new StringTextComponent(TextFormatting.RED + COMMAND_USAGE));
+			}
+			if (args[0].equals("add")) {
+				if (args.length == 2) {
+					if (args[1].equals("1") || args[1].equals("main")) {
+						executeAdd(Group.MAIN);
+					} else if (args[1].equals("2") || args[1].equals("sub")) {
+						executeAdd(Group.SUB);
+					} else {
+						throw new CommandException(new StringTextComponent(TextFormatting.RED + COMMAND_USAGE));
+					}
+				} else {
+					executeAdd(Group.MAIN);
+				}
+			} else if (args[0].equals("reload")) {
+				executeReload();
 			}
 		} catch (CommandException e) {
 			displayMessage(e.getComponent());
 		}
 	}
 	
-	
-	private void executeAdd() throws CommandException {
+	private void executeAdd(Group group) throws CommandException {
 		Minecraft mc = Minecraft.getInstance();
 		StringJoiner stringJoiner = new StringJoiner(",");
 		int count = 0;
 		for (int i = 0; i < PlayerInventory.getHotbarSize(); i++) {
 			ItemStack itemStack = mc.player.inventory.getStackInSlot(i);
-			if (RotationHelper.canRotate(itemStack)) {
+			if (RotationHelper.canRotate(itemStack, group)) {
 				throw new CommandException(new StringTextComponent(String.format("Already exists (%d)", i + 1)));
 			}
 			if (itemStack.isEmpty()) {
 				break;
 			}
-			Block block = Block.getBlockFromItem(itemStack.getItem());
-			if (block == Blocks.AIR) {
-				throw new CommandException(new StringTextComponent(String.format("Failed to get block instance. (%d)", i + 1)));
+			Item item = itemStack.getItem();
+			if (item == Items.AIR) {
+				throw new CommandException(new StringTextComponent(String.format("Failed to get item instance. (%d)", i + 1)));
 			}
-			String name = ForgeRegistries.BLOCKS.getKey(block).toString();
+			String name = ForgeRegistries.ITEMS.getKey(item).toString();
 			stringJoiner.add(name);
 			count++;
 		}
@@ -80,30 +97,26 @@ public class LotTweaksCommand {
 		if (line.isEmpty()) {
 			throw new CommandException(new StringTextComponent(String.format("Hotbar is empty.")));
 		}
-		LotTweaks.LOGGER.debug("adding a new block-group from /lottweaks command");
+		LotTweaks.LOGGER.debug("adding a new block/item-group from /lottweaks command");
 		LotTweaks.LOGGER.debug(line);
-		String[] oldBlockGroups = RotationHelper.BLOCK_GROUPS;
-		String[] newBlockGroups = new String[oldBlockGroups.length + 1];
-		System.arraycopy(oldBlockGroups, 0, newBlockGroups, 0, oldBlockGroups.length);
-		newBlockGroups[newBlockGroups.length - 1] = line;
-		boolean succeeded = RotationHelper.tryToUpdateBlockGroupsFromCommand(newBlockGroups);
+		boolean succeeded = RotationHelper.tryToAddItemGroupFromCommand(line, group);
 		if (succeeded) {
-			RotationHelper.writeToFile();
-			displayMessage(new StringTextComponent(String.format("LotTweaks: added %d blocks", count)));
+			displayMessage(new StringTextComponent(String.format("LotTweaks: added %d blocks/items", count)));
 		} else {
-			displayMessage(new StringTextComponent(TextFormatting.RED + "LotTweaks: failed to add blocks"));
+			displayMessage(new StringTextComponent(TextFormatting.RED + "LotTweaks: failed to add blocks/items"));
 		}
 	}
 
 	private void executeReload() throws CommandException {
-		RotationHelper.loadFromFile();
-		RotationHelper.loadBlockGroups();
-		Minecraft mc = Minecraft.getInstance();
-		int groupCount = RotationHelper.BLOCK_CHAIN.size();
-		if (groupCount > 0) {
+		try {
+			boolean f;
+			f = RotationHelper.loadAllFromFile();
+			if (!f) throw new CommandException(new StringTextComponent("LotTweaks: failed to reload config file"));
+			f = RotationHelper.loadAllItemGroupFromStrArray();
+			if (!f) throw new CommandException(new StringTextComponent("LotTweaks: failed to reload blocks"));
 			displayMessage(new StringTextComponent("LotTweaks: reload succeeded!"));
-		} else {
-			displayMessage(new StringTextComponent(TextFormatting.RED + "LotTweaks: failed to reload config file (0 blocks loaded)"));
+		} catch (CommandException e) {
+			displayMessage(new StringTextComponent(TextFormatting.RED + e.getMessage()));
 		}
 	}
 
