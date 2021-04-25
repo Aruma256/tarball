@@ -27,8 +27,8 @@ public class LotTweaksClient implements ClientModInitializer
 
 	@Override
 	public void onInitializeClient() {
-		RotationHelper.loadFromFile();
-		RotationHelper.loadBlockGroups();
+		RotationHelper.loadAllFromFile();
+		RotationHelper.loadAllItemGroupFromStrArray();
 		//
     	KeyBinding key;
 		key = new ExPickKey(GLFW.GLFW_KEY_V, LotTweaks.NAME);
