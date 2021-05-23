@@ -40,6 +40,7 @@ public class LotTweaks {
 		public static boolean REQUIRE_OP_TO_USE_REPLACE = false;
 		public static boolean DISABLE_ANIMATIONS = false;
 		public static boolean SNEAK_TO_SWITCH_GROUP = false;
+		public static boolean INVERT_REPLACE_LOCK = false;
 	}
 
 	public static void onConfigUpdate() {
