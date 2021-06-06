@@ -34,6 +34,7 @@ public class LotTweaks {
 		public static ForgeConfigSpec.BooleanValue REQUIRE_OP_TO_USE_REPLACE;// = false;
 		public static ForgeConfigSpec.BooleanValue DISABLE_ANIMATIONS;// = false;
 		public static ForgeConfigSpec.BooleanValue SNEAK_TO_SWITCH_GROUP;// = false;
+		public static ForgeConfigSpec.BooleanValue INVERT_REPLACE_LOCK;// = false;
 
 		static {
 			MAX_RANGE = COMMON_BUILDER
@@ -46,6 +47,8 @@ public class LotTweaks {
 					.define("client.DISABLE_ANIMATIONS", false);
 			SNEAK_TO_SWITCH_GROUP = COMMON_BUILDER
 					.define("client.SNEAK_TO_SWITCH_GROUP", false);
+			INVERT_REPLACE_LOCK = COMMON_BUILDER
+					.define("client.INVERT_REPLACE_LOCK", false);
 			//
 			COMMON_SPEC = COMMON_BUILDER.build();
 		}
