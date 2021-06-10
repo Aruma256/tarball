@@ -19,22 +19,11 @@ import net.minecraft.util.math.Vec3d;
 
 public class LTPacketHandler {
 
-//	private static final String PROTOCOL_VERSION = "3";
-//	private static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
-//		new ResourceLocation(LotTweaks.MODID),
-//		() -> PROTOCOL_VERSION,
-//	    PROTOCOL_VERSION::equals,
-//	    PROTOCOL_VERSION::equals
-//	);
 	private static final Identifier REPLACE_PACKET_ID = new Identifier(LotTweaks.MODID, "replace_packet");
 
 	public static void init() {
+		//TODO Migrate to ServerPlayNetworking
 		ServerSidePacketRegistry.INSTANCE.register(REPLACE_PACKET_ID, (ctx, buf) -> {new ReplaceMessage(buf).handle(ctx);});
-//		INSTANCE.messageBuilder(AdjustRangeMessage.class, id++)
-//			.encoder(AdjustRangeMessage::toBytes)
-//			.decoder(AdjustRangeMessage::new)
-//			.consumer(AdjustRangeMessage::handle)
-//			.add();
 	}
 
 	public static void sendReplaceMessage(BlockPos pos, BlockState state, BlockState checkState) {
