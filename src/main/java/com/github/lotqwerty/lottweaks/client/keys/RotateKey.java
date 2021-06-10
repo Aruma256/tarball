@@ -50,7 +50,7 @@ public class RotateKey extends ItemSelectKeyBase implements ScrollListener, Rend
 		if (!mc.player.isCreative()) {
 			return;
 		}
-		ItemStack itemStack = mc.player.inventory.getMainHandStack();
+		ItemStack itemStack = mc.player.getInventory().getMainHandStack();
 		if (itemStack.isEmpty()) {
 			return;
 		}
@@ -108,7 +108,7 @@ public class RotateKey extends ItemSelectKeyBase implements ScrollListener, Rend
 		if (candidates.isEmpty()) {
 			return;
 		}
-		int x = event.getWindow().getScaledWidth() / 2 - 90 + MinecraftClient.getInstance().player.inventory.selectedSlot * 20 + 2;
+		int x = event.getWindow().getScaledWidth() / 2 - 90 + MinecraftClient.getInstance().player.getInventory().selectedSlot * 20 + 2;
 		int y = event.getWindow().getScaledHeight() - 16 - 3;
 		y -= 50 + (20 + candidates.size());
 		LTRenderer.renderItemStacks(candidates, x, y, pressTime, event.getPartialTicks(), lastRotateTime, rotateDirection);

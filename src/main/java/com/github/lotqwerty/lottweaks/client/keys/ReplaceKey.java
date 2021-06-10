@@ -53,7 +53,7 @@ public class ReplaceKey extends LTKeyBase implements RenderHotbarListener {
         {
             return;
         }
-		ItemStack itemStack = mc.player.inventory.getMainHandStack();
+		ItemStack itemStack = mc.player.getInventory().getMainHandStack();
 		Block block = Block.getBlockFromItem(itemStack.getItem());
 		if (itemStack.isEmpty() || block == Blocks.AIR) {
 			return;

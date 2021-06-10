@@ -68,7 +68,7 @@ public class ExPickKey extends ItemSelectKeyBase implements ScrollListener, Rend
 //		}
 		mc.crosshairTarget = rayTraceResult;
 		((VanillaPickInvoker)MinecraftClient.getInstance()).lottweaks_invokeVanillaItemPick();
-		ItemStack itemStack = mc.player.inventory.getMainHandStack();
+		ItemStack itemStack = mc.player.getInventory().getMainHandStack();
 		if (itemStack.isEmpty()) {
 			return;
 		}
