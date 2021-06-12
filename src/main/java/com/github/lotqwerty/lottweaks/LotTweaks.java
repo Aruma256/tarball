@@ -12,7 +12,7 @@ public class LotTweaks implements ModInitializer {
 
 	public static final String MODID = "lottweaks";
 	public static final String NAME = "LotTweaks";
-	public static final String VERSION = "2.0.4";
+	public static final String VERSION = "2.1.0";
 	public static Logger LOGGER = LogManager.getLogger();
 
 	public static class CONFIG {
@@ -21,6 +21,7 @@ public class LotTweaks implements ModInitializer {
 		public static boolean REQUIRE_OP_TO_USE_REPLACE = false;
 		public static boolean DISABLE_ANIMATIONS = false;
 		public static boolean SNEAK_TO_SWITCH_GROUP = false;
+		public static boolean INVERT_REPLACE_LOCK = false;
 	}
 	
 	@Override

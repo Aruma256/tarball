@@ -1,8 +1,11 @@
 package com.github.lotqwerty.lottweaks.client.keys;
 
 import com.github.lotqwerty.lottweaks.LotTweaks;
+import com.github.lotqwerty.lottweaks.fabric.DrawBlockOutlineEvent;
+import com.github.lotqwerty.lottweaks.fabric.DrawBlockOutlineEvent.DrawBlockOutlineListener;
 import com.github.lotqwerty.lottweaks.fabric.RenderHotbarEvent;
 import com.github.lotqwerty.lottweaks.fabric.RenderHotbarEvent.RenderHotbarListener;
+import com.github.lotqwerty.lottweaks.client.renderer.SelectionBoxRenderer;
 import com.github.lotqwerty.lottweaks.network.LTPacketHandler;
 
 import net.fabricmc.api.EnvType;
@@ -19,10 +22,45 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
-public class ReplaceKey extends LTKeyBase implements RenderHotbarListener {
+public class ReplaceKey extends LTKeyBase implements RenderHotbarListener, DrawBlockOutlineListener {
+
+	private BlockState lockedBlockState = null;
 
 	public ReplaceKey(int keyCode, String category) {
 		super("Replace", keyCode, category);
+	}
+
+	@Override
+	protected void onKeyPressStart() {
+		MinecraftClient mc = MinecraftClient.getInstance();
+		if (mc.player.isSneaking() ^ LotTweaks.CONFIG.INVERT_REPLACE_LOCK) {
+			HitResult target = mc.crosshairTarget;
+			if (target != null && target.getType() == HitResult.Type.BLOCK){
+				lockedBlockState = mc.world.getBlockState(((BlockHitResult)target).getBlockPos());
+			} else {
+				lockedBlockState = Blocks.AIR.getDefaultState();
+			}
+		} else {
+			lockedBlockState = null;
+		}
+	}
+
+	@Override
+	protected void onKeyReleased() {
+		lockedBlockState = null;
+	}
+
+	@Override
+	public void onDrawBlockHighlightEvent(final DrawBlockOutlineEvent event) {
+		if (this.pressTime == 0) {
+			return;
+		}
+		if (lockedBlockState == null) {
+			return;
+		}
+		if (SelectionBoxRenderer.render(event.getInfo(), event.getMatrix(), event.getBuffers(), event.getPos(), 0f, 1f, 0f, 0f)) {
+			event.setCanceled(true);
+		}
 	}
 
 	@Override
@@ -51,6 +89,9 @@ public class ReplaceKey extends LTKeyBase implements RenderHotbarListener {
         BlockState state = mc.world.getBlockState(pos);
         if (state.getBlock() == Blocks.AIR)
         {
+            return;
+        }
+        if (lockedBlockState != null && lockedBlockState != state) {
             return;
         }
 		ItemStack itemStack = mc.player.inventory.getMainHandStack();

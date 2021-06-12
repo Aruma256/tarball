@@ -11,6 +11,8 @@
     "MouseScrollRedirector",
     "HotbarRendererHook",
     "VanillaPickInvoker",
+    "DrawShapeOutlineInjector",
+    "DrawShapeOutlineInvoker",
     "ClientReachDistanceOverwriter",
     "ClientSendChatHook"
   ],

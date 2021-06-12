@@ -9,6 +9,8 @@ import com.github.lotqwerty.lottweaks.client.keys.ReplaceKey;
 import com.github.lotqwerty.lottweaks.client.keys.RotateKey;
 import com.github.lotqwerty.lottweaks.fabric.ClientChatEvent;
 import com.github.lotqwerty.lottweaks.fabric.ClientChatEvent.ClientChatEventListener;
+import com.github.lotqwerty.lottweaks.fabric.DrawBlockOutlineEvent;
+import com.github.lotqwerty.lottweaks.fabric.DrawBlockOutlineEvent.DrawBlockOutlineListener;
 import com.github.lotqwerty.lottweaks.fabric.RenderHotbarEvent;
 import com.github.lotqwerty.lottweaks.fabric.ScrollEvent;
 import com.github.lotqwerty.lottweaks.fabric.RenderHotbarEvent.RenderHotbarListener;
@@ -61,6 +63,9 @@ public class LotTweaksClient implements ClientModInitializer
 		}
 		if (obj instanceof ClientChatEventListener) {
 			ClientChatEvent.registerListener((ClientChatEventListener)obj);
+		}
+		if (obj instanceof DrawBlockOutlineListener) {
+			DrawBlockOutlineEvent.registerListener((DrawBlockOutlineListener)obj);
 		}
 	}
 	
