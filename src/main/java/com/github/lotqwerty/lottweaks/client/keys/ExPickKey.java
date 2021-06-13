@@ -1,5 +1,8 @@
 package com.github.lotqwerty.lottweaks.client.keys;
 
+import java.util.Deque;
+import java.util.LinkedList;
+
 import com.github.lotqwerty.lottweaks.client.renderer.LTRenderer;
 
 import net.minecraft.block.state.IBlockState;
@@ -12,12 +15,15 @@ import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class ExPickKey extends ItemSelectKeyBase {
+
+	private static final int HISTORY_SIZE = 10;
 
 	private static final BlockPos[] SEARCH_POS = {
 			new BlockPos(1, 0, 0),
@@ -41,6 +47,10 @@ public class ExPickKey extends ItemSelectKeyBase {
 			new BlockPos(0, -1, -1),
 			};
 
+	private static final Deque<ItemStack> breakHistory = new LinkedList<>();
+
+	private boolean isHistoryMode = false;
+
 	public ExPickKey(int keyCode, String category) {
 		super("Ex Pick", keyCode, category);
 	}
@@ -59,7 +69,16 @@ public class ExPickKey extends ItemSelectKeyBase {
 			}
 			return;
 		}
-		rayTraceResult = mc.getRenderViewEntity().rayTrace(255.0, mc.getRenderPartialTicks());
+		if (!mc.player.isSneaking()) {
+			normalModePick();
+		} else {
+			historyModePick();
+		}
+	}
+
+	private void normalModePick() {
+		Minecraft mc = Minecraft.getMinecraft();
+		RayTraceResult rayTraceResult = mc.getRenderViewEntity().rayTrace(255.0, mc.getRenderPartialTicks());
 		if (rayTraceResult == null) {
 			return;
 		}
@@ -71,18 +90,32 @@ public class ExPickKey extends ItemSelectKeyBase {
 		if (itemStack.isEmpty()) {
 			return;
 		}
-		addToCandidates(itemStack);
+		addToCandidatesWithDedup(itemStack);
 		BlockPos pos = rayTraceResult.getBlockPos();
 		for (BlockPos posDiff : SEARCH_POS) {
 			try {
 				IBlockState state = mc.world.getBlockState(pos.add(posDiff));
 				itemStack = state.getBlock().getPickBlock(state, rayTraceResult, mc.world, pos, mc.player);
 				if (!itemStack.isEmpty()) {
-					addToCandidates(itemStack);
+					addToCandidatesWithDedup(itemStack);
 				}
 			} catch (Exception e) {
 			}
 		}
+	}
+
+	private void historyModePick() {
+		if (!breakHistory.isEmpty()) {
+			candidates.addAll(breakHistory);
+			candidates.addFirst(Minecraft.getMinecraft().player.inventory.getCurrentItem());
+			isHistoryMode = true;
+		}
+	}
+
+	@Override
+	protected void onKeyReleased() {
+		super.onKeyReleased();
+		isHistoryMode = false;
 	}
 
 	@SubscribeEvent
@@ -127,9 +160,50 @@ public class ExPickKey extends ItemSelectKeyBase {
 			return;
 		}
 		ScaledResolution sr = event.getResolution();
-		int x = sr.getScaledWidth() / 2 - 8;
-		int y = sr.getScaledHeight() / 2 - 8;
-		LTRenderer.renderItemStacks(candidates, x, y, pressTime, event.getPartialTicks(), lastRotateTime, rotateDirection);
+		if (!isHistoryMode) {
+			int x = sr.getScaledWidth() / 2 - 8;
+			int y = sr.getScaledHeight() / 2 - 8;
+			LTRenderer.renderItemStacks(candidates, x, y, pressTime, event.getPartialTicks(), lastRotateTime, rotateDirection);
+		} else {
+			int x = sr.getScaledWidth() / 2 - 90 + Minecraft.getMinecraft().player.inventory.currentItem * 20 + 2;
+			int y = sr.getScaledHeight() - 16 - 3;
+			LTRenderer.renderItemStacks(candidates, x, y, pressTime, event.getPartialTicks(), lastRotateTime, rotateDirection, LTRenderer.RenderMode.LINE);
+		}
 	}
-	
+
+	@SubscribeEvent
+	public void onBreakBlock(final PlayerInteractEvent.LeftClickBlock event) {
+		if (!event.getWorld().isRemote) {
+			return;
+		}
+		if (!event.getEntityPlayer().isCreative()) {
+			return;
+		}
+		//
+		Minecraft mc = Minecraft.getMinecraft();
+		IBlockState blockState = event.getWorld().getBlockState(event.getPos());
+		ItemStack itemStack = blockState.getBlock().getPickBlock(blockState, mc.objectMouseOver, event.getWorld(), event.getPos(), event.getEntityPlayer());
+		addToHistory(itemStack);
+	}
+
+	protected static void addToHistory(ItemStack itemStack) {
+		if (itemStack == null || itemStack.isEmpty()) {
+			return;
+		}
+		Deque<ItemStack> tmpHistory = new LinkedList<>();
+		tmpHistory.addAll(breakHistory);
+		breakHistory.clear();
+		while(!tmpHistory.isEmpty()) {
+			if (!ItemStack.areItemStacksEqual(tmpHistory.peekFirst(), itemStack)) {
+				breakHistory.add(tmpHistory.pollFirst());
+			} else {
+				tmpHistory.removeFirst();
+			}
+		}
+		while (breakHistory.size() >= HISTORY_SIZE) {
+			breakHistory.pollLast();
+		}
+		breakHistory.addFirst(itemStack);
+	}
+
 }

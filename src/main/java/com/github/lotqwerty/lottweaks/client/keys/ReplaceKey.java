@@ -103,6 +103,8 @@ public class ReplaceKey extends LTKeyBase {
 		float hitZ = (float) (target.hitVec.z - target.getBlockPos().getZ());
 		IBlockState newBlockState = block.getStateForPlacement(mc.world, target.getBlockPos(), target.sideHit, hitX, hitY, hitZ, itemStack.getItemDamage(), mc.player, EnumHand.MAIN_HAND);
 		LTPacketHandler.sendReplaceMessage(target.getBlockPos(), block, block.getMetaFromState(newBlockState), mc.world.getBlockState(target.getBlockPos()).getBlock());
+		// add to history
+		ExPickKey.addToHistory(state.getBlock().getPickBlock(state, target, mc.world, target.getBlockPos(), mc.player));
 	}
 
 }
