@@ -10,9 +10,11 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.network.NetworkCheckHandler;
 import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
 
@@ -78,4 +80,27 @@ public class LotTweaks {
 			}
 		}
 	}
+
+	@NetworkCheckHandler
+	public boolean networkCheckHandler(Map<String, String> mods, Side remoteSide) {
+		if (!mods.containsKey(MODID)) {
+			return true;
+		}
+		//
+		String clientVersion;
+		String serverVersion;
+		if (remoteSide == Side.SERVER) {
+			clientVersion = VERSION;
+			serverVersion = mods.get(MODID);
+		} else {
+			clientVersion = mods.get(MODID);
+			serverVersion = VERSION;
+		}
+		if (clientVersion.compareTo(serverVersion) >= 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 }
