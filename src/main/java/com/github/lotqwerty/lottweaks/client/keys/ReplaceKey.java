@@ -1,6 +1,8 @@
 package com.github.lotqwerty.lottweaks.client.keys;
 
 import com.github.lotqwerty.lottweaks.LotTweaks;
+import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
+import com.github.lotqwerty.lottweaks.client.renderer.LTTextRenderer;
 import com.github.lotqwerty.lottweaks.client.renderer.SelectionBoxRenderer;
 import com.github.lotqwerty.lottweaks.network.LTPacketHandler;
 
@@ -66,6 +68,13 @@ public class ReplaceKey extends LTKeyBase {
 	@SubscribeEvent
 	public void onRenderTick(final RenderTickEvent event) {
 		if (event.getPhase() != EventPriority.NORMAL) {
+			return;
+		}
+		if (this.pressTime == 0) {
+			return;
+		}
+		if (!LotTweaksClient.requireServerVersion("2.2.1")) {
+			LTTextRenderer.showServerSideRequiredMessage("2.2.1");
 			return;
 		}
 		if (this.pressTime==1 || this.pressTime > LotTweaks.CONFIG.REPLACE_INTERVAL) {

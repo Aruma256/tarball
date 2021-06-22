@@ -21,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
 import com.github.lotqwerty.lottweaks.client.RotationHelper;
 import com.github.lotqwerty.lottweaks.network.LTPacketHandler;
+import com.github.lotqwerty.lottweaks.network.ServerConnectionListener;
 
 @Mod(modid = LotTweaks.MODID, name = LotTweaks.NAME, version = LotTweaks.VERSION)
 public class LotTweaks {
@@ -69,6 +70,7 @@ public class LotTweaks {
 		}
 		LTPacketHandler.init();
 		MinecraftForge.EVENT_BUS.register(new AdjustRangeHelper());
+		MinecraftForge.EVENT_BUS.register(new ServerConnectionListener());
 	}
 
 	@EventHandler
@@ -90,9 +92,11 @@ public class LotTweaks {
 		String clientVersion;
 		String serverVersion;
 		if (remoteSide == Side.SERVER) {
+			// CLIENT
 			clientVersion = VERSION;
 			serverVersion = mods.get(MODID);
 		} else {
+			// SERVER
 			clientVersion = mods.get(MODID);
 			serverVersion = VERSION;
 		}

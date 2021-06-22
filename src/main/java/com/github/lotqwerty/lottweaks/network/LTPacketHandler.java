@@ -1,7 +1,10 @@
 package com.github.lotqwerty.lottweaks.network;
 
+import java.nio.charset.StandardCharsets;
+
 import com.github.lotqwerty.lottweaks.AdjustRangeHelper;
 import com.github.lotqwerty.lottweaks.LotTweaks;
+import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
@@ -27,6 +30,7 @@ public class LTPacketHandler {
 		int id = 0;
 		INSTANCE.registerMessage(ReplaceMessageHandler.class, ReplaceMessage.class, id++, Side.SERVER);
 		INSTANCE.registerMessage(AdjustRangeMessageHandler.class, AdjustRangeMessage.class, id++, Side.SERVER);
+		INSTANCE.registerMessage(HelloMessageHandler.class, HelloMessage.class, id++, Side.CLIENT);
 	}
 
 	public static void sendReplaceMessage(BlockPos pos, Block block, int meta, Block checkBlock) {
@@ -35,6 +39,10 @@ public class LTPacketHandler {
 
 	public static void sendReachRangeMessage(double dist) {
 		INSTANCE.sendToServer(new AdjustRangeMessage(dist));
+	}
+
+	public static void sendHelloMessage(EntityPlayerMP player) {
+		INSTANCE.sendTo(new HelloMessage(LotTweaks.VERSION), player);
 	}
 
 	//Replace
@@ -158,4 +166,41 @@ public class LTPacketHandler {
 			return null;
 		}
 	}
+
+	// Hello
+
+	public static class HelloMessage implements IMessage {
+
+		private String version;
+
+		public HelloMessage() {
+		}
+
+		public HelloMessage(String version) {
+			this.version = version;
+		}
+
+		@Override
+		public void toBytes(ByteBuf buf) {
+			buf.writeInt(version.length());
+			buf.writeCharSequence(version, StandardCharsets.UTF_8);
+		}
+
+		@Override
+		public void fromBytes(ByteBuf buf) {
+			this.version = buf.readCharSequence(buf.readInt(), StandardCharsets.UTF_8).toString();
+		}
+
+	}
+
+	public static class HelloMessageHandler implements IMessageHandler<HelloMessage, IMessage> {
+
+		@Override
+		public IMessage onMessage(HelloMessage message, MessageContext ctx) {
+			LotTweaksClient.setServerVersion(message.version);
+			return null;
+		}
+
+	}
+
 }

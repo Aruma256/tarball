@@ -1,6 +1,8 @@
 package com.github.lotqwerty.lottweaks.client.keys;
 
 import com.github.lotqwerty.lottweaks.LotTweaks;
+import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
+import com.github.lotqwerty.lottweaks.client.renderer.LTTextRenderer;
 import com.github.lotqwerty.lottweaks.network.LTPacketHandler;
 
 import net.minecraft.client.Minecraft;
@@ -29,6 +31,10 @@ public class AdjustRangeKey extends LTKeyBase {
 		if (!Minecraft.getMinecraft().player.isCreative()) {
 			return;
 		}
+		if (!LotTweaksClient.requireServerVersion("2.2.1")) {
+			LTTextRenderer.showServerSideRequiredMessage(event.getResolution(), "2.2.1");
+			return;
+		}
 		// Update dist
 		Minecraft mc = Minecraft.getMinecraft();
 		RayTraceResult rayTraceResult = mc.getRenderViewEntity().rayTrace(255.0, event.getPartialTicks());
@@ -42,8 +48,6 @@ public class AdjustRangeKey extends LTKeyBase {
 		// Render
 		int distInt = (int)dist;
 		String distStr = String.valueOf(distInt);
-		int x = (event.getResolution().getScaledWidth() - mc.fontRenderer.getStringWidth(distStr)) / 2;
-		int y = event.getResolution().getScaledHeight() - 70;
-		mc.fontRenderer.drawStringWithShadow(distStr, x, y, 0xFFFFFF);
+		LTTextRenderer.showMessage(event.getResolution(), distStr);
 	}
 }

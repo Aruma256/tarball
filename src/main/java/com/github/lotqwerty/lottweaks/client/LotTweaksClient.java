@@ -14,12 +14,15 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class LotTweaksClient
 {
+	private static String serverVersion = "0";
+
 	public static void init() {
     	KeyBinding key;
 		key = new ExPickKey(Keyboard.KEY_V, LotTweaks.NAME);
@@ -35,9 +38,31 @@ public class LotTweaksClient
 		MinecraftForge.EVENT_BUS.register(key);
 		ClientRegistry.registerKeyBinding(key);
 		//
+		MinecraftForge.EVENT_BUS.register(new LotTweaksClient());
 		MinecraftForge.EVENT_BUS.register(new ConfigChangeHandler());
 		//
 		ClientCommandHandler.instance.registerCommand(new LotTweaksCommand());
+	}
+
+	public static boolean requireServerVersion(String requiredVersion) {
+		return (serverVersion.compareTo(requiredVersion) >= 0);
+	}
+
+	public static void clearServerVersion() {
+		setServerVersion("0");
+	}
+
+	public static void setServerVersion(String version) {
+		serverVersion = version;
+	}
+
+	public static String getServerVersion() {
+		return serverVersion;
+	}
+
+	@SubscribeEvent
+	public void onClientDisconnectionFromServer(final ClientDisconnectionFromServerEvent event) {
+		clearServerVersion();
 	}
 
 	private static class ConfigChangeHandler {
