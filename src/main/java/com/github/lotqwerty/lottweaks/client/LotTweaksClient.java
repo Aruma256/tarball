@@ -44,7 +44,6 @@ public class LotTweaksClient
 		ClientRegistry.registerKeyBinding(key);
 		//
 		MinecraftForge.EVENT_BUS.register(new LotTweaksClient());
-		MinecraftForge.EVENT_BUS.register(new ConfigChangeHandler());
 		//
 		ClientCommandHandler.instance.registerCommand(new LotTweaksCommand());
 	}
@@ -84,15 +83,11 @@ public class LotTweaksClient
 		clearServerVersion();
 	}
 
-	private static class ConfigChangeHandler {
-		@SubscribeEvent
-		public void onConfigChanged(final ConfigChangedEvent.OnConfigChangedEvent event) {
-			if (event.getModID().equals(LotTweaks.MODID)) {
-				LotTweaks.onConfigUpdate();
-			}
+	@SubscribeEvent
+	public void onConfigChanged(final ConfigChangedEvent.OnConfigChangedEvent event) {
+		if (event.getModID().equals(LotTweaks.MODID)) {
+			LotTweaks.onConfigUpdate();
 		}
-		
 	}
-	
 
 }
