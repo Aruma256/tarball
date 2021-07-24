@@ -65,7 +65,7 @@ public class LotTweaksClient
 	}
 
 	public static void showErrorLogToChat() {
-		if (LotTweaks.CONFIG.SHOW_ERROR_LOG_TO_CHAT) {
+		if (LotTweaks.CONFIG.SHOW_BLOCKCONFIG_ERROR_LOG_TO_CHAT) {
 			Minecraft mc = Minecraft.getMinecraft();
 			for (String line : RotationHelper.LOG_GROUP_CONFIG) {
 				mc.ingameGUI.addChatMessage(ChatType.SYSTEM, new TextComponentString(String.format("LotTweaks: %s%s", TextFormatting.RED, line)));

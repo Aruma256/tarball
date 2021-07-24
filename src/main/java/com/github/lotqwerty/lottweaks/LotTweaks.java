@@ -50,7 +50,7 @@ public class LotTweaks {
 		@Comment(value = { "Default: false" })
 		public static boolean INVERT_REPLACE_LOCK = false;
 		@Comment(value = { "Default: true", "'true' is highly recommended" })
-		public static boolean SHOW_ERROR_LOG_TO_CHAT = true;
+		public static boolean SHOW_BLOCKCONFIG_ERROR_LOG_TO_CHAT = true;
 	}
 
 	public static void onConfigUpdate() {
