@@ -8,12 +8,17 @@ import com.github.lotqwerty.lottweaks.client.keys.AdjustRangeKey;
 import com.github.lotqwerty.lottweaks.client.keys.ReplaceKey;
 import com.github.lotqwerty.lottweaks.client.keys.RotateKey;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.util.text.ChatType;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -58,6 +63,20 @@ public class LotTweaksClient
 
 	public static String getServerVersion() {
 		return serverVersion;
+	}
+
+	public static void showErrorLogToChat() {
+		if (LotTweaks.CONFIG.SHOW_ERROR_LOG_TO_CHAT) {
+			Minecraft mc = Minecraft.getMinecraft();
+			for (String line : RotationHelper.LOG_GROUP_CONFIG) {
+				mc.ingameGUI.addChatMessage(ChatType.SYSTEM, new TextComponentString(String.format("LotTweaks: %s%s", TextFormatting.RED, line)));
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onPlayerLoggedIn(final ClientConnectedToServerEvent event) {
+		showErrorLogToChat();
 	}
 
 	@SubscribeEvent

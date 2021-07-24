@@ -111,6 +111,7 @@ public class LotTweaksCommand extends CommandBase implements IClientCommand {
 		} catch (CommandException e) {
 			mc.ingameGUI.addChatMessage(ChatType.SYSTEM, new TextComponentString(TextFormatting.RED + e.getMessage()));
 		}
+		LotTweaksClient.showErrorLogToChat();
 	}
 
 	@Override

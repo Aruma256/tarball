@@ -165,9 +165,17 @@ public class RotationHelper {
 	public static List<String> ITEM_GROUPS_STRLIST_MAIN = new ArrayList<>(Arrays.asList(DEFAULT_ITEM_GROUP_STRLIST_MAIN));
 	private static final List<String> ITEM_GROUPS_STRLIST_SUB = new ArrayList<>(Arrays.asList(DEFAULT_ITEM_GROUP_STRLIST_SUB));
 
+	public static final List<String> LOG_GROUP_CONFIG = new ArrayList<>();
+
 	public enum Group {
 		MAIN,
 		SUB,
+	}
+
+	private static void warnGroupConfigErrors(String msg, int lineCount, Group group) {
+		String fullMsg =  String.format("%s (Line %d of %s group)", msg, lineCount, group.name());
+		LOG_GROUP_CONFIG.add(fullMsg);
+		LotTweaks.LOGGER.warn(fullMsg);
 	}
 
 	private static String toMetaVariationsStr(String name, int max) {
@@ -250,6 +258,7 @@ public class RotationHelper {
 	}
 
 	public static boolean loadAllItemGroupFromStrArray() {
+		LOG_GROUP_CONFIG.clear();
 		boolean flag = true;
 		for(Group group : Group.values()) {
 			flag &= loadItemGroupFromStrArray(group);
@@ -279,43 +288,37 @@ public class RotationHelper {
 						meta = 0;
 					}
 					if (itemStr.equals("minecraft:double_stone_slab") || itemStr.equals("minecraft:double_wooden_slab")) {
-						LotTweaks.LOGGER.warn(String.format("%s is no longer supported", part));
-						LotTweaks.LOGGER.warn(part);
+						warnGroupConfigErrors(String.format("'%s' is no longer supported.", part), lineCount, group);
 						continue;
 					}
 					Item item = Item.getByNameOrId(itemStr);
 					if (item == null || item == Items.AIR) {
 						Block block = Block.getBlockFromName(itemStr);
 						if (block == null || block == Blocks.AIR) {
-							LotTweaks.LOGGER.warn(String.format("Not found: '%s'", itemStr));
-							LotTweaks.LOGGER.warn(String.format("(GROUPS line %d)", lineCount));
-							throw new ItemGroupRegistrationException();
+							warnGroupConfigErrors(String.format("'%s' was not found.", itemStr), lineCount, group);
+							continue;
 						}
 						item = Item.getItemFromBlock(block);
 					}
 					if (item == null || item == Items.AIR) {
-						LotTweaks.LOGGER.warn(String.format("'%s' is not supported", itemStr));
-						throw new ItemGroupRegistrationException();
+						warnGroupConfigErrors(String.format("'%s' is not supported.", part), lineCount, group);
+						continue;
 					}
 					ItemState state = new ItemState(item, meta);
+					if (states.contains(state) || newItemChain.containsKey(state)) {
+						warnGroupConfigErrors(String.format("'%s' is duplicated.", part), lineCount, group);
+						continue;
+					}
 					states.add(state);
 				}
 				if (states.size() <= 1) {
-					LotTweaks.LOGGER.warn(String.format("group size is %d", states.size()));
+					warnGroupConfigErrors(String.format("The group size is %d.", states.size()), lineCount, group);
 					continue;
 				}
 				for (int i=0;i<states.size();i++) {
-					if (newItemChain.containsKey(states.get(i))) {
-						LotTweaks.LOGGER.error("GROUPS value is invalid.");
-						LotTweaks.LOGGER.error(String.format("(GROUPS line %d)", lineCount));
-						throw new ItemGroupRegistrationException();
-					}
 					newItemChain.put(states.get(i), states.get((i+1)%states.size()));
 				}
-				LotTweaks.LOGGER.debug(String.format("GROUPS line %d: OK", lineCount));
 			}
-		} catch (ItemGroupRegistrationException e) {
-			return false;
 		} catch (Exception e) {
 			LotTweaks.LOGGER.error(e);
 			return false;
@@ -401,10 +404,6 @@ public class RotationHelper {
 			return;
 		}
 		LotTweaks.LOGGER.debug("Finished.");
-	}
-
-	@SuppressWarnings("serial")
-	private static class ItemGroupRegistrationException extends Exception {
 	}
 	
 }
