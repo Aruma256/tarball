@@ -3,6 +3,7 @@ package com.github.lotqwerty.lottweaks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
+import net.minecraftforge.common.config.Config.Comment;
 import net.minecraftforge.common.config.Config.RangeInt;
 import net.minecraftforge.common.config.Config.Type;
 import net.minecraftforge.fml.common.Mod;
@@ -40,10 +41,15 @@ public class LotTweaks {
 		public static int MAX_RANGE = 128;
 		@RangeInt(min = 1, max = 120)
 		public static int REPLACE_INTERVAL = 1;
+		@Comment(value = { "Default: false" })
 		public static boolean REQUIRE_OP_TO_USE_REPLACE = false;
+		@Comment(value = { "Default: false" })
 		public static boolean DISABLE_ANIMATIONS = false;
+		@Comment(value = { "Default: false -> Double-tap to switch to the secondary group" })
 		public static boolean SNEAK_TO_SWITCH_GROUP = false;
+		@Comment(value = { "Default: false" })
 		public static boolean INVERT_REPLACE_LOCK = false;
+		@Comment(value = { "Default: true", "'true' is highly recommended" })
 		public static boolean SHOW_ERROR_LOG_TO_CHAT = true;
 	}
 
