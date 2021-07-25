@@ -51,6 +51,7 @@ public class RotationHelper {
 	private static final HashMap<ItemState, ItemState> ITEM_CHAIN_SECONDARY = new HashMap<>();
 
 	private static final String[] DEFAULT_ITEM_GROUP_STRLIST_PRIMARY = {
+		"//■ LotTweaks BlockGroups (PRIMARY)",
 		"//VANILLA BLOCKS",
 		"//STONE",
 		toMetaVariationsStr("minecraft:stone", 7),
@@ -128,6 +129,7 @@ public class RotationHelper {
 	};
 
 	private static final String[] DEFAULT_ITEM_GROUP_STRLIST_SECONDARY = {
+		"//■ LotTweaks BlockGroups (SECONDARY)",
 		"//WHITE",
 		toSameColorsStr(0),
 		"//ORANGE",
