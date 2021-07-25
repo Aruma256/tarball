@@ -36,9 +36,9 @@ public class RotateKey extends ItemSelectKeyBase {
 
 	private Group getGroup() {
 		if (LotTweaks.CONFIG.SNEAK_TO_SWITCH_GROUP) {
-			return (!Minecraft.getMinecraft().player.isSneaking()) ? Group.MAIN : Group.SUB;
+			return (!Minecraft.getMinecraft().player.isSneaking()) ? Group.PRIMARY : Group.SECONDARY;
 		} else {
-			return this.phase==0 ? Group.MAIN : Group.SUB;
+			return this.phase==0 ? Group.PRIMARY : Group.SECONDARY;
 		}
 	}
 

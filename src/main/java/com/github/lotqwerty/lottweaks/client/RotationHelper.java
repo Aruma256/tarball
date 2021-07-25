@@ -168,8 +168,8 @@ public class RotationHelper {
 	public static final List<String> LOG_GROUP_CONFIG = new ArrayList<>();
 
 	public enum Group {
-		MAIN,
-		SUB,
+		PRIMARY,
+		SECONDARY,
 	}
 
 	private static void warnGroupConfigErrors(String msg, int lineCount, Group group) {
@@ -201,15 +201,15 @@ public class RotationHelper {
 	}
 
 	private static HashMap<ItemState, ItemState> getItemChain(Group group) {
-		return (group == Group.MAIN) ? ITEM_CHAIN_MAIN : ITEM_CHAIN_SUB;
+		return (group == Group.PRIMARY) ? ITEM_CHAIN_MAIN : ITEM_CHAIN_SUB;
 	}
 
 	private static List<String> getItemGroupStrList(Group group) {
-		return (group == Group.MAIN) ? ITEM_GROUPS_STRLIST_MAIN : ITEM_GROUPS_STRLIST_SUB;
+		return (group == Group.PRIMARY) ? ITEM_GROUPS_STRLIST_MAIN : ITEM_GROUPS_STRLIST_SUB;
 	}
 
 	private static String getFileName(Group group) {
-		return (group == Group.MAIN) ? ITEMGROUP_CONFFILE_MAIN : ITEMGROUP_CONFFILE_SUB;
+		return (group == Group.PRIMARY) ? ITEMGROUP_CONFFILE_MAIN : ITEMGROUP_CONFFILE_SUB;
 	}
 
 	public static boolean canRotate(ItemStack itemStack, Group group) {
@@ -389,7 +389,7 @@ public class RotationHelper {
 
 	private static void writeToFile(Group group) {
 		LotTweaks.LOGGER.debug("Write config to file.");
-		String filename = (group == Group.MAIN ? ITEMGROUP_CONFFILE_MAIN : ITEMGROUP_CONFFILE_SUB);
+		String filename = (group == Group.PRIMARY ? ITEMGROUP_CONFFILE_MAIN : ITEMGROUP_CONFFILE_SUB);
 		File file = new File(new File("config"), filename);
 		try {
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
