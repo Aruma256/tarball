@@ -32,7 +32,7 @@ public class LotTweaks {
 	public static final String VERSION = "2.2.2a";
 	public static Logger LOGGER;
 
-	private static final String HAS_BEEN_MOVED = String.format("'BLOCK_GROUPS' config has been moved to '%s'", RotationHelper.ITEMGROUP_CONFFILE_MAIN);
+	private static final String HAS_BEEN_MOVED = String.format("'BLOCK_GROUPS' config has been moved to '%s'", RotationHelper.ITEMGROUP_CONFFILE_PRIMARY);
 
 	@Config(modid = MODID, type = Type.INSTANCE, name = NAME)
 	public static class CONFIG {
@@ -69,7 +69,7 @@ public class LotTweaks {
 	public void init(FMLPostInitializationEvent event) {
 		if (event.getSide() == Side.CLIENT) {
 			if (CONFIG.BLOCK_GROUPS.length > 0 && !CONFIG.BLOCK_GROUPS[0].equals(HAS_BEEN_MOVED)) {
-				RotationHelper.ITEM_GROUPS_STRLIST_MAIN = Arrays.asList(CONFIG.BLOCK_GROUPS);
+				RotationHelper.ITEM_GROUPS_STRLIST_PRIMARY = Arrays.asList(CONFIG.BLOCK_GROUPS);
 				RotationHelper.writeAllToFile();
 			}
 			RotationHelper.loadAllFromFile();

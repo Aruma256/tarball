@@ -24,8 +24,8 @@ import net.minecraft.item.ItemStack;
 
 public class RotationHelper {
 
-	public static final String ITEMGROUP_CONFFILE_MAIN = "LotTweaks-BlockGroups.txt";
-	private static final String ITEMGROUP_CONFFILE_SUB = "LotTweaks-BlockGroups2.txt";
+	public static final String ITEMGROUP_CONFFILE_PRIMARY = "LotTweaks-BlockGroups.txt";
+	private static final String ITEMGROUP_CONFFILE_SECONDARY = "LotTweaks-BlockGroups2.txt";
 
 	private static class ItemState {
 		private Item item;
@@ -47,10 +47,10 @@ public class RotationHelper {
 		}
 	}
 
-	private static final HashMap<ItemState, ItemState> ITEM_CHAIN_MAIN = new HashMap<>();
-	private static final HashMap<ItemState, ItemState> ITEM_CHAIN_SUB = new HashMap<>();
+	private static final HashMap<ItemState, ItemState> ITEM_CHAIN_PRIMARY = new HashMap<>();
+	private static final HashMap<ItemState, ItemState> ITEM_CHAIN_SECONDARY = new HashMap<>();
 
-	private static final String[] DEFAULT_ITEM_GROUP_STRLIST_MAIN = {
+	private static final String[] DEFAULT_ITEM_GROUP_STRLIST_PRIMARY = {
 		"//VANILLA BLOCKS",
 		"//STONE",
 		toMetaVariationsStr("minecraft:stone", 7),
@@ -127,7 +127,7 @@ public class RotationHelper {
 		"minecraft:wooden_axe,minecraft:compass,minecraft:clock",
 	};
 
-	private static final String[] DEFAULT_ITEM_GROUP_STRLIST_SUB = {
+	private static final String[] DEFAULT_ITEM_GROUP_STRLIST_SECONDARY = {
 		"//WHITE",
 		toSameColorsStr(0),
 		"//ORANGE",
@@ -162,8 +162,8 @@ public class RotationHelper {
 		toSameColorsStr(15),
 	};
 
-	public static List<String> ITEM_GROUPS_STRLIST_MAIN = new ArrayList<>(Arrays.asList(DEFAULT_ITEM_GROUP_STRLIST_MAIN));
-	private static final List<String> ITEM_GROUPS_STRLIST_SUB = new ArrayList<>(Arrays.asList(DEFAULT_ITEM_GROUP_STRLIST_SUB));
+	public static List<String> ITEM_GROUPS_STRLIST_PRIMARY = new ArrayList<>(Arrays.asList(DEFAULT_ITEM_GROUP_STRLIST_PRIMARY));
+	private static final List<String> ITEM_GROUPS_STRLIST_SECONDARY = new ArrayList<>(Arrays.asList(DEFAULT_ITEM_GROUP_STRLIST_SECONDARY));
 
 	public static final List<String> LOG_GROUP_CONFIG = new ArrayList<>();
 
@@ -201,15 +201,15 @@ public class RotationHelper {
 	}
 
 	private static HashMap<ItemState, ItemState> getItemChain(Group group) {
-		return (group == Group.PRIMARY) ? ITEM_CHAIN_MAIN : ITEM_CHAIN_SUB;
+		return (group == Group.PRIMARY) ? ITEM_CHAIN_PRIMARY : ITEM_CHAIN_SECONDARY;
 	}
 
 	private static List<String> getItemGroupStrList(Group group) {
-		return (group == Group.PRIMARY) ? ITEM_GROUPS_STRLIST_MAIN : ITEM_GROUPS_STRLIST_SUB;
+		return (group == Group.PRIMARY) ? ITEM_GROUPS_STRLIST_PRIMARY : ITEM_GROUPS_STRLIST_SECONDARY;
 	}
 
 	private static String getFileName(Group group) {
-		return (group == Group.PRIMARY) ? ITEMGROUP_CONFFILE_MAIN : ITEMGROUP_CONFFILE_SUB;
+		return (group == Group.PRIMARY) ? ITEMGROUP_CONFFILE_PRIMARY : ITEMGROUP_CONFFILE_SECONDARY;
 	}
 
 	public static boolean canRotate(ItemStack itemStack, Group group) {
@@ -389,7 +389,7 @@ public class RotationHelper {
 
 	private static void writeToFile(Group group) {
 		LotTweaks.LOGGER.debug("Write config to file.");
-		String filename = (group == Group.PRIMARY ? ITEMGROUP_CONFFILE_MAIN : ITEMGROUP_CONFFILE_SUB);
+		String filename = (group == Group.PRIMARY ? ITEMGROUP_CONFFILE_PRIMARY : ITEMGROUP_CONFFILE_SECONDARY);
 		File file = new File(new File("config"), filename);
 		try {
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));

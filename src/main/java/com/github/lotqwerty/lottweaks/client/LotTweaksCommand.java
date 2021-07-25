@@ -42,9 +42,9 @@ public class LotTweaksCommand extends CommandBase implements IClientCommand {
 		}
 		if (args[0].equals("add")) {
 			if (args.length == 2) {
-				if (args[1].equals("1") || args[1].equals("main")) {
+				if (args[1].equals("1") || args[1].equals("main") || args[1].equals("primary")) {
 					executeAdd(Group.PRIMARY);
-				} else if (args[1].equals("2") || args[1].equals("sub")) {
+				} else if (args[1].equals("2") || args[1].equals("sub") || args[1].equals("secondary")) {
 					executeAdd(Group.SECONDARY);
 				} else {
 					throw new WrongUsageException(getUsage(sender), new Object[0]);
