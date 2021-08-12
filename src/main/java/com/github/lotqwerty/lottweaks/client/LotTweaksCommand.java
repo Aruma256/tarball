@@ -15,6 +15,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.Util;
 import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -32,7 +33,7 @@ public class LotTweaksCommand {
 	private static final String COMMAND_USAGE = String.format("/%s <arg : 'add' or 'reload'>", COMMAND_NAME);
 
 	private static void displayMessage(ITextComponent textComponent) {
-		Minecraft.getInstance().ingameGUI.sendChatMessage(ChatType.SYSTEM, textComponent, null);
+		Minecraft.getInstance().ingameGUI.sendChatMessage(ChatType.SYSTEM, textComponent, Util.DUMMY_UUID);
 	}
 
 	@SubscribeEvent
@@ -55,15 +56,15 @@ public class LotTweaksCommand {
 			}
 			if (args[0].equals("add")) {
 				if (args.length == 2) {
-					if (args[1].equals("1") || args[1].equals("main")) {
-						executeAdd(Group.MAIN);
-					} else if (args[1].equals("2") || args[1].equals("sub")) {
-						executeAdd(Group.SUB);
+					if (args[1].equals("1") || args[1].equals("main") || args[1].equals("primary")) {
+						executeAdd(Group.PRIMARY);
+					} else if (args[1].equals("2") || args[1].equals("sub") || args[1].equals("secondary")) {
+						executeAdd(Group.SECONDARY);
 					} else {
 						throw new CommandException(new StringTextComponent(TextFormatting.RED + COMMAND_USAGE));
 					}
 				} else {
-					executeAdd(Group.MAIN);
+					executeAdd(Group.PRIMARY);
 				}
 			} else if (args[0].equals("reload")) {
 				executeReload();
@@ -118,6 +119,7 @@ public class LotTweaksCommand {
 		} catch (CommandException e) {
 			displayMessage(new StringTextComponent(TextFormatting.RED + e.getMessage()));
 		}
+		LotTweaksClient.showErrorLogToChat();
 	}
 
 }

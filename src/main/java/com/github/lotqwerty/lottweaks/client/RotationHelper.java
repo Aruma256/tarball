@@ -24,12 +24,13 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public class RotationHelper {
 
-	public static final String ITEMGROUP_CONFFILE_MAIN = "LotTweaks-BlockGroups.txt";
-	private static final String ITEMGROUP_CONFFILE_SUB = "LotTweaks-BlockGroups2.txt";
+	public static final String ITEMGROUP_CONFFILE_PRIMARY = "LotTweaks-BlockGroups.txt";
+	private static final String ITEMGROUP_CONFFILE_SECONDARY = "LotTweaks-BlockGroups2.txt";
 
-	private static final HashMap<Item, Item> ITEM_CHAIN_MAIN = new HashMap<>();
-	private static final HashMap<Item, Item> ITEM_CHAIN_SUB = new HashMap<>();
-	public static final String[] DEFAULT_ITEM_GROUP_STRLIST_MAIN = {
+	private static final HashMap<Item, Item> ITEM_CHAIN_PRIMARY = new HashMap<>();
+	private static final HashMap<Item, Item> ITEM_CHAIN_SECONDARY = new HashMap<>();
+	private static final String[] DEFAULT_ITEM_GROUP_STRLIST_PRIMARY = {
+		"//■ LotTweaks BlockGroups (PRIMARY)",
 		"//VANILLA BLOCKS",
 		"//STONE",
 		"minecraft:stone,minecraft:granite,minecraft:polished_granite,minecraft:diorite,minecraft:polished_diorite,minecraft:andesite,minecraft:polished_andesite",
@@ -128,7 +129,8 @@ public class RotationHelper {
 		"minecraft:wooden_axe,minecraft:compass,minecraft:clock",
 	};
 
-	private static final String[] DEFAULT_ITEM_GROUP_STRLIST_SUB = {
+	private static final String[] DEFAULT_ITEM_GROUP_STRLIST_SECONDARY = {
+		"//■ LotTweaks BlockGroups (SECONDARY)",
 		"//WHITE",
 		toSameColorsStr("white"),
 		"//ORANGE",
@@ -163,12 +165,20 @@ public class RotationHelper {
 		toSameColorsStr("black"),
 	};
 
-	public static List<String> ITEM_GROUPS_STRLIST_MAIN = new ArrayList<>(Arrays.asList(DEFAULT_ITEM_GROUP_STRLIST_MAIN));
-	private static final List<String> ITEM_GROUPS_STRLIST_SUB = new ArrayList<>(Arrays.asList(DEFAULT_ITEM_GROUP_STRLIST_SUB));
+	public static List<String> ITEM_GROUPS_STRLIST_PRIMARY = new ArrayList<>(Arrays.asList(DEFAULT_ITEM_GROUP_STRLIST_PRIMARY));
+	private static final List<String> ITEM_GROUPS_STRLIST_SECONDARY = new ArrayList<>(Arrays.asList(DEFAULT_ITEM_GROUP_STRLIST_SECONDARY));
+
+	public static final List<String> LOG_GROUP_CONFIG = new ArrayList<>();
 
 	public enum Group {
-		MAIN,
-		SUB,
+		PRIMARY,
+		SECONDARY,
+	}
+
+	private static void warnGroupConfigErrors(String msg, int lineCount, Group group) {
+		String fullMsg =  String.format("%s (Line %d of %s group)", msg, lineCount, group.name());
+		LOG_GROUP_CONFIG.add(fullMsg);
+		LotTweaks.LOGGER.warn(fullMsg);
 	}
 
 	private static String toColorVariationsStr(String name) {
@@ -186,15 +196,15 @@ public class RotationHelper {
 	}
 
 	private static HashMap<Item, Item> getItemChain(Group group) {
-		return (group == Group.MAIN) ? ITEM_CHAIN_MAIN : ITEM_CHAIN_SUB;
+		return (group == Group.PRIMARY) ? ITEM_CHAIN_PRIMARY : ITEM_CHAIN_SECONDARY;
 	}
 
 	private static List<String> getItemGroupStrList(Group group) {
-		return (group == Group.MAIN) ? ITEM_GROUPS_STRLIST_MAIN : ITEM_GROUPS_STRLIST_SUB;
+		return (group == Group.PRIMARY) ? ITEM_GROUPS_STRLIST_PRIMARY : ITEM_GROUPS_STRLIST_SECONDARY;
 	}
 
 	private static String getFileName(Group group) {
-		return (group == Group.MAIN) ? ITEMGROUP_CONFFILE_MAIN : ITEMGROUP_CONFFILE_SUB;
+		return (group == Group.PRIMARY) ? ITEMGROUP_CONFFILE_PRIMARY : ITEMGROUP_CONFFILE_SECONDARY;
 	}
 
 	public static boolean canRotate(ItemStack itemStack, Group group) {
@@ -240,6 +250,7 @@ public class RotationHelper {
 	}
 
 	public static boolean loadAllItemGroupFromStrArray() {
+		LOG_GROUP_CONFIG.clear();
 		boolean flag = true;
 		for(Group group : Group.values()) {
 			flag &= loadItemGroupFromStrArray(group);
@@ -261,27 +272,23 @@ public class RotationHelper {
 					ResourceLocation resourceLocation = new ResourceLocation(itemStr);
 					Item item = ForgeRegistries.ITEMS.getValue(resourceLocation);
 					if (item == null || item == Items.AIR) {
-						LotTweaks.LOGGER.warn(String.format("'%s' is not supported", itemStr));
-						throw new ItemGroupRegistrationException();
+						warnGroupConfigErrors(String.format("'%s' is not supported.", itemStr), lineCount, group);
+						continue;
+					}
+					if (items.contains(item) || newItemChain.containsKey(item)) {
+						warnGroupConfigErrors(String.format("'%s' is duplicated.", itemStr), lineCount, group);
+						continue;
 					}
 					items.add(item);
 				}
 				if (items.size() <= 1) {
-					LotTweaks.LOGGER.warn(String.format("group size is %d", items.size()));
+					warnGroupConfigErrors(String.format("The group size is %d.", items.size()), lineCount, group);
 					continue;
 				}
 				for (int i=0;i<items.size();i++) {
-					if (newItemChain.containsKey(items.get(i))) {
-						LotTweaks.LOGGER.error("GROUPS value is invalid.");
-						LotTweaks.LOGGER.error(String.format("(GROUPS line %d)", lineCount));
-						throw new ItemGroupRegistrationException();
-					}
 					newItemChain.put(items.get(i), items.get((i+1)%items.size()));
 				}
-				LotTweaks.LOGGER.debug(String.format("GROUPS line %d: OK", lineCount));
 			}
-		} catch (ItemGroupRegistrationException e) {
-			return false;
 		} catch (Exception e) {
 			LotTweaks.LOGGER.error(e);
 			return false;
@@ -352,7 +359,7 @@ public class RotationHelper {
 
 	private static void writeToFile(Group group) {
 		LotTweaks.LOGGER.debug("Write config to file.");
-		String filename = (group == Group.MAIN ? ITEMGROUP_CONFFILE_MAIN : ITEMGROUP_CONFFILE_SUB);
+		String filename = (group == Group.PRIMARY ? ITEMGROUP_CONFFILE_PRIMARY : ITEMGROUP_CONFFILE_SECONDARY);
 		File file = new File(new File("config"), filename);
 		try {
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
@@ -367,10 +374,6 @@ public class RotationHelper {
 			return;
 		}
 		LotTweaks.LOGGER.debug("Finished.");
-	}
-
-	@SuppressWarnings("serial")
-	private static class ItemGroupRegistrationException extends Exception {
 	}
 	
 }

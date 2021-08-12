@@ -1,8 +1,11 @@
 package com.github.lotqwerty.lottweaks.client.keys;
 
 import com.github.lotqwerty.lottweaks.LotTweaks;
+import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
+import com.github.lotqwerty.lottweaks.client.renderer.LTTextRenderer;
 import com.github.lotqwerty.lottweaks.client.renderer.SelectionBoxRenderer;
 import com.github.lotqwerty.lottweaks.network.LTPacketHandler;
+import com.mojang.blaze3d.matrix.MatrixStack;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -69,6 +72,13 @@ public class ReplaceKey extends LTKeyBase {
 		if (event.getPhase() != EventPriority.NORMAL) {
 			return;
 		}
+		if (this.pressTime == 0) {
+			return;
+		}
+		if (!LotTweaksClient.requireServerVersion("2.2.1")) {
+			LTTextRenderer.showServerSideRequiredMessage(new MatrixStack(), "2.2.1");
+			return;
+		}
 		if (this.pressTime==1 || this.pressTime > LotTweaks.CONFIG.REPLACE_INTERVAL.get()) {
 			this.execReplace();
 			if (this.pressTime==1) {
@@ -102,6 +112,8 @@ public class ReplaceKey extends LTKeyBase {
 		}
 		BlockState newBlockState = block.getStateForPlacement(new BlockItemUseContext(mc.player, Hand.MAIN_HAND, itemStack, (BlockRayTraceResult)target));
 		LTPacketHandler.sendReplaceMessage(pos, newBlockState, state);
+		// add to history
+		ExPickKey.addToHistory(state.getBlock().getPickBlock(state, target, mc.world, pos, mc.player));
 	}
 
 }

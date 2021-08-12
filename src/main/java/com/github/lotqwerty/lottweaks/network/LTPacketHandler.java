@@ -1,9 +1,11 @@
 package com.github.lotqwerty.lottweaks.network;
 
 import java.util.function.Supplier;
+import java.nio.charset.StandardCharsets;
 
 import com.github.lotqwerty.lottweaks.AdjustRangeHelper;
 import com.github.lotqwerty.lottweaks.LotTweaks;
+import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -15,13 +17,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 //https://mcforge.readthedocs.io/en/1.16.x/networking/simpleimpl/
 
 public class LTPacketHandler {
 
-	private static final String PROTOCOL_VERSION = "3";
+	private static final String PROTOCOL_VERSION = 'v' + LotTweaks.VERSION;
 	private static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
 		new ResourceLocation(LotTweaks.MODID),
 		() -> PROTOCOL_VERSION,
@@ -41,6 +44,11 @@ public class LTPacketHandler {
 			.decoder(AdjustRangeMessage::new)
 			.consumer(AdjustRangeMessage::handle)
 			.add();
+		INSTANCE.messageBuilder(HelloMessage.class, id++)
+			.encoder(HelloMessage::toBytes)
+			.decoder(HelloMessage::new)
+			.consumer(HelloMessage::handle)
+			.add();
 	}
 
 	public static void sendReplaceMessage(BlockPos pos, BlockState state, BlockState checkState) {
@@ -49,6 +57,10 @@ public class LTPacketHandler {
 
 	public static void sendReachRangeMessage(double dist) {
 		INSTANCE.sendToServer(new AdjustRangeMessage(dist));
+	}
+
+	public static void sendHelloMessage(ServerPlayerEntity player) {
+		INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new HelloMessage(LotTweaks.VERSION));
 	}
 
 	//Replace
@@ -141,4 +153,31 @@ public class LTPacketHandler {
 			return;
 		}
 	}
+
+	// Hello
+
+	public static class HelloMessage {
+
+		private String version;
+
+		public HelloMessage(String version) {
+			this.version = version;
+		}
+
+		public HelloMessage(PacketBuffer buf) {
+			this.version = buf.readCharSequence(buf.readInt(), StandardCharsets.UTF_8).toString();
+		}
+
+		public void toBytes(PacketBuffer buf) {
+			buf.writeInt(version.length());
+			buf.writeCharSequence(version, StandardCharsets.UTF_8);
+		}
+
+		public void handle(Supplier<NetworkEvent.Context> ctx) {
+			ctx.get().setPacketHandled(true);
+			LotTweaksClient.setServerVersion(this.version);
+		}
+
+	}
+
 }

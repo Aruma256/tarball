@@ -16,13 +16,14 @@ import org.apache.logging.log4j.Logger;
 import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
 import com.github.lotqwerty.lottweaks.client.RotationHelper;
 import com.github.lotqwerty.lottweaks.network.LTPacketHandler;
+import com.github.lotqwerty.lottweaks.network.ServerConnectionListener;
 
 @Mod(LotTweaks.MODID)
 public class LotTweaks {
 
 	public static final String MODID = "lottweaks";
 	public static final String NAME = "LotTweaks";
-	public static final String VERSION = "2.1.0";
+	public static final String VERSION = "2.2.2c";
 	public static Logger LOGGER = LogManager.getLogger();
 
 	public static class CONFIG {
@@ -35,6 +36,7 @@ public class LotTweaks {
 		public static ForgeConfigSpec.BooleanValue DISABLE_ANIMATIONS;// = false;
 		public static ForgeConfigSpec.BooleanValue SNEAK_TO_SWITCH_GROUP;// = false;
 		public static ForgeConfigSpec.BooleanValue INVERT_REPLACE_LOCK;// = false;
+		public static ForgeConfigSpec.BooleanValue SHOW_BLOCKCONFIG_ERROR_LOG_TO_CHAT;// = true;
 
 		static {
 			MAX_RANGE = COMMON_BUILDER
@@ -42,13 +44,21 @@ public class LotTweaks {
 			REPLACE_INTERVAL = COMMON_BUILDER
 					.defineInRange("client.REPLACE_INTERVAL", 1, 1, 256);
 			REQUIRE_OP_TO_USE_REPLACE = COMMON_BUILDER
+					.comment("Default: false")
 					.define("server.REQUIRE_OP_TO_USE_REPLACE", false);
 			DISABLE_ANIMATIONS = COMMON_BUILDER
+					.comment("Default: false")
 					.define("client.DISABLE_ANIMATIONS", false);
 			SNEAK_TO_SWITCH_GROUP = COMMON_BUILDER
+					.comment("Default: false -> Double-tap to switch to the secondary group")
 					.define("client.SNEAK_TO_SWITCH_GROUP", false);
 			INVERT_REPLACE_LOCK = COMMON_BUILDER
+					.comment("Default: false")
 					.define("client.INVERT_REPLACE_LOCK", false);
+			SHOW_BLOCKCONFIG_ERROR_LOG_TO_CHAT = COMMON_BUILDER
+					.comment("Default: true")
+					.comment("'true' is highly recommended")
+					.define("client.SHOW_BLOCKCONFIG_ERROR_LOG_TO_CHAT", true);
 			//
 			COMMON_SPEC = COMMON_BUILDER.build();
 		}
@@ -71,6 +81,7 @@ public class LotTweaks {
 	private void commonInit(FMLCommonSetupEvent event) {
 		LTPacketHandler.init();
 		MinecraftForge.EVENT_BUS.register(new AdjustRangeHelper());
+		MinecraftForge.EVENT_BUS.register(new ServerConnectionListener());
 	}
 
 }

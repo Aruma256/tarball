@@ -21,7 +21,7 @@ public class LTKeyBase extends KeyBinding {
 
 	@SubscribeEvent
 	public void onKeyInput(final KeyInputEvent event) {
-		//キー押下をハンドル済みにする
+		//Mark this key as handled.
 	}
 
 	@SubscribeEvent

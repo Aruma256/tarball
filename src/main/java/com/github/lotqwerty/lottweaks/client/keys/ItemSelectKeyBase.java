@@ -17,7 +17,7 @@ public class ItemSelectKeyBase extends LTKeyBase{
 		super(description, keyCode, category);
 	}
 
-	protected void addToCandidates(ItemStack itemStack) {
+	protected void addToCandidatesWithDedup(ItemStack itemStack) {
 		for (ItemStack c: candidates) {
 			if (ItemStack.areItemStacksEqual(c, itemStack)) {
 				return;
