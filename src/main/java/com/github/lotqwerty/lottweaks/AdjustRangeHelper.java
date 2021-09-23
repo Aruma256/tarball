@@ -2,9 +2,9 @@ package com.github.lotqwerty.lottweaks;
 
 import java.util.UUID;
 
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.event.TickEvent.PlayerTickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
@@ -28,23 +28,23 @@ public class AdjustRangeHelper {
 	}
 
 	//Just remove all of them!
-	public static void removeOldRangeModifiers(PlayerEntity player) {
-		ModifiableAttributeInstance instance = player.getAttribute(ForgeMod.REACH_DISTANCE.get());
-		for (AttributeModifier modifier: instance.getModifierListCopy()) {
+	public static void removeOldRangeModifiers(Player player) {
+		AttributeInstance instance = player.getAttribute(ForgeMod.REACH_DISTANCE.get());
+		for (AttributeModifier modifier: instance.getModifiers()) {
 			if (modifier.getName().equals(LotTweaks.MODID)) {
 				instance.removeModifier(modifier);
 			}
 		}
 	}
 	
-	private static void clearRangeModifier(PlayerEntity player) {
+	private static void clearRangeModifier(Player player) {
 		player.getAttribute(ForgeMod.REACH_DISTANCE.get()).removeModifier(_UUID);
 	}
 
-	public static void changeRangeModifier(PlayerEntity player, double dist) {
+	public static void changeRangeModifier(Player player, double dist) {
 		clearRangeModifier(player);
-		ModifiableAttributeInstance instance = player.getAttribute(ForgeMod.REACH_DISTANCE.get());
-		instance.applyPersistentModifier(new AttributeModifier(_UUID, NAME, dist - instance.getBaseValue() + 0.5, AttributeModifier.Operation.ADDITION));
+		AttributeInstance instance = player.getAttribute(ForgeMod.REACH_DISTANCE.get());
+		instance.addPermanentModifier(new AttributeModifier(_UUID, NAME, dist - instance.getBaseValue() + 0.5, AttributeModifier.Operation.ADDITION));
 	}
 	
 }

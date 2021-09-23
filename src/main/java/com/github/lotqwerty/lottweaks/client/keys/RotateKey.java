@@ -8,7 +8,7 @@ import com.github.lotqwerty.lottweaks.client.RotationHelper.Group;
 import com.github.lotqwerty.lottweaks.client.renderer.LTRenderer;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.InputEvent;
@@ -35,7 +35,7 @@ public class RotateKey extends ItemSelectKeyBase {
 
 	private Group getGroup() {
 		if (LotTweaks.CONFIG.SNEAK_TO_SWITCH_GROUP.get()) {
-			return (!Minecraft.getInstance().player.isSneaking()) ? Group.PRIMARY : Group.SECONDARY;
+			return (!Minecraft.getInstance().player.isShiftKeyDown()) ? Group.PRIMARY : Group.SECONDARY;
 		} else {
 			return this.phase==0 ? Group.PRIMARY : Group.SECONDARY;
 		}
@@ -50,7 +50,7 @@ public class RotateKey extends ItemSelectKeyBase {
 		if (!mc.player.isCreative()) {
 			return;
 		}
-		ItemStack itemStack = mc.player.inventory.getCurrentItem();
+		ItemStack itemStack = mc.player.inventory.getSelected();
 		if (itemStack.isEmpty()) {
 			return;
 		}
@@ -109,8 +109,8 @@ public class RotateKey extends ItemSelectKeyBase {
 		if (candidates.isEmpty()) {
 			return;
 		}
-		int x = event.getWindow().getScaledWidth() / 2 - 90 + Minecraft.getInstance().player.inventory.currentItem * 20 + 2;
-		int y = event.getWindow().getScaledHeight() - 16 - 3;
+		int x = event.getWindow().getGuiScaledWidth() / 2 - 90 + Minecraft.getInstance().player.inventory.selected * 20 + 2;
+		int y = event.getWindow().getGuiScaledHeight() - 16 - 3;
 		y -= 50 + (20 + candidates.size());
 		LTRenderer.renderItemStacks(candidates, x, y, pressTime, event.getPartialTicks(), lastRotateTime, rotateDirection);
 	}

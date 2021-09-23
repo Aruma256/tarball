@@ -4,8 +4,8 @@ import java.util.Deque;
 import java.util.LinkedList;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.InteractionHand;
 
 public class ItemSelectKeyBase extends LTKeyBase{
 
@@ -19,7 +19,7 @@ public class ItemSelectKeyBase extends LTKeyBase{
 
 	protected void addToCandidatesWithDedup(ItemStack itemStack) {
 		for (ItemStack c: candidates) {
-			if (ItemStack.areItemStacksEqual(c, itemStack)) {
+			if (ItemStack.matches(c, itemStack)) {
 				return;
 			}
 		}
@@ -40,8 +40,8 @@ public class ItemSelectKeyBase extends LTKeyBase{
 
 	protected void updateCurrentItemStack(ItemStack itemStack) {
 		Minecraft mc = Minecraft.getInstance();
-		mc.player.inventory.setInventorySlotContents(mc.player.inventory.currentItem, itemStack);
-        mc.playerController.sendSlotPacket(mc.player.getHeldItem(Hand.MAIN_HAND), 36 + mc.player.inventory.currentItem);
+		mc.player.inventory.setItem(mc.player.inventory.selected, itemStack);
+        mc.gameMode.handleCreativeModeItemAdd(mc.player.getItemInHand(InteractionHand.MAIN_HAND), 36 + mc.player.inventory.selected);
 	}
 
 	@Override

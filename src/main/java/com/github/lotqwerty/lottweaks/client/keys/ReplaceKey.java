@@ -5,19 +5,19 @@ import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
 import com.github.lotqwerty.lottweaks.client.renderer.LTTextRenderer;
 import com.github.lotqwerty.lottweaks.client.renderer.SelectionBoxRenderer;
 import com.github.lotqwerty.lottweaks.network.LTPacketHandler;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.DrawHighlightEvent;
@@ -37,12 +37,12 @@ public class ReplaceKey extends LTKeyBase {
 	@Override
 	protected void onKeyPressStart() {
 		Minecraft mc = Minecraft.getInstance();
-		if (mc.player.isSneaking() ^ LotTweaks.CONFIG.INVERT_REPLACE_LOCK.get()) {
-			RayTraceResult target = mc.objectMouseOver;
-			if (target != null && target.getType() == RayTraceResult.Type.BLOCK){
-				lockedBlockState = mc.world.getBlockState(((BlockRayTraceResult)target).getPos());
+		if (mc.player.isShiftKeyDown() ^ LotTweaks.CONFIG.INVERT_REPLACE_LOCK.get()) {
+			HitResult target = mc.hitResult;
+			if (target != null && target.getType() == HitResult.Type.BLOCK){
+				lockedBlockState = mc.level.getBlockState(((BlockHitResult)target).getBlockPos());
 			} else {
-				lockedBlockState = Blocks.AIR.getDefaultState();
+				lockedBlockState = Blocks.AIR.defaultBlockState();
 			}
 		} else {
 			lockedBlockState = null;
@@ -62,7 +62,7 @@ public class ReplaceKey extends LTKeyBase {
 		if (lockedBlockState == null) {
 			return;
 		}
-		if (SelectionBoxRenderer.render(event.getInfo(), event.getMatrix(), event.getBuffers().getBuffer(RenderType.getLines()), event.getTarget().getPos(), event.getPartialTicks(), 1f, 0f, 0f)) {
+		if (SelectionBoxRenderer.render(event.getInfo(), event.getMatrix(), event.getBuffers().getBuffer(RenderType.lines()), event.getTarget().getBlockPos(), event.getPartialTicks(), 1f, 0f, 0f)) {
 			event.setCanceled(true);
 		}
 	}
@@ -76,7 +76,7 @@ public class ReplaceKey extends LTKeyBase {
 			return;
 		}
 		if (!LotTweaksClient.requireServerVersion("2.2.1")) {
-			LTTextRenderer.showServerSideRequiredMessage(new MatrixStack(), "2.2.1");
+			LTTextRenderer.showServerSideRequiredMessage(new PoseStack(), "2.2.1");
 			return;
 		}
 		if (this.pressTime==1 || this.pressTime > LotTweaks.CONFIG.REPLACE_INTERVAL.get()) {
@@ -92,28 +92,28 @@ public class ReplaceKey extends LTKeyBase {
 		if (!mc.player.isCreative()) {
 			return;
 		}
-		RayTraceResult target = mc.objectMouseOver;
-		if (target == null || target.getType() != RayTraceResult.Type.BLOCK){
+		HitResult target = mc.hitResult;
+		if (target == null || target.getType() != HitResult.Type.BLOCK){
         	return;
         }
-		BlockPos pos = ((BlockRayTraceResult)target).getPos();
-        BlockState state = mc.world.getBlockState(pos);
-        if (state.getBlock().isAir(state, mc.world, pos))
+		BlockPos pos = ((BlockHitResult)target).getBlockPos();
+        BlockState state = mc.level.getBlockState(pos);
+        if (state.getBlock().isAir(state, mc.level, pos))
         {
             return;
         }
         if (lockedBlockState != null && lockedBlockState != state) {
             return;
         }
-		ItemStack itemStack = mc.player.inventory.getCurrentItem();
-		Block block = Block.getBlockFromItem(itemStack.getItem());
+		ItemStack itemStack = mc.player.inventory.getSelected();
+		Block block = Block.byItem(itemStack.getItem());
 		if (itemStack.isEmpty() || block == Blocks.AIR) {
 			return;
 		}
-		BlockState newBlockState = block.getStateForPlacement(new BlockItemUseContext(mc.player, Hand.MAIN_HAND, itemStack, (BlockRayTraceResult)target));
+		BlockState newBlockState = block.getStateForPlacement(new BlockPlaceContext(mc.player, InteractionHand.MAIN_HAND, itemStack, (BlockHitResult)target));
 		LTPacketHandler.sendReplaceMessage(pos, newBlockState, state);
 		// add to history
-		ExPickKey.addToHistory(state.getBlock().getPickBlock(state, target, mc.world, pos, mc.player));
+		ExPickKey.addToHistory(state.getBlock().getPickBlock(state, target, mc.level, pos, mc.player));
 	}
 
 }

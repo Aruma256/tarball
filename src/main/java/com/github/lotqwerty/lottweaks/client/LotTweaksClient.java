@@ -9,11 +9,11 @@ import com.github.lotqwerty.lottweaks.client.keys.ReplaceKey;
 import com.github.lotqwerty.lottweaks.client.keys.RotateKey;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.util.Util;
-import net.minecraft.util.text.ChatType;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.Util;
+import net.minecraft.network.chat.ChatType;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
@@ -27,7 +27,7 @@ public class LotTweaksClient
 	private static String serverVersion = "0";
 
 	public static void init() {
-    	KeyBinding key;
+    	KeyMapping key;
 		key = new ExPickKey(GLFW.GLFW_KEY_V, LotTweaks.NAME);
 		MinecraftForge.EVENT_BUS.register(key);
 		ClientRegistry.registerKeyBinding(key);
@@ -66,7 +66,7 @@ public class LotTweaksClient
 		if (LotTweaks.CONFIG.SHOW_BLOCKCONFIG_ERROR_LOG_TO_CHAT.get()) {
 			Minecraft mc = Minecraft.getInstance();
 			for (String line : RotationHelper.LOG_GROUP_CONFIG) {
-				mc.ingameGUI.sendChatMessage(ChatType.SYSTEM, new StringTextComponent(String.format("LotTweaks: %s%s", TextFormatting.RED, line)), Util.DUMMY_UUID);
+				mc.gui.handleChat(ChatType.SYSTEM, new TextComponent(String.format("LotTweaks: %s%s", ChatFormatting.RED, line)), Util.NIL_UUID);
 			}
 		}
 	}

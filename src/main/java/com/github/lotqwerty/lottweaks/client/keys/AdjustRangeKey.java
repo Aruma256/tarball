@@ -6,7 +6,7 @@ import com.github.lotqwerty.lottweaks.client.renderer.LTTextRenderer;
 import com.github.lotqwerty.lottweaks.network.LTPacketHandler;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -37,12 +37,12 @@ public class AdjustRangeKey extends LTKeyBase {
 		}
 		// Update dist
 		Minecraft mc = Minecraft.getInstance();
-		RayTraceResult rayTraceResult = mc.getRenderViewEntity().pick(255.0, mc.getRenderPartialTicks(), false);
+		HitResult rayTraceResult = mc.getCameraEntity().pick(255.0, mc.getFrameTime(), false);
 		double dist;
-		if (rayTraceResult == null || rayTraceResult.getType() == RayTraceResult.Type.MISS) {
+		if (rayTraceResult == null || rayTraceResult.getType() == HitResult.Type.MISS) {
 			dist = LotTweaks.CONFIG.MAX_RANGE.get();
 		} else {
-			dist = Math.min(LotTweaks.CONFIG.MAX_RANGE.get(), mc.player.getEyePosition(event.getPartialTicks()).distanceTo(rayTraceResult.getHitVec()));
+			dist = Math.min(LotTweaks.CONFIG.MAX_RANGE.get(), mc.player.getEyePosition(event.getPartialTicks()).distanceTo(rayTraceResult.getLocation()));
 		}
 		LTPacketHandler.sendReachRangeMessage(dist);
 		// Render

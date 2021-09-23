@@ -1,6 +1,6 @@
 package com.github.lotqwerty.lottweaks.client.keys;
 
-import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.client.KeyMapping;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
@@ -9,7 +9,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 @OnlyIn(Dist.CLIENT)
-public class LTKeyBase extends KeyBinding {
+public class LTKeyBase extends KeyMapping {
 
 	protected int pressTime = 0;
 	protected int doubleTapTick = 0;
@@ -27,7 +27,7 @@ public class LTKeyBase extends KeyBinding {
 	@SubscribeEvent
 	public void onClientTick(final TickEvent.ClientTickEvent event) {
 		if (event.phase == TickEvent.Phase.END && event.getPhase() == EventPriority.NORMAL) {
-			if (this.isKeyDown()) {
+			if (this.isDown()) {
 				this.pressTime = Math.min(12345, this.pressTime + 1);
 				if (this.pressTime == 1) {
 					this.onKeyPressStart();

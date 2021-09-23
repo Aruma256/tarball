@@ -7,14 +7,14 @@ import com.github.lotqwerty.lottweaks.AdjustRangeHelper;
 import com.github.lotqwerty.lottweaks.LotTweaks;
 import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -59,7 +59,7 @@ public class LTPacketHandler {
 		INSTANCE.sendToServer(new AdjustRangeMessage(dist));
 	}
 
-	public static void sendHelloMessage(ServerPlayerEntity player) {
+	public static void sendHelloMessage(ServerPlayer player) {
 		INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new HelloMessage(LotTweaks.VERSION));
 	}
 
@@ -77,43 +77,43 @@ public class LTPacketHandler {
 			this.checkState = checkState;
 		}
 
-		public ReplaceMessage(PacketBuffer buf) {
-			this(buf.readBlockPos(), Block.getStateById(buf.readInt()), Block.getStateById(buf.readInt()));
+		public ReplaceMessage(FriendlyByteBuf buf) {
+			this(buf.readBlockPos(), Block.stateById(buf.readInt()), Block.stateById(buf.readInt()));
 		}
 
-		public void toBytes(PacketBuffer buf) {
+		public void toBytes(FriendlyByteBuf buf) {
 			buf.writeBlockPos(this.pos);
-			buf.writeInt(Block.getStateId(state));
-			buf.writeInt(Block.getStateId(checkState));
+			buf.writeInt(Block.getId(state));
+			buf.writeInt(Block.getId(checkState));
 		}
 
 		public void handle(Supplier<NetworkEvent.Context> ctx) {
 			ctx.get().setPacketHandled(true);
-			final ServerPlayerEntity player = ctx.get().getSender();
+			final ServerPlayer player = ctx.get().getSender();
 			if (!player.isCreative()) {
 				return;
 			}
-			if (player.getServerWorld().isRemote) {
+			if (player.getLevel().isClientSide) {
 				// kore iru ??
 				return;
 			}
-			if (LotTweaks.CONFIG.REQUIRE_OP_TO_USE_REPLACE.get() && player.getServer().getPlayerList().getOppedPlayers().getEntry(player.getGameProfile())==null) {
+			if (LotTweaks.CONFIG.REQUIRE_OP_TO_USE_REPLACE.get() && player.getServer().getPlayerList().getOps().get(player.getGameProfile())==null) {
 				return;
 			}
 			// validation
 			if (state.getBlock() == Blocks.AIR) {
 				return;
 			}
-			double dist = player.getEyePosition(1.0F).distanceTo(new Vector3d(pos.getX(), pos.getY(), pos.getZ()));
+			double dist = player.getEyePosition(1.0F).distanceTo(new Vec3(pos.getX(), pos.getY(), pos.getZ()));
 			if (dist > LotTweaks.CONFIG.MAX_RANGE.get()) {
 				return;
 			}
-			if (player.getServerWorld().getBlockState(pos) != checkState) {
+			if (player.getLevel().getBlockState(pos) != checkState) {
 				return;
 			}
 			//
 			ctx.get().enqueueWork(() -> {
-				player.getServerWorld().setBlockState(pos, state, 2);
+				player.getLevel().setBlock(pos, state, 2);
 			});
 			return;
 		}
@@ -129,17 +129,17 @@ public class LTPacketHandler {
 			this.dist = dist;
 		}
 
-		public AdjustRangeMessage(PacketBuffer buf) {
+		public AdjustRangeMessage(FriendlyByteBuf buf) {
 			this(buf.readDouble());
 		}
 
-		public void toBytes(PacketBuffer buf) {
+		public void toBytes(FriendlyByteBuf buf) {
 			buf.writeDouble(this.dist);
 		}
 
 		public void handle(Supplier<NetworkEvent.Context> ctx) {
 			ctx.get().setPacketHandled(true);
-			final ServerPlayerEntity player = ctx.get().getSender();
+			final ServerPlayer player = ctx.get().getSender();
 			if (!player.isCreative()) {
 				return;
 			}
@@ -164,11 +164,11 @@ public class LTPacketHandler {
 			this.version = version;
 		}
 
-		public HelloMessage(PacketBuffer buf) {
+		public HelloMessage(FriendlyByteBuf buf) {
 			this.version = buf.readCharSequence(buf.readInt(), StandardCharsets.UTF_8).toString();
 		}
 
-		public void toBytes(PacketBuffer buf) {
+		public void toBytes(FriendlyByteBuf buf) {
 			buf.writeInt(version.length());
 			buf.writeCharSequence(version, StandardCharsets.UTF_8);
 		}

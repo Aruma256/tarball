@@ -5,12 +5,12 @@ import java.util.LinkedList;
 
 import com.github.lotqwerty.lottweaks.client.renderer.LTRenderer;
 
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.InputEvent;
@@ -60,16 +60,16 @@ public class ExPickKey extends ItemSelectKeyBase {
 		super.onKeyPressStart();
 		candidates.clear();
 		Minecraft mc = Minecraft.getInstance();
-		RayTraceResult rayTraceResult;
+		HitResult rayTraceResult;
 
 		if (!mc.player.isCreative()) {
-			rayTraceResult = mc.objectMouseOver;
+			rayTraceResult = mc.hitResult;
 			if (rayTraceResult != null) {
-				ForgeHooks.onPickBlock(rayTraceResult, mc.player, mc.world);
+				ForgeHooks.onPickBlock(rayTraceResult, mc.player, mc.level);
 			}
 			return;
 		}
-		if (!mc.player.isSneaking()) {
+		if (!mc.player.isShiftKeyDown()) {
 			normalModePick();
 		} else {
 			historyModePick();
@@ -78,24 +78,24 @@ public class ExPickKey extends ItemSelectKeyBase {
 
 	private void normalModePick() {
 		Minecraft mc = Minecraft.getInstance();
-		RayTraceResult rayTraceResult = mc.getRenderViewEntity().pick(255.0, mc.getRenderPartialTicks(), false);
+		HitResult rayTraceResult = mc.getCameraEntity().pick(255.0, mc.getFrameTime(), false);
 		if (rayTraceResult == null) {
 			return;
 		}
-		boolean succeeded = ForgeHooks.onPickBlock(rayTraceResult, mc.player, mc.world);
+		boolean succeeded = ForgeHooks.onPickBlock(rayTraceResult, mc.player, mc.level);
 		if (!succeeded) {
 			return;
 		}
-		ItemStack itemStack = mc.player.inventory.getCurrentItem();
+		ItemStack itemStack = mc.player.inventory.getSelected();
 		if (itemStack.isEmpty()) {
 			return;
 		}
 		addToCandidatesWithDedup(itemStack);
-		BlockPos pos = ((BlockRayTraceResult)rayTraceResult).getPos();
+		BlockPos pos = ((BlockHitResult)rayTraceResult).getBlockPos();
 		for (BlockPos posDiff : SEARCH_POS) {
 			try {
-				BlockState state = mc.world.getBlockState(pos.add(posDiff));
-				itemStack = state.getBlock().getPickBlock(state, rayTraceResult, mc.world, pos, mc.player);
+				BlockState state = mc.level.getBlockState(pos.offset(posDiff));
+				itemStack = state.getBlock().getPickBlock(state, rayTraceResult, mc.level, pos, mc.player);
 				if (!itemStack.isEmpty()) {
 					addToCandidatesWithDedup(itemStack);
 				}
@@ -107,7 +107,7 @@ public class ExPickKey extends ItemSelectKeyBase {
 	private void historyModePick() {
 		if (!breakHistory.isEmpty()) {
 			candidates.addAll(breakHistory);
-			candidates.addFirst(Minecraft.getInstance().player.inventory.getCurrentItem());
+			candidates.addFirst(Minecraft.getInstance().player.inventory.getSelected());
 			isHistoryMode = true;
 		}
 	}
@@ -160,19 +160,19 @@ public class ExPickKey extends ItemSelectKeyBase {
 			return;
 		}
 		if (!isHistoryMode) {
-			int x = event.getWindow().getScaledWidth() / 2 - 8;
-			int y = event.getWindow().getScaledHeight() / 2 - 8;
+			int x = event.getWindow().getGuiScaledWidth() / 2 - 8;
+			int y = event.getWindow().getGuiScaledHeight() / 2 - 8;
 			LTRenderer.renderItemStacks(candidates, x, y, pressTime, event.getPartialTicks(), lastRotateTime, rotateDirection);
 		} else {
-			int x = event.getWindow().getScaledWidth() / 2 - 90 + Minecraft.getInstance().player.inventory.currentItem * 20 + 2;
-			int y = event.getWindow().getScaledHeight() - 16 - 3;
+			int x = event.getWindow().getGuiScaledWidth() / 2 - 90 + Minecraft.getInstance().player.inventory.selected * 20 + 2;
+			int y = event.getWindow().getGuiScaledHeight() - 16 - 3;
 			LTRenderer.renderItemStacks(candidates, x, y, pressTime, event.getPartialTicks(), lastRotateTime, rotateDirection, LTRenderer.RenderMode.LINE);
 		}
 	}
 
 	@SubscribeEvent
 	public void onBreakBlock(final PlayerInteractEvent.LeftClickBlock event) {
-		if (!event.getWorld().isRemote) {
+		if (!event.getWorld().isClientSide) {
 			return;
 		}
 		if (!event.getPlayer().isCreative()) {
@@ -181,7 +181,7 @@ public class ExPickKey extends ItemSelectKeyBase {
 		//
 		Minecraft mc = Minecraft.getInstance();
 		BlockState blockState = event.getWorld().getBlockState(event.getPos());
-		ItemStack itemStack = blockState.getBlock().getPickBlock(blockState, mc.objectMouseOver, event.getWorld(), event.getPos(), event.getPlayer());
+		ItemStack itemStack = blockState.getBlock().getPickBlock(blockState, mc.hitResult, event.getWorld(), event.getPos(), event.getPlayer());
 		addToHistory(itemStack);
 	}
 
@@ -193,7 +193,7 @@ public class ExPickKey extends ItemSelectKeyBase {
 		tmpHistory.addAll(breakHistory);
 		breakHistory.clear();
 		while(!tmpHistory.isEmpty()) {
-			if (!ItemStack.areItemStacksEqual(tmpHistory.peekFirst(), itemStack)) {
+			if (!ItemStack.matches(tmpHistory.peekFirst(), itemStack)) {
 				breakHistory.add(tmpHistory.pollFirst());
 			} else {
 				tmpHistory.removeFirst();
