@@ -6,18 +6,19 @@ import com.github.lotqwerty.lottweaks.LotTweaks;
 import com.github.lotqwerty.lottweaks.client.RotationHelper;
 import com.github.lotqwerty.lottweaks.client.RotationHelper.Group;
 import com.github.lotqwerty.lottweaks.client.renderer.LTRenderer;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
+import net.minecraftforge.client.gui.ForgeIngameGui;
+import net.minecraftforge.client.gui.IIngameOverlay;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 @OnlyIn(Dist.CLIENT)
-public class RotateKey extends ItemSelectKeyBase {
+public class RotateKey extends ItemSelectKeyBase implements IIngameOverlay {
 
 	private int phase = 0;
 
@@ -50,7 +51,7 @@ public class RotateKey extends ItemSelectKeyBase {
 		if (!mc.player.isCreative()) {
 			return;
 		}
-		ItemStack itemStack = mc.player.inventory.getSelected();
+		ItemStack itemStack = mc.player.getInventory().getSelected();
 		if (itemStack.isEmpty()) {
 			return;
 		}
@@ -94,11 +95,8 @@ public class RotateKey extends ItemSelectKeyBase {
 		this.updateCurrentItemStack(candidates.getFirst());
 	}
 
-	@SubscribeEvent
-	public void onRenderOverlay(final RenderGameOverlayEvent.Post event) {
-		if (event.getType() != ElementType.HOTBAR) {
-			return;
-		}
+	@Override
+	public void render(ForgeIngameGui gui, PoseStack mStack, float partialTicks, int width, int height) {
 		if (this.pressTime == 0) {
 			candidates.clear();
 			return;
@@ -109,10 +107,10 @@ public class RotateKey extends ItemSelectKeyBase {
 		if (candidates.isEmpty()) {
 			return;
 		}
-		int x = event.getWindow().getGuiScaledWidth() / 2 - 90 + Minecraft.getInstance().player.inventory.selected * 20 + 2;
-		int y = event.getWindow().getGuiScaledHeight() - 16 - 3;
+		int x = Minecraft.getInstance().getWindow().getGuiScaledWidth() / 2 - 90 + Minecraft.getInstance().player.getInventory().selected * 20 + 2;
+		int y = Minecraft.getInstance().getWindow().getGuiScaledHeight() - 16 - 3;
 		y -= 50 + (20 + candidates.size());
-		LTRenderer.renderItemStacks(candidates, x, y, pressTime, event.getPartialTicks(), lastRotateTime, rotateDirection);
+		LTRenderer.renderItemStacks(candidates, x, y, pressTime, partialTicks, lastRotateTime, rotateDirection);
 	}
 
 }

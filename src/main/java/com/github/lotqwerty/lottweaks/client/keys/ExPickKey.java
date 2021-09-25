@@ -4,6 +4,7 @@ import java.util.Deque;
 import java.util.LinkedList;
 
 import com.github.lotqwerty.lottweaks.client.renderer.LTRenderer;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
@@ -14,14 +15,14 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
+import net.minecraftforge.client.gui.ForgeIngameGui;
+import net.minecraftforge.client.gui.IIngameOverlay;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 @OnlyIn(Dist.CLIENT)
-public class ExPickKey extends ItemSelectKeyBase {
+public class ExPickKey extends ItemSelectKeyBase implements IIngameOverlay {
 
 	private static final int HISTORY_SIZE = 10;
 
@@ -86,7 +87,7 @@ public class ExPickKey extends ItemSelectKeyBase {
 		if (!succeeded) {
 			return;
 		}
-		ItemStack itemStack = mc.player.inventory.getSelected();
+		ItemStack itemStack = mc.player.getInventory().getSelected();
 		if (itemStack.isEmpty()) {
 			return;
 		}
@@ -107,7 +108,7 @@ public class ExPickKey extends ItemSelectKeyBase {
 	private void historyModePick() {
 		if (!breakHistory.isEmpty()) {
 			candidates.addAll(breakHistory);
-			candidates.addFirst(Minecraft.getInstance().player.inventory.getSelected());
+			candidates.addFirst(Minecraft.getInstance().player.getInventory().getSelected());
 			isHistoryMode = true;
 		}
 	}
@@ -145,11 +146,8 @@ public class ExPickKey extends ItemSelectKeyBase {
 		this.updateCurrentItemStack(candidates.getFirst());
 	}
 
-	@SubscribeEvent
-	public void onRenderOverlay(final RenderGameOverlayEvent.Post event) {
-		if (event.getType() != ElementType.HOTBAR) {
-			return;
-		}
+	@Override
+	public void render(ForgeIngameGui gui, PoseStack mStack, float partialTicks, int width, int height) {
 		if (this.pressTime == 0) {
 			return;
 		}
@@ -160,13 +158,13 @@ public class ExPickKey extends ItemSelectKeyBase {
 			return;
 		}
 		if (!isHistoryMode) {
-			int x = event.getWindow().getGuiScaledWidth() / 2 - 8;
-			int y = event.getWindow().getGuiScaledHeight() / 2 - 8;
-			LTRenderer.renderItemStacks(candidates, x, y, pressTime, event.getPartialTicks(), lastRotateTime, rotateDirection);
+			int x = Minecraft.getInstance().getWindow().getGuiScaledWidth() / 2 - 8;
+			int y = Minecraft.getInstance().getWindow().getGuiScaledHeight() / 2 - 8;
+			LTRenderer.renderItemStacks(candidates, x, y, pressTime, partialTicks, lastRotateTime, rotateDirection);
 		} else {
-			int x = event.getWindow().getGuiScaledWidth() / 2 - 90 + Minecraft.getInstance().player.inventory.selected * 20 + 2;
-			int y = event.getWindow().getGuiScaledHeight() - 16 - 3;
-			LTRenderer.renderItemStacks(candidates, x, y, pressTime, event.getPartialTicks(), lastRotateTime, rotateDirection, LTRenderer.RenderMode.LINE);
+			int x = Minecraft.getInstance().getWindow().getGuiScaledWidth() / 2 - 90 + Minecraft.getInstance().player.getInventory().selected * 20 + 2;
+			int y = Minecraft.getInstance().getWindow().getGuiScaledHeight() - 16 - 3;
+			LTRenderer.renderItemStacks(candidates, x, y, pressTime, partialTicks, lastRotateTime, rotateDirection, LTRenderer.RenderMode.LINE);
 		}
 	}
 

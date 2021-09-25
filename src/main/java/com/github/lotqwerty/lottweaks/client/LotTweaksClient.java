@@ -17,9 +17,12 @@ import net.minecraft.ChatFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.client.gui.ForgeIngameGui;
+import net.minecraftforge.client.gui.IIngameOverlay;
+import net.minecraftforge.client.gui.OverlayRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fmlclient.registry.ClientRegistry;
 
 @OnlyIn(Dist.CLIENT)
 public class LotTweaksClient
@@ -27,23 +30,22 @@ public class LotTweaksClient
 	private static String serverVersion = "0";
 
 	public static void init() {
-    	KeyMapping key;
-		key = new ExPickKey(GLFW.GLFW_KEY_V, LotTweaks.NAME);
-		MinecraftForge.EVENT_BUS.register(key);
-		ClientRegistry.registerKeyBinding(key);
-		key = new RotateKey(GLFW.GLFW_KEY_R, LotTweaks.NAME);
-		MinecraftForge.EVENT_BUS.register(key);
-		ClientRegistry.registerKeyBinding(key);
-		key = new ReplaceKey(GLFW.GLFW_KEY_G, LotTweaks.NAME);
-		MinecraftForge.EVENT_BUS.register(key);
-		ClientRegistry.registerKeyBinding(key);
-		key = new AdjustRangeKey(GLFW.GLFW_KEY_U, LotTweaks.NAME);
-		MinecraftForge.EVENT_BUS.register(key);
-		ClientRegistry.registerKeyBinding(key);
+		registerKey(new ExPickKey(GLFW.GLFW_KEY_V, LotTweaks.NAME));
+		registerKey(new RotateKey(GLFW.GLFW_KEY_R, LotTweaks.NAME));
+		registerKey(new ReplaceKey(GLFW.GLFW_KEY_G, LotTweaks.NAME));
+		registerKey(new AdjustRangeKey(GLFW.GLFW_KEY_U, LotTweaks.NAME));
 		//
 		MinecraftForge.EVENT_BUS.register(new LotTweaksClient());
 		//
 		MinecraftForge.EVENT_BUS.register(new LotTweaksCommand());
+	}
+
+	private static void registerKey(KeyMapping key) {
+		MinecraftForge.EVENT_BUS.register(key);
+		ClientRegistry.registerKeyBinding(key);
+		if (key instanceof IIngameOverlay) {
+			OverlayRegistry.registerOverlayAbove(ForgeIngameGui.HOTBAR_ELEMENT, key.getName(), (IIngameOverlay)key);
+		}
 	}
 
 	public static boolean requireServerVersion(String requiredVersion) {

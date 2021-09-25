@@ -20,7 +20,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.DrawHighlightEvent;
+import net.minecraftforge.client.event.DrawSelectionEvent;
 import net.minecraftforge.event.TickEvent.RenderTickEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -55,7 +55,7 @@ public class ReplaceKey extends LTKeyBase {
 	}
 
 	@SubscribeEvent
-	public void onDrawBlockHighlightEvent(final DrawHighlightEvent.HighlightBlock event) {
+	public void onDrawBlockHighlightEvent(final DrawSelectionEvent.HighlightBlock event) {
 		if (this.pressTime == 0) {
 			return;
 		}
@@ -98,14 +98,14 @@ public class ReplaceKey extends LTKeyBase {
         }
 		BlockPos pos = ((BlockHitResult)target).getBlockPos();
         BlockState state = mc.level.getBlockState(pos);
-        if (state.getBlock().isAir(state, mc.level, pos))
+        if (state.isAir())
         {
             return;
         }
         if (lockedBlockState != null && lockedBlockState != state) {
             return;
         }
-		ItemStack itemStack = mc.player.inventory.getSelected();
+		ItemStack itemStack = mc.player.getInventory().getSelected();
 		Block block = Block.byItem(itemStack.getItem());
 		if (itemStack.isEmpty() || block == Blocks.AIR) {
 			return;
