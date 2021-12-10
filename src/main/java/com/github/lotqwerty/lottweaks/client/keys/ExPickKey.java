@@ -96,7 +96,7 @@ public class ExPickKey extends ItemSelectKeyBase implements IIngameOverlay {
 		for (BlockPos posDiff : SEARCH_POS) {
 			try {
 				BlockState state = mc.level.getBlockState(pos.offset(posDiff));
-				itemStack = state.getBlock().getPickBlock(state, rayTraceResult, mc.level, pos, mc.player);
+				itemStack = state.getBlock().getCloneItemStack(state, rayTraceResult, mc.level, pos, mc.player);
 				if (!itemStack.isEmpty()) {
 					addToCandidatesWithDedup(itemStack);
 				}
@@ -179,7 +179,7 @@ public class ExPickKey extends ItemSelectKeyBase implements IIngameOverlay {
 		//
 		Minecraft mc = Minecraft.getInstance();
 		BlockState blockState = event.getWorld().getBlockState(event.getPos());
-		ItemStack itemStack = blockState.getBlock().getPickBlock(blockState, mc.hitResult, event.getWorld(), event.getPos(), event.getPlayer());
+		ItemStack itemStack = blockState.getBlock().getCloneItemStack(blockState, mc.hitResult, event.getWorld(), event.getPos(), event.getPlayer());
 		addToHistory(itemStack);
 	}
 

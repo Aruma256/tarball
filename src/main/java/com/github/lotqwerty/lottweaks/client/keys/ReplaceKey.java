@@ -62,7 +62,7 @@ public class ReplaceKey extends LTKeyBase {
 		if (lockedBlockState == null) {
 			return;
 		}
-		if (SelectionBoxRenderer.render(event.getInfo(), event.getMatrix(), event.getBuffers().getBuffer(RenderType.lines()), event.getTarget().getBlockPos(), event.getPartialTicks(), 1f, 0f, 0f)) {
+		if (SelectionBoxRenderer.render(event.getCamera(), event.getPoseStack(), event.getMultiBufferSource().getBuffer(RenderType.lines()), event.getTarget().getBlockPos(), event.getPartialTicks(), 1f, 0f, 0f)) {
 			event.setCanceled(true);
 		}
 	}
@@ -113,7 +113,7 @@ public class ReplaceKey extends LTKeyBase {
 		BlockState newBlockState = block.getStateForPlacement(new BlockPlaceContext(mc.player, InteractionHand.MAIN_HAND, itemStack, (BlockHitResult)target));
 		LTPacketHandler.sendReplaceMessage(pos, newBlockState, state);
 		// add to history
-		ExPickKey.addToHistory(state.getBlock().getPickBlock(state, target, mc.level, pos, mc.player));
+		ExPickKey.addToHistory(state.getBlock().getCloneItemStack(state, target, mc.level, pos, mc.player));
 	}
 
 }
