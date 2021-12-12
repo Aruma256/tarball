@@ -2,9 +2,10 @@ package com.github.lotqwerty.lottweaks.fabric;
 
 import java.util.ArrayList;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.Window;
-import net.minecraft.client.util.math.MatrixStack;
+import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.vertex.PoseStack;
+
+import net.minecraft.client.Minecraft;
 
 public class RenderHotbarEvent {
 	private static final ArrayList<RenderHotbarListener> listeners = new ArrayList<>();
@@ -13,22 +14,22 @@ public class RenderHotbarEvent {
 		listeners.add(listener);
 	}
 
-	public static void post(MatrixStack matrixStack, float tickDelta) {
+	public static void post(PoseStack matrixStack, float tickDelta) {
 		RenderHotbarEvent event = new RenderHotbarEvent(matrixStack, tickDelta);
 		for (RenderHotbarListener iListener : listeners) {
 			iListener.onRenderHotbar(event);
 		}
 	}
 
-	private final MatrixStack matrixStack;
+	private final PoseStack matrixStack;
 	private final float tickDelta;
 
-	private RenderHotbarEvent(MatrixStack matrixStack, float tickDelta) {
+	private RenderHotbarEvent(PoseStack matrixStack, float tickDelta) {
 		this.matrixStack = matrixStack;
 		this.tickDelta = tickDelta;
 	}
 	
-	public MatrixStack getMatrixStack() {
+	public PoseStack getMatrixStack() {
 		return this.matrixStack;
 	}
 
@@ -37,7 +38,7 @@ public class RenderHotbarEvent {
 	}
 	
 	public Window getWindow() {
-		return MinecraftClient.getInstance().getWindow();
+		return Minecraft.getInstance().getWindow();
 	}
 
 	public static interface RenderHotbarListener {

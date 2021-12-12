@@ -6,15 +6,15 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 import com.github.lotqwerty.lottweaks.fabric.ServerReachDistanceManager;
 
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.network.ServerPlayerInteractionManager;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerPlayerGameMode;
 
-@Mixin(ServerPlayerInteractionManager.class)
+@Mixin(ServerPlayerGameMode.class)
 public abstract class BreakingDistanceOverwriter {
 	
-	@ModifyConstant(method = "processBlockBreakingAction(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/network/packet/c2s/play/PlayerActionC2SPacket$Action;Lnet/minecraft/util/math/Direction;I)V", constant = @Constant(doubleValue = 36.0D))
-	private double lottweaks_getReachDistance(double defaultValue) {
-		ServerPlayerEntity player = ((ServerPlayerInteractionManager)((Object)this)).player;
+	@ModifyConstant(method = "handleBlockBreakAction(Lnet/minecraft/core/BlockPos;Lnet/minecraft/network/protocol/game/ServerboundPlayerActionPacket$Action;Lnet/minecraft/core/Direction;I)V", constant = @Constant(doubleValue = 36.0D))
+	private double lottweaks_handleBlockBreakAction(double defaultValue) {
+		ServerPlayer player = ((ServerPlayerGameMode)((Object)this)).player;
 		return ServerReachDistanceManager.getSquaredReachDistance(player, defaultValue);
 	}
 

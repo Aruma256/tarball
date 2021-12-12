@@ -3,11 +3,11 @@ package com.github.lotqwerty.lottweaks.client.keys;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
 
 @Environment(EnvType.CLIENT)
-public class LTKeyBase extends KeyBinding implements ClientTickEvents.EndTick {
+public class LTKeyBase extends KeyMapping implements ClientTickEvents.EndTick {
 
 	protected int pressTime = 0;
 	protected int doubleTapTick = 0;
@@ -17,15 +17,10 @@ public class LTKeyBase extends KeyBinding implements ClientTickEvents.EndTick {
 		super(description, keyCode, category);
 	}
 
-//	@SubscribeEvent
-//	public void onKeyInput(final KeyInputEvent event) {
-//		//
-//	}
-
 	@Override
-	public void onEndTick(final MinecraftClient client) {
+	public void onEndTick(final Minecraft client) {
 //		if (event.getPhase() == EventPriority.NORMAL) {
-			if (this.isPressed()) {
+			if (this.isDown()) {
 				this.pressTime = Math.min(12345, this.pressTime + 1);
 				if (this.pressTime == 1) {
 					this.onKeyPressStart();

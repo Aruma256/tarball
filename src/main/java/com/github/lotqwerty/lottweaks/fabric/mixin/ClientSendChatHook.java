@@ -7,13 +7,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.github.lotqwerty.lottweaks.fabric.ClientChatEvent;
 
-import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.player.LocalPlayer;
 
-@Mixin(ClientPlayerEntity.class)
+@Mixin(LocalPlayer.class)
 public abstract class ClientSendChatHook {
 
-	@Inject(method = "sendChatMessage(Ljava/lang/String;)V", at = @At("HEAD"), cancellable = true)
-	private void lottweaks_sendChatMessage(String message, CallbackInfo ci) {
+	@Inject(method = "chat(Ljava/lang/String;)V", at = @At("HEAD"), cancellable = true)
+	private void lottweaks_chat(String message, CallbackInfo ci) {
 		if (ClientChatEvent.post(new ClientChatEvent(message))) {
 			ci.cancel();
 		}

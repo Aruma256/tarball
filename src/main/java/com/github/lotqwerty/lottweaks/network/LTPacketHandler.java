@@ -1,40 +1,44 @@
 package com.github.lotqwerty.lottweaks.network;
 
-import com.github.lotqwerty.lottweaks.LotTweaks;
+import java.nio.charset.StandardCharsets;
 
-import io.netty.buffer.Unpooled;
-import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
-import net.fabricmc.fabric.api.network.PacketContext;
-import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import com.github.lotqwerty.lottweaks.LotTweaks;
+import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
+
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 
 //https://mcforge.readthedocs.io/en/1.16.x/networking/simpleimpl/
 
 public class LTPacketHandler {
 
-	private static final Identifier REPLACE_PACKET_ID = new Identifier(LotTweaks.MODID, "replace_packet");
+	protected static final ResourceLocation REPLACE_PACKET_ID = new ResourceLocation(LotTweaks.MODID, "replace_packet");
+	protected static final ResourceLocation HELLO_PACKET_ID = new ResourceLocation(LotTweaks.MODID, "hello_packet");
 
 	public static void init() {
-		//TODO Migrate to ServerPlayNetworking
-		ServerSidePacketRegistry.INSTANCE.register(REPLACE_PACKET_ID, (ctx, buf) -> {new ReplaceMessage(buf).handle(ctx);});
+		ServerPlayNetworking.registerGlobalReceiver(REPLACE_PACKET_ID, (server, player, handler, buf, responseSender) -> {new ReplaceMessage(buf).handle(server, player);});
 	}
 
-	public static void sendReplaceMessage(BlockPos pos, BlockState state, BlockState checkState) {
-		PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-		new ReplaceMessage(pos, state, checkState).toBytes(buf);
-		ClientSidePacketRegistry.INSTANCE.sendToServer(REPLACE_PACKET_ID, buf);
+	/*
+	public static void sendReachRangeMessage(double dist) {
+		INSTANCE.sendToServer(new AdjustRangeMessage(dist));
 	}
+	*/
 
-//	public static void sendReachRangeMessage(double dist) {
-//		INSTANCE.sendToServer(new AdjustRangeMessage(dist));
-//	}
+	public static void sendHelloMessage(ServerPlayer player) {
+		FriendlyByteBuf buf = PacketByteBufs.create();
+		new HelloMessage(LotTweaks.VERSION).toBytes(buf);
+		ServerPlayNetworking.send(player, HELLO_PACKET_ID, buf);
+	}
 
 	//Replace
 
@@ -50,80 +54,114 @@ public class LTPacketHandler {
 			this.checkState = checkState;
 		}
 
-		public ReplaceMessage(PacketByteBuf buf) {
-			this(buf.readBlockPos(), Block.getStateFromRawId(buf.readInt()), Block.getStateFromRawId(buf.readInt()));
+		public ReplaceMessage(FriendlyByteBuf buf) {
+			this(buf.readBlockPos(), Block.stateById(buf.readInt()), Block.stateById(buf.readInt()));
 		}
 
-		public void toBytes(PacketByteBuf buf) {
+		public void toBytes(FriendlyByteBuf buf) {
 			buf.writeBlockPos(this.pos);
-			buf.writeInt(Block.getRawIdFromState(state));
-			buf.writeInt(Block.getRawIdFromState(checkState));
+			buf.writeInt(Block.getId(state));
+			buf.writeInt(Block.getId(checkState));
 		}
 
-		public void handle(PacketContext ctx) {
-//			ctx.get().setPacketHandled(true);
-			final ServerPlayerEntity player = (ServerPlayerEntity)ctx.getPlayer();
+		public void handle(MinecraftServer server, ServerPlayer player) {
+			/*
+			ctx.get().setPacketHandled(true);
+			final ServerPlayer player = ctx.get().getSender();
+			*/
 			if (!player.isCreative()) {
 				return;
 			}
-//			if (player.getServerWorld().isRemote) {
-//				// kore iru ??
-//				return;
-//			}
-			if (LotTweaks.CONFIG.REQUIRE_OP_TO_USE_REPLACE && player.getServer().getPlayerManager().getOpList().get(player.getGameProfile())==null) {
+			if (player.getLevel().isClientSide) {
+				// kore iru ??
+				return;
+			}
+			if (LotTweaks.CONFIG.REQUIRE_OP_TO_USE_REPLACE && player.getServer().getPlayerList().getOps().get(player.getGameProfile())==null) {
 				return;
 			}
 			// validation
 			if (state.getBlock() == Blocks.AIR) {
 				return;
 			}
-			double dist = player.getCameraPosVec(1.0F).distanceTo(new Vec3d(pos.getX(), pos.getY(), pos.getZ()));
+			double dist = player.getEyePosition(1.0F).distanceTo(new Vec3(pos.getX(), pos.getY(), pos.getZ()));
 			if (dist > LotTweaks.CONFIG.MAX_RANGE) {
 				return;
 			}
-			if (player.getServerWorld().getBlockState(pos) != checkState) {
+			if (player.getLevel().getBlockState(pos) != checkState) {
 				return;
 			}
 			//
-			ctx.getTaskQueue().execute(() -> {
-				player.getServerWorld().setBlockState(pos, state, 2);
+			server.execute(() -> {
+				player.getLevel().setBlock(pos, state, 2);
 			});
 			return;
 		}
 	}
 
-//	// AdjustRange
-//
-//	public static class AdjustRangeMessage {
-//
-//		private double dist;
-//
-//		public AdjustRangeMessage(double dist) {
-//			this.dist = dist;
-//		}
-//
-//		public AdjustRangeMessage(PacketBuffer buf) {
-//			this(buf.readDouble());
-//		}
-//
-//		public void toBytes(PacketBuffer buf) {
-//			buf.writeDouble(this.dist);
-//		}
-//
-//		public void handle(Supplier<NetworkEvent.Context> ctx) {
-//			ctx.get().setPacketHandled(true);
-//			final ServerPlayerEntity player = ctx.get().getSender();
-//			if (!player.isCreative()) {
-//				return;
-//			}
-//			ctx.get().enqueueWork(() -> {
-//				if (dist < 0) {
-//					return;
-//				}
-//				dist = Math.min(LotTweaks.CONFIG.MAX_RANGE.get(), dist);
-//				AdjustRangeHelper.changeRangeModifier(player, dist);
-//			});
-//			return;
-//		}
-//	}
+
+	// AdjustRange
+
+	/*
+	public static class AdjustRangeMessage {
+
+		private double dist;
+
+		public AdjustRangeMessage(double dist) {
+			this.dist = dist;
+		}
+
+		public AdjustRangeMessage(FriendlyByteBuf buf) {
+			this(buf.readDouble());
+		}
+
+		public void toBytes(FriendlyByteBuf buf) {
+			buf.writeDouble(this.dist);
+		}
+
+		public void handle(Supplier<NetworkEvent.Context> ctx) {
+			ctx.get().setPacketHandled(true);
+			final ServerPlayer player = ctx.get().getSender();
+			if (!player.isCreative()) {
+				return;
+			}
+			ctx.get().enqueueWork(() -> {
+				if (dist < 0) {
+					return;
+				}
+				dist = Math.min(LotTweaks.CONFIG.MAX_RANGE.get(), dist);
+				AdjustRangeHelper.changeRangeModifier(player, dist);
+			});
+			return;
+		}
+	}
+	*/
+
+	// Hello
+
+	public static class HelloMessage {
+
+		private String version;
+
+		public HelloMessage(String version) {
+			this.version = version;
+		}
+
+		public HelloMessage(FriendlyByteBuf buf) {
+			this.version = buf.readCharSequence(buf.readInt(), StandardCharsets.UTF_8).toString();
+		}
+
+		public void toBytes(FriendlyByteBuf buf) {
+			buf.writeInt(version.length());
+			buf.writeCharSequence(version, StandardCharsets.UTF_8);
+		}
+
+		public void handle() {
+			/*
+			ctx.get().setPacketHandled(true);
+			*/
+			LotTweaksClient.setServerVersion(this.version);
+		}
+
+	}
+
 }

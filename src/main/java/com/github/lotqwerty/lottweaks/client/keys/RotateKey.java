@@ -13,8 +13,8 @@ import com.github.lotqwerty.lottweaks.fabric.ScrollEvent.ScrollListener;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.ItemStack;
 
 @Environment(EnvType.CLIENT)
 public class RotateKey extends ItemSelectKeyBase implements ScrollListener, RenderHotbarListener {
@@ -35,9 +35,9 @@ public class RotateKey extends ItemSelectKeyBase implements ScrollListener, Rend
 
 	private Group getGroup() {
 		if (LotTweaks.CONFIG.SNEAK_TO_SWITCH_GROUP) {
-			return (!MinecraftClient.getInstance().player.isSneaking()) ? Group.MAIN : Group.SUB;
+			return (!Minecraft.getInstance().player.isShiftKeyDown()) ? Group.PRIMARY : Group.SECONDARY;
 		} else {
-			return this.phase==0 ? Group.MAIN : Group.SUB;
+			return this.phase==0 ? Group.PRIMARY : Group.SECONDARY;
 		}
 	}
 
@@ -46,11 +46,11 @@ public class RotateKey extends ItemSelectKeyBase implements ScrollListener, Rend
 		super.onKeyPressStart();
 		this.updatePhase();
 		candidates.clear();
-		MinecraftClient mc = MinecraftClient.getInstance();
+		Minecraft mc = Minecraft.getInstance();
 		if (!mc.player.isCreative()) {
 			return;
 		}
-		ItemStack itemStack = mc.player.inventory.getMainHandStack();
+		ItemStack itemStack = mc.player.inventory.getSelected();
 		if (itemStack.isEmpty()) {
 			return;
 		}
@@ -70,7 +70,7 @@ public class RotateKey extends ItemSelectKeyBase implements ScrollListener, Rend
 		if (this.pressTime == 0) {
 			return;
 		}
-		MinecraftClient mc = MinecraftClient.getInstance();
+		Minecraft mc = Minecraft.getInstance();
 		if (!mc.player.isCreative()) {
 			return;
 		}
@@ -95,21 +95,23 @@ public class RotateKey extends ItemSelectKeyBase implements ScrollListener, Rend
 
 	@Override
 	public void onRenderHotbar(RenderHotbarEvent event) {
-//		if (event.getType() != ElementType.HOTBAR) {
-//			return;
-//		}
+		/*
+		if (event.getType() != ElementType.HOTBAR) {
+			return;
+		}
+		*/
 		if (this.pressTime == 0) {
 			candidates.clear();
 			return;
 		}
-		if (!MinecraftClient.getInstance().player.isCreative()) {
+		if (!Minecraft.getInstance().player.isCreative()) {
 			return;
 		}
 		if (candidates.isEmpty()) {
 			return;
 		}
-		int x = event.getWindow().getScaledWidth() / 2 - 90 + MinecraftClient.getInstance().player.inventory.selectedSlot * 20 + 2;
-		int y = event.getWindow().getScaledHeight() - 16 - 3;
+		int x = event.getWindow().getGuiScaledWidth() / 2 - 90 + Minecraft.getInstance().player.inventory.selected * 20 + 2;
+		int y = event.getWindow().getGuiScaledHeight() - 16 - 3;
 		y -= 50 + (20 + candidates.size());
 		LTRenderer.renderItemStacks(candidates, x, y, pressTime, event.getPartialTicks(), lastRotateTime, rotateDirection);
 	}

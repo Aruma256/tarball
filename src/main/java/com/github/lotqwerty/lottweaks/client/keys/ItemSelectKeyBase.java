@@ -5,9 +5,9 @@ import java.util.LinkedList;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
 
 @Environment(EnvType.CLIENT)
 public class ItemSelectKeyBase extends LTKeyBase {
@@ -20,9 +20,9 @@ public class ItemSelectKeyBase extends LTKeyBase {
 		super(description, keyCode, category);
 	}
 
-	protected void addToCandidates(ItemStack itemStack) {
+	protected void addToCandidatesWithDedup(ItemStack itemStack) {
 		for (ItemStack c: candidates) {
-			if (ItemStack.areEqual(c, itemStack)) {
+			if (ItemStack.matches(c, itemStack)) {
 				return;
 			}
 		}
@@ -42,9 +42,9 @@ public class ItemSelectKeyBase extends LTKeyBase {
 	}
 
 	protected void updateCurrentItemStack(ItemStack itemStack) {
-		MinecraftClient mc = MinecraftClient.getInstance();
-		mc.player.inventory.setStack(mc.player.inventory.selectedSlot, itemStack);
-        mc.interactionManager.clickCreativeStack(mc.player.getStackInHand(Hand.MAIN_HAND), 36 + mc.player.inventory.selectedSlot);
+		Minecraft mc = Minecraft.getInstance();
+		mc.player.inventory.setItem(mc.player.inventory.selected, itemStack);
+        mc.gameMode.handleCreativeModeItemAdd(mc.player.getItemInHand(InteractionHand.MAIN_HAND), 36 + mc.player.inventory.selected);
 	}
 
 	@Override

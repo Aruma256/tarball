@@ -21,18 +21,27 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.client.options.KeyBinding;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.network.chat.ChatType;
+import net.minecraft.network.chat.TextComponent;
 
 @Environment(EnvType.CLIENT)
-public class LotTweaksClient implements ClientModInitializer
+public class LotTweaksClient implements ClientModInitializer, ClientPlayConnectionEvents.Join, ClientPlayConnectionEvents.Disconnect
 {
+	private static String serverVersion = "0";
 
 	@Override
 	public void onInitializeClient() {
 		RotationHelper.loadAllFromFile();
 		RotationHelper.loadAllItemGroupFromStrArray();
 		//
-    	KeyBinding key;
+		KeyMapping key;
 		key = new ExPickKey(GLFW.GLFW_KEY_V, LotTweaks.NAME);
 		registerToMyEventBus(key);
 		KeyBindingHelper.registerKeyBinding(key);
@@ -46,9 +55,12 @@ public class LotTweaksClient implements ClientModInitializer
 		registerToMyEventBus(key);
 		KeyBindingHelper.registerKeyBinding(key);
 		//
-//		MinecraftForge.EVENT_BUS.register(new ConfigChangeHandler());
+		ClientPlayConnectionEvents.JOIN.register(this);
+		ClientPlayConnectionEvents.DISCONNECT.register(this);
 		//
 		registerToMyEventBus(new LotTweaksCommand());
+		//
+		LTPacketHandlerClient.initClient();
 	}
 
 	private static void registerToMyEventBus(Object obj) {
@@ -68,16 +80,40 @@ public class LotTweaksClient implements ClientModInitializer
 			DrawBlockOutlineEvent.registerListener((DrawBlockOutlineListener)obj);
 		}
 	}
-	
-//	private static class ConfigChangeHandler {
-//		@SubscribeEvent
-//		public void onConfigChanged(final ConfigChangedEvent.OnConfigChangedEvent event) {
-//			if (event.getModID().equals(LotTweaks.MODID)) {
-//				LotTweaks.onConfigUpdate();
-//			}
-//		}
-//		
-//	}
-	
+
+	public static boolean requireServerVersion(String requiredVersion) {
+		return (serverVersion.compareTo(requiredVersion) >= 0);
+	}
+
+	public static void clearServerVersion() {
+		setServerVersion("0");
+	}
+
+	public static void setServerVersion(String version) {
+		serverVersion = version;
+	}
+
+	public static String getServerVersion() {
+		return serverVersion;
+	}
+
+	public static void showErrorLogToChat() {
+		if (LotTweaks.CONFIG.SHOW_BLOCKCONFIG_ERROR_LOG_TO_CHAT) {
+			Minecraft mc = Minecraft.getInstance();
+			for (String line : RotationHelper.LOG_GROUP_CONFIG) {
+				mc.gui.handleChat(ChatType.SYSTEM, new TextComponent(String.format("LotTweaks: %s%s", ChatFormatting.RED, line)), Util.NIL_UUID);
+			}
+		}
+	}
+
+	@Override
+	public void onPlayReady(ClientPacketListener handler, PacketSender sender, Minecraft client) {
+		showErrorLogToChat();
+	}
+
+	@Override
+	public void onPlayDisconnect(ClientPacketListener handler, Minecraft client) {
+		clearServerVersion();
+	}
 
 }

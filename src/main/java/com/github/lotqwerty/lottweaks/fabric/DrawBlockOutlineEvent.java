@@ -2,10 +2,11 @@ package com.github.lotqwerty.lottweaks.fabric;
 
 import java.util.ArrayList;
 
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.BlockPos;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+
+import net.minecraft.client.Camera;
+import net.minecraft.core.BlockPos;
 
 public class DrawBlockOutlineEvent {
 	private static final ArrayList<DrawBlockOutlineListener> LISTENERS = new ArrayList<>();
@@ -14,7 +15,7 @@ public class DrawBlockOutlineEvent {
 		LISTENERS.add(listener);
 	}
 
-	public static boolean post(Camera activeRenderInfo, MatrixStack matrixStack, VertexConsumer buffer, BlockPos blockPos) {
+	public static boolean post(Camera activeRenderInfo, PoseStack matrixStack, VertexConsumer buffer, BlockPos blockPos) {
 		DrawBlockOutlineEvent event = new DrawBlockOutlineEvent(activeRenderInfo, matrixStack, buffer, blockPos);
 		for (DrawBlockOutlineListener iListener : LISTENERS) {
 			iListener.onDrawBlockHighlightEvent(event);
@@ -27,11 +28,11 @@ public class DrawBlockOutlineEvent {
 
 	private boolean canceled = false;
 	private final Camera activeRenderInfo;
-	private final MatrixStack matrixStack;
+	private final PoseStack matrixStack;
 	private final VertexConsumer buffer;
 	private final BlockPos blockPos;
 
-	private DrawBlockOutlineEvent(Camera activeRenderInfo, MatrixStack matrixStack, VertexConsumer buffer, BlockPos blockPos) {
+	private DrawBlockOutlineEvent(Camera activeRenderInfo, PoseStack matrixStack, VertexConsumer buffer, BlockPos blockPos) {
 		this.activeRenderInfo = activeRenderInfo;
 		this.matrixStack = matrixStack;
 		this.buffer = buffer;
@@ -42,7 +43,7 @@ public class DrawBlockOutlineEvent {
 		return this.activeRenderInfo;
 	}
 
-	public MatrixStack getMatrix() {
+	public PoseStack getMatrix() {
 		return this.matrixStack;
 	}
 
