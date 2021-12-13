@@ -11,6 +11,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
@@ -94,8 +95,9 @@ public class ExPickKey extends ItemSelectKeyBase {
 		BlockPos pos = rayTraceResult.getBlockPos();
 		for (BlockPos posDiff : SEARCH_POS) {
 			try {
-				IBlockState state = mc.world.getBlockState(pos.add(posDiff));
-				itemStack = state.getBlock().getPickBlock(state, rayTraceResult, mc.world, pos, mc.player);
+				BlockPos targetPos = pos.add(posDiff);
+				IBlockState state = mc.world.getBlockState(targetPos);
+				itemStack = state.getBlock().getPickBlock(state, new RayTraceResult(new Vec3d(targetPos), rayTraceResult.sideHit, targetPos), mc.world, targetPos, mc.player);
 				if (!itemStack.isEmpty()) {
 					addToCandidatesWithDedup(itemStack);
 				}
