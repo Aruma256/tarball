@@ -61,7 +61,7 @@ public class ReplaceKey extends LTKeyBase implements RenderHotbarListener, DrawB
 		if (lockedBlockState == null) {
 			return;
 		}
-		if (SelectionBoxRenderer.render(event.getInfo(), event.getMatrix(), event.getBuffers(), event.getPos(), 0f, 1f, 0f, 0f)) {
+		if (SelectionBoxRenderer.render(event.getCamera(), event.getPoseStack(), event.getBuffers(), event.getPos(), 0f, 1f, 0f, 0f)) {
 			event.setCanceled(true);
 		}
 	}

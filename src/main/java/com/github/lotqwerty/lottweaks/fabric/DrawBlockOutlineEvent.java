@@ -15,8 +15,8 @@ public class DrawBlockOutlineEvent {
 		LISTENERS.add(listener);
 	}
 
-	public static boolean post(Camera activeRenderInfo, PoseStack matrixStack, VertexConsumer buffer, BlockPos blockPos) {
-		DrawBlockOutlineEvent event = new DrawBlockOutlineEvent(activeRenderInfo, matrixStack, buffer, blockPos);
+	public static boolean post(Camera camera, PoseStack poseStack, VertexConsumer vertexConsumer, BlockPos blockPos) {
+		DrawBlockOutlineEvent event = new DrawBlockOutlineEvent(camera, poseStack, vertexConsumer, blockPos);
 		for (DrawBlockOutlineListener iListener : LISTENERS) {
 			iListener.onDrawBlockHighlightEvent(event);
 			if (event.isCanceled()) {
@@ -27,28 +27,28 @@ public class DrawBlockOutlineEvent {
 	}
 
 	private boolean canceled = false;
-	private final Camera activeRenderInfo;
-	private final PoseStack matrixStack;
-	private final VertexConsumer buffer;
+	private final Camera camera;
+	private final PoseStack poseStack;
+	private final VertexConsumer vertexConsumer;
 	private final BlockPos blockPos;
 
-	private DrawBlockOutlineEvent(Camera activeRenderInfo, PoseStack matrixStack, VertexConsumer buffer, BlockPos blockPos) {
-		this.activeRenderInfo = activeRenderInfo;
-		this.matrixStack = matrixStack;
-		this.buffer = buffer;
+	private DrawBlockOutlineEvent(Camera camera, PoseStack poseStack, VertexConsumer vertexConsumer, BlockPos blockPos) {
+		this.camera = camera;
+		this.poseStack = poseStack;
+		this.vertexConsumer = vertexConsumer;
 		this.blockPos = blockPos;
 	}
 
-	public Camera getInfo() {
-		return this.activeRenderInfo;
+	public Camera getCamera() {
+		return this.camera;
 	}
 
-	public PoseStack getMatrix() {
-		return this.matrixStack;
+	public PoseStack getPoseStack() {
+		return this.poseStack;
 	}
 
 	public VertexConsumer getBuffers() {
-		return this.buffer;
+		return this.vertexConsumer;
 	}
 
 	public BlockPos getPos() {
