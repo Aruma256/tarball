@@ -109,6 +109,7 @@ public class LotTweaksClient implements ClientModInitializer, ClientPlayConnecti
 	@Override
 	public void onPlayReady(ClientPacketListener handler, PacketSender sender, Minecraft client) {
 		showErrorLogToChat();
+		AdjustRangeKey.resetRange();
 	}
 
 	@Override

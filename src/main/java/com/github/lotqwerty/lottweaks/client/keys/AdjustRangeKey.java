@@ -14,7 +14,8 @@ import net.minecraft.world.phys.HitResult;
 @Environment(EnvType.CLIENT)
 public class AdjustRangeKey extends LTKeyBase implements RenderHotbarListener {
 
-	public static float reachDistance = 6;
+	private static final float DEFAULT_REACH_DISTANCE = 6;
+	private static float reachDistance = DEFAULT_REACH_DISTANCE;
 	
 	public AdjustRangeKey(int keyCode, String category) {
 		super("AdjustRange", keyCode, category);
@@ -51,4 +52,13 @@ public class AdjustRangeKey extends LTKeyBase implements RenderHotbarListener {
 		String distStr = String.valueOf(distInt);
 		LTTextRenderer.showMessage(event.getMatrixStack(), event.getWindow(), distStr);
 	}
+
+	public static float getRange() {
+		return reachDistance;
+	}
+
+	public static void resetRange() {
+		reachDistance = DEFAULT_REACH_DISTANCE;
+	}
+
 }
