@@ -98,15 +98,15 @@ public class ReplaceKey extends LTKeyBase implements RenderHotbarListener, DrawB
         	return;
         }
 		BlockPos pos = ((BlockHitResult)target).getBlockPos();
-        BlockState state = mc.level.getBlockState(pos);
-        if (state.getBlock() == Blocks.AIR)
-        {
-            return;
-        }
-        if (lockedBlockState != null && lockedBlockState != state) {
-            return;
-        }
-		ItemStack itemStack = mc.player.inventory.getSelected();
+		BlockState state = mc.level.getBlockState(pos);
+		if (state.isAir())
+		{
+			return;
+		}
+		if (lockedBlockState != null && lockedBlockState != state) {
+			return;
+		}
+		ItemStack itemStack = mc.player.getInventory().getSelected();
 		Block block = Block.byItem(itemStack.getItem());
 		if (itemStack.isEmpty() || block == Blocks.AIR) {
 			return;

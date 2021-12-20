@@ -41,19 +41,10 @@ public class LotTweaksClient implements ClientModInitializer, ClientPlayConnecti
 		RotationHelper.loadAllFromFile();
 		RotationHelper.loadAllItemGroupFromStrArray();
 		//
-		KeyMapping key;
-		key = new ExPickKey(GLFW.GLFW_KEY_V, LotTweaks.NAME);
-		registerToMyEventBus(key);
-		KeyBindingHelper.registerKeyBinding(key);
-		key = new RotateKey(GLFW.GLFW_KEY_R, LotTweaks.NAME);
-		registerToMyEventBus(key);
-		KeyBindingHelper.registerKeyBinding(key);
-		key = new ReplaceKey(GLFW.GLFW_KEY_G, LotTweaks.NAME);
-		registerToMyEventBus(key);
-		KeyBindingHelper.registerKeyBinding(key);
-		key = new AdjustRangeKey(GLFW.GLFW_KEY_U, LotTweaks.NAME);
-		registerToMyEventBus(key);
-		KeyBindingHelper.registerKeyBinding(key);
+		registerKey(new ExPickKey(GLFW.GLFW_KEY_V, LotTweaks.NAME));
+		registerKey(new RotateKey(GLFW.GLFW_KEY_R, LotTweaks.NAME));
+		registerKey(new ReplaceKey(GLFW.GLFW_KEY_G, LotTweaks.NAME));
+		registerKey(new AdjustRangeKey(GLFW.GLFW_KEY_U, LotTweaks.NAME));
 		//
 		ClientPlayConnectionEvents.JOIN.register(this);
 		ClientPlayConnectionEvents.DISCONNECT.register(this);
@@ -79,6 +70,11 @@ public class LotTweaksClient implements ClientModInitializer, ClientPlayConnecti
 		if (obj instanceof DrawBlockOutlineListener) {
 			DrawBlockOutlineEvent.registerListener((DrawBlockOutlineListener)obj);
 		}
+	}
+
+	private static void registerKey(KeyMapping key) {
+		registerToMyEventBus(key);
+		KeyBindingHelper.registerKeyBinding(key);
 	}
 
 	public static boolean requireServerVersion(String requiredVersion) {

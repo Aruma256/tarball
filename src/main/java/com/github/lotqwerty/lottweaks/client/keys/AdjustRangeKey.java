@@ -5,6 +5,7 @@ import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
 import com.github.lotqwerty.lottweaks.client.renderer.LTTextRenderer;
 import com.github.lotqwerty.lottweaks.fabric.RenderHotbarEvent;
 import com.github.lotqwerty.lottweaks.fabric.RenderHotbarEvent.RenderHotbarListener;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -22,9 +23,7 @@ public class AdjustRangeKey extends LTKeyBase implements RenderHotbarListener {
 
 	@Override
 	public void onRenderHotbar(RenderHotbarEvent event) {
-//		if (event.getType() != ElementType.HOTBAR) {
-//			return;
-//		}
+		PoseStack mStack = event.getMatrixStack();
 		if (this.pressTime == 0) {
 			return;
 		}
@@ -32,7 +31,7 @@ public class AdjustRangeKey extends LTKeyBase implements RenderHotbarListener {
 			return;
 		}
 		if (!LotTweaksClient.requireServerVersion("2.2.1")) {
-			LTTextRenderer.showServerSideRequiredMessage(event.getMatrixStack(), event.getWindow(), "2.2.1");
+			LTTextRenderer.showServerSideRequiredMessage(mStack, Minecraft.getInstance().getWindow(), "2.2.1");
 			return;
 		}
 		// Update dist
@@ -44,11 +43,14 @@ public class AdjustRangeKey extends LTKeyBase implements RenderHotbarListener {
 		} else {
 			dist = Math.min(LotTweaks.CONFIG.MAX_RANGE, mc.player.getEyePosition(event.getPartialTicks()).distanceTo(rayTraceResult.getLocation()));
 		}
-//		LTPacketHandler.sendReachRangeMessage(dist);
+		/*
+		LTPacketHandler.sendReachRangeMessage(dist);
+		*/
 		reachDistance = (float) dist;
 		// Render
 		int distInt = (int)dist;
 		String distStr = String.valueOf(distInt);
-		LTTextRenderer.showMessage(event.getMatrixStack(), event.getWindow(), distStr);
+		LTTextRenderer.showMessage(mStack, Minecraft.getInstance().getWindow(), distStr);
 	}
+
 }

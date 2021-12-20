@@ -7,9 +7,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Camera;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.phys.shapes.Shapes;
-import com.mojang.math.Matrix4f;
 import net.minecraft.world.phys.Vec3;
 
 public class SelectionBoxRenderer {
@@ -27,22 +27,29 @@ public class SelectionBoxRenderer {
 		double d1 = vector3d.y();
 		double d2 = vector3d.z();
 
-		drawSelectionBox(matrixStack, buffer, activeRenderInfo.getEntity(), d0, d1, d2, blockPos);
+		renderHitOutline(matrixStack, buffer, activeRenderInfo.getEntity(), d0, d1, d2, blockPos);
 
 		return true;
 	}
 
-	//from WorldRenderer.class (drawBlockOutline)
-	private static void drawSelectionBox(PoseStack matrixStackIn, VertexConsumer bufferIn, Entity entityIn, double xIn, double yIn, double zIn, BlockPos blockPosIn) {
-		drawShape(matrixStackIn, bufferIn, CUBE, (double)blockPosIn.getX() - xIn, (double)blockPosIn.getY() - yIn, (double)blockPosIn.getZ() - zIn, 1.0F, 0.0F, 0.0F, 0.4F);
+	//from WorldRenderer.class
+	private static void renderHitOutline(PoseStack matrixStackIn, VertexConsumer bufferIn, Entity entity, double xIn, double yIn, double zIn, BlockPos blockPosIn) {
+		renderShape(matrixStackIn, bufferIn, CUBE, (double)blockPosIn.getX() - xIn, (double)blockPosIn.getY() - yIn, (double)blockPosIn.getZ() - zIn, 1.0F, 0.0F, 0.0F, 0.4F);
 	}
 
-	//from WorldRenderer.class
-	private static void drawShape(PoseStack matrixStackIn, VertexConsumer bufferIn, VoxelShape shapeIn, double xIn, double yIn, double zIn, float red, float green, float blue, float alpha) {
-		Matrix4f matrix4f = matrixStackIn.last().pose();
-		shapeIn.forAllEdges((p_230013_12_, p_230013_14_, p_230013_16_, p_230013_18_, p_230013_20_, p_230013_22_) -> {
-			bufferIn.vertex(matrix4f, (float)(p_230013_12_ + xIn), (float)(p_230013_14_ + yIn), (float)(p_230013_16_ + zIn)).color(red, green, blue, alpha).endVertex();
-			bufferIn.vertex(matrix4f, (float)(p_230013_18_ + xIn), (float)(p_230013_20_ + yIn), (float)(p_230013_22_ + zIn)).color(red, green, blue, alpha).endVertex();
+	//from LevelRenderer.class
+	private static void renderShape(PoseStack matrixStackIn, VertexConsumer bufferIn, VoxelShape shapeIn, double xIn, double yIn, double zIn, float red, float green, float blue, float alpha) {
+		PoseStack.Pose posestack$pose = matrixStackIn.last();
+		shapeIn.forAllEdges((ax, ay, az, bx, by, bz) -> {
+			float x = (float)(bx - ax);
+			float y = (float)(by - ay);
+			float z = (float)(bz - az);
+			float d = Mth.sqrt(x * x + y * y + z * z);
+			x = x / d;
+			y = y / d;
+			z = z / d;
+			bufferIn.vertex(posestack$pose.pose(), (float)(ax + xIn), (float)(ay + yIn), (float)(az + zIn)).color(red, green, blue, alpha).normal(posestack$pose.normal(), x, y, z).endVertex();
+			bufferIn.vertex(posestack$pose.pose(), (float)(bx + xIn), (float)(by + yIn), (float)(bz + zIn)).color(red, green, blue, alpha).normal(posestack$pose.normal(), x, y, z).endVertex();
 		});
 	}
 

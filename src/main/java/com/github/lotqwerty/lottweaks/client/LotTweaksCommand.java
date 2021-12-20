@@ -79,7 +79,7 @@ public class LotTweaksCommand implements ClientChatEventListener {
 		StringJoiner stringJoiner = new StringJoiner(",");
 		int count = 0;
 		for (int i = 0; i < Inventory.getSelectionSize(); i++) {
-			ItemStack itemStack = mc.player.inventory.getItem(i);
+			ItemStack itemStack = mc.player.getInventory().getItem(i);
 			if (RotationHelper.canRotate(itemStack, group)) {
 				throw new CommandRuntimeException(new TextComponent(String.format("Already exists (%d)", i + 1)));
 			}

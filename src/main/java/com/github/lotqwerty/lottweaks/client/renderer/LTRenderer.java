@@ -62,13 +62,11 @@ public final class LTRenderer {
 	}
 
 	private static void glInitialize() {
-        RenderSystem.enableRescaleNormal();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
 	}
 	
 	private static void glFinalize() {
-        RenderSystem.disableRescaleNormal();
         RenderSystem.disableBlend();
 	}
 	

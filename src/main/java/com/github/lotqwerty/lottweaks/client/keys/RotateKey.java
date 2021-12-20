@@ -50,7 +50,7 @@ public class RotateKey extends ItemSelectKeyBase implements ScrollListener, Rend
 		if (!mc.player.isCreative()) {
 			return;
 		}
-		ItemStack itemStack = mc.player.inventory.getSelected();
+		ItemStack itemStack = mc.player.getInventory().getSelected();
 		if (itemStack.isEmpty()) {
 			return;
 		}
@@ -95,11 +95,7 @@ public class RotateKey extends ItemSelectKeyBase implements ScrollListener, Rend
 
 	@Override
 	public void onRenderHotbar(RenderHotbarEvent event) {
-		/*
-		if (event.getType() != ElementType.HOTBAR) {
-			return;
-		}
-		*/
+		float partialTicks = event.getPartialTicks();
 		if (this.pressTime == 0) {
 			candidates.clear();
 			return;
@@ -110,10 +106,10 @@ public class RotateKey extends ItemSelectKeyBase implements ScrollListener, Rend
 		if (candidates.isEmpty()) {
 			return;
 		}
-		int x = event.getWindow().getGuiScaledWidth() / 2 - 90 + Minecraft.getInstance().player.inventory.selected * 20 + 2;
-		int y = event.getWindow().getGuiScaledHeight() - 16 - 3;
+		int x = Minecraft.getInstance().getWindow().getGuiScaledWidth() / 2 - 90 + Minecraft.getInstance().player.getInventory().selected * 20 + 2;
+		int y = Minecraft.getInstance().getWindow().getGuiScaledHeight() - 16 - 3;
 		y -= 50 + (20 + candidates.size());
-		LTRenderer.renderItemStacks(candidates, x, y, pressTime, event.getPartialTicks(), lastRotateTime, rotateDirection);
+		LTRenderer.renderItemStacks(candidates, x, y, pressTime, partialTicks, lastRotateTime, rotateDirection);
 	}
 
 }
