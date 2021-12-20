@@ -13,7 +13,7 @@ public abstract class ClientReachDistanceOverwriter {
 
 	@ModifyConstant(method = "getPickRange()F", constant = @Constant(floatValue = 5.0F))
 	private float lottweaks_getPickRange(float defaultValue) {
-		return AdjustRangeKey.reachDistance;
+		return AdjustRangeKey.getRange();
 	}
 
 }
