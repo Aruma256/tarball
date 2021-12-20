@@ -32,7 +32,7 @@ import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.TextComponent;
 
 @Environment(EnvType.CLIENT)
-public class LotTweaksClient implements ClientModInitializer, ClientPlayConnectionEvents.Join, ClientPlayConnectionEvents.Disconnect
+public class LotTweaksClient implements ClientModInitializer, ClientPlayConnectionEvents.Init, ClientPlayConnectionEvents.Join
 {
 	private static String serverVersion = "0";
 
@@ -46,8 +46,8 @@ public class LotTweaksClient implements ClientModInitializer, ClientPlayConnecti
 		registerKey(new ReplaceKey(GLFW.GLFW_KEY_G, LotTweaks.NAME));
 		registerKey(new AdjustRangeKey(GLFW.GLFW_KEY_U, LotTweaks.NAME));
 		//
+		ClientPlayConnectionEvents.INIT.register(this);
 		ClientPlayConnectionEvents.JOIN.register(this);
-		ClientPlayConnectionEvents.DISCONNECT.register(this);
 		//
 		registerToMyEventBus(new LotTweaksCommand());
 		//
@@ -103,14 +103,14 @@ public class LotTweaksClient implements ClientModInitializer, ClientPlayConnecti
 	}
 
 	@Override
-	public void onPlayReady(ClientPacketListener handler, PacketSender sender, Minecraft client) {
-		showErrorLogToChat();
-		AdjustRangeKey.resetRange();
+	public void onPlayInit(ClientPacketListener handler, Minecraft client) {
+		clearServerVersion();
 	}
 
 	@Override
-	public void onPlayDisconnect(ClientPacketListener handler, Minecraft client) {
-		clearServerVersion();
+	public void onPlayReady(ClientPacketListener handler, PacketSender sender, Minecraft client) {
+		showErrorLogToChat();
+		AdjustRangeKey.resetRange();
 	}
 
 }
