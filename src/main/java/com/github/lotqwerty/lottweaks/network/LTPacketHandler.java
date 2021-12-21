@@ -31,6 +31,7 @@ public class LTPacketHandler {
 		INSTANCE.registerMessage(ReplaceMessageHandler.class, ReplaceMessage.class, id++, Side.SERVER);
 		INSTANCE.registerMessage(AdjustRangeMessageHandler.class, AdjustRangeMessage.class, id++, Side.SERVER);
 		INSTANCE.registerMessage(HelloMessageHandler.class, HelloMessage.class, id++, Side.CLIENT);
+		INSTANCE.registerMessage(ExtendRangeMessageHandler.class, ExtendRangeMessage.class, id++, Side.SERVER);
 	}
 
 	public static void sendReplaceMessage(BlockPos pos, Block block, int meta, Block checkBlock) {
@@ -43,6 +44,10 @@ public class LTPacketHandler {
 
 	public static void sendHelloMessage(EntityPlayerMP player) {
 		INSTANCE.sendTo(new HelloMessage(LotTweaks.VERSION), player);
+	}
+
+	public static void sendExtendRangeMessage(int dist) {
+		INSTANCE.sendToServer(new ExtendRangeMessage(dist));
 	}
 
 	//Replace
@@ -201,6 +206,54 @@ public class LTPacketHandler {
 			return null;
 		}
 
+	}
+
+	// ExtendRange
+
+	public static class ExtendRangeMessage implements IMessage {
+
+		private int dist;
+
+		public ExtendRangeMessage(int dist) {
+			this.dist = dist;
+		}
+
+		public ExtendRangeMessage() {
+		}
+
+		@Override
+		public void toBytes(ByteBuf buf) {
+			buf.writeInt(this.dist);
+		}
+
+		@Override
+		public void fromBytes(ByteBuf buf) {
+			this.dist = buf.readInt();
+		}
+
+	}
+
+	public static class ExtendRangeMessageHandler implements IMessageHandler<ExtendRangeMessage, IMessage> {
+
+		@Override
+		public IMessage onMessage(ExtendRangeMessage message, MessageContext ctx) {
+			final EntityPlayerMP player = ctx.getServerHandler().player;
+			if (!player.isCreative()) {
+				return null;
+			}
+			player.getServerWorld().addScheduledTask(() -> {
+				int dist = message.dist;
+				if (128 < dist) {
+					return;
+				}
+				if (dist == 0) {
+					AdjustRangeHelper.deactivateExtendedRange(player);
+				} else {
+					AdjustRangeHelper.activateExtendedRange(player, dist);
+				}
+			});
+			return null;
+		}
 	}
 
 }
