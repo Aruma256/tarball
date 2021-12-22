@@ -166,7 +166,7 @@ public class LTPacketHandler {
 					return;
 				}
 				dist = Math.min(LotTweaks.CONFIG.MAX_RANGE, dist);
-				RangeManager.changeRangeModifier(player, dist);
+				RangeManager.changeAdjustRangeModifier(player, dist);
 			});
 			return null;
 		}
@@ -247,9 +247,9 @@ public class LTPacketHandler {
 					return;
 				}
 				if (dist == 0) {
-					RangeManager.deactivateExtendedRange(player);
+					RangeManager.deactivateExtendRange(player);
 				} else {
-					RangeManager.activateExtendedRange(player, dist);
+					RangeManager.activateExtendRange(player, dist);
 				}
 			});
 			return null;
