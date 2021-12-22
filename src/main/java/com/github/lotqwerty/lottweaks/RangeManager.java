@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 
-public class AdjustRangeHelper {
+public class RangeManager {
 
 	private static final UUID _UUID = new UUID(2457550121339451521L, 1595282694073824061L);
 	private static final String NAME = LotTweaks.MODID + "v2";

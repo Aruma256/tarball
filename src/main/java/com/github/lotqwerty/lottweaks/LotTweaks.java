@@ -76,7 +76,7 @@ public class LotTweaks {
 			RotationHelper.loadAllItemGroupFromStrArray();
 		}
 		LTPacketHandler.init();
-		MinecraftForge.EVENT_BUS.register(new AdjustRangeHelper());
+		MinecraftForge.EVENT_BUS.register(new RangeManager());
 		MinecraftForge.EVENT_BUS.register(new ServerConnectionListener());
 	}
 

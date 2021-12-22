@@ -1,6 +1,6 @@
 package com.github.lotqwerty.lottweaks.client.keys;
 
-import com.github.lotqwerty.lottweaks.AdjustRangeHelper;
+import com.github.lotqwerty.lottweaks.RangeManager;
 import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
 import com.github.lotqwerty.lottweaks.client.renderer.LTTextRenderer;
 import com.github.lotqwerty.lottweaks.client.renderer.SelectionBoxRenderer;
@@ -48,7 +48,7 @@ public class ExtendRangeKey extends LTKeyBase {
 		}
 		//
 		boolean pressed = (this.pressTime > 0);
-		boolean activated = AdjustRangeHelper.isExtendRangeActivated(Minecraft.getMinecraft().player);
+		boolean activated = RangeManager.isExtendRangeActivated(Minecraft.getMinecraft().player);
 		if (pressed && !activated) {
 			LTTextRenderer.showMessage(event.getResolution(), "switching...");
 		} else if (!pressed && activated) {
@@ -61,7 +61,7 @@ public class ExtendRangeKey extends LTKeyBase {
 		if (!LotTweaksClient.requireServerVersion("2.2.4")) {
 			return;
 		}
-		if (!AdjustRangeHelper.isExtendRangeActivated(Minecraft.getMinecraft().player)) {
+		if (!RangeManager.isExtendRangeActivated(Minecraft.getMinecraft().player)) {
 			return;
 		}
 		RayTraceResult target = Minecraft.getMinecraft().objectMouseOver;

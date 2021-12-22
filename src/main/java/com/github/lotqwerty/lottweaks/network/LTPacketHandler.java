@@ -2,7 +2,7 @@ package com.github.lotqwerty.lottweaks.network;
 
 import java.nio.charset.StandardCharsets;
 
-import com.github.lotqwerty.lottweaks.AdjustRangeHelper;
+import com.github.lotqwerty.lottweaks.RangeManager;
 import com.github.lotqwerty.lottweaks.LotTweaks;
 import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
 
@@ -166,7 +166,7 @@ public class LTPacketHandler {
 					return;
 				}
 				dist = Math.min(LotTweaks.CONFIG.MAX_RANGE, dist);
-				AdjustRangeHelper.changeRangeModifier(player, dist);
+				RangeManager.changeRangeModifier(player, dist);
 			});
 			return null;
 		}
@@ -247,9 +247,9 @@ public class LTPacketHandler {
 					return;
 				}
 				if (dist == 0) {
-					AdjustRangeHelper.deactivateExtendedRange(player);
+					RangeManager.deactivateExtendedRange(player);
 				} else {
-					AdjustRangeHelper.activateExtendedRange(player, dist);
+					RangeManager.activateExtendedRange(player, dist);
 				}
 			});
 			return null;
