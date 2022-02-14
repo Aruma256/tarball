@@ -1,6 +1,7 @@
 package com.github.lotqwerty.lottweaks.client.keys;
 
 import com.github.lotqwerty.lottweaks.LotTweaks;
+import com.github.lotqwerty.lottweaks.client.LTPacketHandlerClient;
 import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
 import com.github.lotqwerty.lottweaks.client.renderer.LTTextRenderer;
 import com.github.lotqwerty.lottweaks.fabric.RenderHotbarEvent;
@@ -45,7 +46,7 @@ public class AdjustRangeKey extends LTKeyBase implements RenderHotbarListener {
 		} else {
 			dist = Math.min(LotTweaks.CONFIG.MAX_RANGE, mc.player.getEyePosition(event.getPartialTicks()).distanceTo(rayTraceResult.getLocation()));
 		}
-//		LTPacketHandler.sendReachRangeMessage(dist);
+		LTPacketHandlerClient.sendReachRangeMessage(dist);
 		reachDistance = (float) dist;
 		// Render
 		int distInt = (int)dist;
