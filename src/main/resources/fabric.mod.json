@@ -13,7 +13,7 @@
   },
 
   "license": "",
-  "icon": "",
+  "icon": "assets/lottweaks/icon.png",
 
   "environment": "*",
   "entrypoints": {
