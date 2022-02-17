@@ -33,8 +33,8 @@ public class AdjustRangeKey extends LTKeyBase implements RenderHotbarListener {
 		if (!Minecraft.getInstance().player.isCreative()) {
 			return;
 		}
-		if (!LotTweaksClient.requireServerVersion("2.2.1")) {
-			LTTextRenderer.showServerSideRequiredMessage(event.getMatrixStack(), event.getWindow(), "2.2.1");
+		if (!LotTweaksClient.requireServerVersion("2.3.0")) {
+			LTTextRenderer.showServerSideRequiredMessage(event.getMatrixStack(), event.getWindow(), "2.3.0");
 			return;
 		}
 		// Update dist
