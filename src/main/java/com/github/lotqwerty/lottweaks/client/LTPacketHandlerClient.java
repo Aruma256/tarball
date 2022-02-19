@@ -20,4 +20,10 @@ public class LTPacketHandlerClient extends LTPacketHandler {
 		ClientPlayNetworking.send(REPLACE_PACKET_ID, buf);
 	}
 
+	public static void sendReachRangeMessage(double dist) {
+		FriendlyByteBuf buf = PacketByteBufs.create();
+		new AdjustRangeMessage(dist).toBytes(buf);
+		ClientPlayNetworking.send(ADJUSTRANGE_PACKET_ID, buf);
+	}
+
 }

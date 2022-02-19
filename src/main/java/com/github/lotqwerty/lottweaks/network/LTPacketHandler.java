@@ -2,6 +2,7 @@ package com.github.lotqwerty.lottweaks.network;
 
 import java.nio.charset.StandardCharsets;
 
+import com.github.lotqwerty.lottweaks.AdjustRangeHelper;
 import com.github.lotqwerty.lottweaks.LotTweaks;
 import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
 
@@ -22,17 +23,13 @@ import net.minecraft.world.phys.Vec3;
 public class LTPacketHandler {
 
 	protected static final ResourceLocation REPLACE_PACKET_ID = new ResourceLocation(LotTweaks.MODID, "replace_packet");
+	protected static final ResourceLocation ADJUSTRANGE_PACKET_ID = new ResourceLocation(LotTweaks.MODID, "adjustrange_packet");
 	protected static final ResourceLocation HELLO_PACKET_ID = new ResourceLocation(LotTweaks.MODID, "hello_packet");
 
 	public static void init() {
 		ServerPlayNetworking.registerGlobalReceiver(REPLACE_PACKET_ID, (server, player, handler, buf, responseSender) -> {new ReplaceMessage(buf).handle(server, player);});
+		ServerPlayNetworking.registerGlobalReceiver(ADJUSTRANGE_PACKET_ID, (server, player, handler, buf, responseSender) -> {new AdjustRangeMessage(buf).handle(server, player);});
 	}
-
-	/*
-	public static void sendReachRangeMessage(double dist) {
-		INSTANCE.sendToServer(new AdjustRangeMessage(dist));
-	}
-	*/
 
 	public static void sendHelloMessage(ServerPlayer player) {
 		FriendlyByteBuf buf = PacketByteBufs.create();
@@ -101,7 +98,6 @@ public class LTPacketHandler {
 
 	// AdjustRange
 
-	/*
 	public static class AdjustRangeMessage {
 
 		private double dist;
@@ -118,23 +114,24 @@ public class LTPacketHandler {
 			buf.writeDouble(this.dist);
 		}
 
-		public void handle(Supplier<NetworkEvent.Context> ctx) {
+		public void handle(MinecraftServer server, ServerPlayer player) {
+			/*
 			ctx.get().setPacketHandled(true);
 			final ServerPlayer player = ctx.get().getSender();
+			*/
 			if (!player.isCreative()) {
 				return;
 			}
-			ctx.get().enqueueWork(() -> {
+			server.execute(() -> {
 				if (dist < 0) {
 					return;
 				}
-				dist = Math.min(LotTweaks.CONFIG.MAX_RANGE.get(), dist);
+				dist = Math.min(LotTweaks.CONFIG.MAX_RANGE, dist);
 				AdjustRangeHelper.changeRangeModifier(player, dist);
 			});
 			return;
 		}
 	}
-	*/
 
 	// Hello
 

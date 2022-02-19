@@ -1,6 +1,7 @@
 package com.github.lotqwerty.lottweaks.client.keys;
 
 import com.github.lotqwerty.lottweaks.LotTweaks;
+import com.github.lotqwerty.lottweaks.client.LTPacketHandlerClient;
 import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
 import com.github.lotqwerty.lottweaks.client.renderer.LTTextRenderer;
 import com.github.lotqwerty.lottweaks.fabric.RenderHotbarEvent;
@@ -31,8 +32,8 @@ public class AdjustRangeKey extends LTKeyBase implements RenderHotbarListener {
 		if (!Minecraft.getInstance().player.isCreative()) {
 			return;
 		}
-		if (!LotTweaksClient.requireServerVersion("2.2.1")) {
-			LTTextRenderer.showServerSideRequiredMessage(mStack, Minecraft.getInstance().getWindow(), "2.2.1");
+		if (!LotTweaksClient.requireServerVersion("2.3.0")) {
+			LTTextRenderer.showServerSideRequiredMessage(mStack, Minecraft.getInstance().getWindow(), "2.3.0");
 			return;
 		}
 		// Update dist
@@ -44,9 +45,7 @@ public class AdjustRangeKey extends LTKeyBase implements RenderHotbarListener {
 		} else {
 			dist = Math.min(LotTweaks.CONFIG.MAX_RANGE, mc.player.getEyePosition(event.getPartialTicks()).distanceTo(rayTraceResult.getLocation()));
 		}
-		/*
-		LTPacketHandler.sendReachRangeMessage(dist);
-		*/
+		LTPacketHandlerClient.sendReachRangeMessage(dist);
 		reachDistance = (float) dist;
 		// Render
 		int distInt = (int)dist;

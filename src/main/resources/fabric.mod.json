@@ -4,16 +4,17 @@
   "version": "${version}",
 
   "name": "LotTweaks",
-  "description": "",
+  "description": "LotTweaks adds tweaks for builders to increase productivity in Creative mode.",
   "authors": [
-    "LOTqwerty"
+    "LOTqwerty",
+    "Aruma256"
   ],
   "contact": {
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/lottweaks"
   },
 
   "license": "",
-  "icon": "",
+  "icon": "assets/lottweaks/icon.png",
 
   "environment": "*",
   "entrypoints": {
@@ -36,5 +37,12 @@
   },
   "suggests": {
     "another-mod": "*"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.discord": "https://discord.gg/sEvqhB86mM"
+      }
+    }
   }
 }
