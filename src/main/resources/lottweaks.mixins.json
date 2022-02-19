@@ -4,15 +4,12 @@
   "package": "com.github.lotqwerty.lottweaks.fabric.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-  	"PlacingDistanceOverwriter",
-  	"BreakingDistanceOverwriter"
   ],
   "client": [
     "MouseScrollRedirector",
     "HotbarRendererHook",
     "VanillaPickInvoker",
     "DrawShapeOutlineInjector",
-    "ClientReachDistanceOverwriter",
     "ClientSendChatHook"
   ],
   "server": [

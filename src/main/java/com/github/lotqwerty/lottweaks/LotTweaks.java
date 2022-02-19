@@ -7,6 +7,7 @@ import com.github.lotqwerty.lottweaks.network.LTPacketHandler;
 import com.github.lotqwerty.lottweaks.network.ServerConnectionListener;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
 //@Mod(LotTweaks.MODID)
@@ -14,7 +15,7 @@ public class LotTweaks implements ModInitializer {
 
 	public static final String MODID = "lottweaks";
 	public static final String NAME = "LotTweaks";
-	public static final String VERSION = "2.2.2e";
+	public static final String VERSION = "2.3.1a";
 	public static Logger LOGGER = LogManager.getLogger();
 
 	public static class CONFIG {
@@ -30,9 +31,7 @@ public class LotTweaks implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		LTPacketHandler.init();
-		/*
-		MinecraftForge.EVENT_BUS.register(new AdjustRangeHelper());
-		*/
+		ServerTickEvents.START_SERVER_TICK.register(new AdjustRangeHelper());
 		ServerPlayConnectionEvents.JOIN.register(new ServerConnectionListener());
 	}
 
