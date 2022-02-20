@@ -82,14 +82,26 @@ public class ExPickKey extends ItemSelectKeyBase implements ScrollListener, Rend
 		}
 	}
 
+	private static boolean Forge_onPickBlock(HitResult rayTraceResult) {
+		Minecraft mc = Minecraft.getInstance();
+		final HitResult tmpHitResult = mc.hitResult;
+		mc.hitResult = rayTraceResult;
+		final int tmpSlot = mc.player.getInventory().selected;
+		final ItemStack tmpStack = mc.player.getInventory().getSelected();
+		//
+		((VanillaPickInvoker)mc).lottweaks_invokeVanillaItemPick();
+		//
+		mc.hitResult = tmpHitResult;
+		return (tmpSlot != mc.player.getInventory().selected) || (tmpStack != mc.player.getInventory().getSelected());
+	}
+
 	private void normalModePick() {
 		Minecraft mc = Minecraft.getInstance();
 		HitResult rayTraceResult = mc.getCameraEntity().pick(255.0, mc.getFrameTime(), false);
 		if (rayTraceResult == null) {
 			return;
 		}
-		((VanillaPickInvoker)Minecraft.getInstance()).lottweaks_invokeVanillaItemPick();
-		boolean succeeded = true;
+		boolean succeeded = Forge_onPickBlock(rayTraceResult);
 		if (!succeeded) {
 			return;
 		}
