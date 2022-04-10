@@ -22,7 +22,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ExPickKey extends ItemSelectKeyBase {
+public class ExPickKey extends LTKeyBase {
 
 	private static final int HISTORY_SIZE = 10;
 
@@ -169,7 +169,7 @@ public class ExPickKey extends ItemSelectKeyBase {
 		} else {
 			int x = sr.getScaledWidth() / 2 - 90 + Minecraft.getMinecraft().player.inventory.currentItem * 20 + 2;
 			int y = sr.getScaledHeight() - 16 - 3;
-			LTRenderer.renderItemStacks(candidates, x, y, pressTime, event.getPartialTicks(), lastRotateTime, rotateDirection, LTRenderer.RenderMode.LINE);
+			LTRenderer.renderItemStacks(candidates, x, y, pressTime, event.getPartialTicks(), lastRotateTime, rotateDirection);
 		}
 	}
 
