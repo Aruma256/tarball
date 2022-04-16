@@ -10,7 +10,7 @@ import com.github.lotqwerty.lottweaks.LotTweaks;
 import com.github.lotqwerty.lottweaks.client.RotationHelper;
 import com.github.lotqwerty.lottweaks.client.RotationHelper.Group;
 import com.github.lotqwerty.lottweaks.client.selector.CircleItemSelector;
-import com.github.lotqwerty.lottweaks.client.selector.HorizontalItemSelector;
+import com.github.lotqwerty.lottweaks.client.selector.ColumnItemSelector;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -29,7 +29,7 @@ public class RotateKey extends LTKeyBase {
 	private int phase = 0;
 
 	private CircleItemSelector selector;
-	private List<HorizontalItemSelector> rowSelectors;
+	private List<ColumnItemSelector> rowSelectors;
 
 	public RotateKey(int keyCode, String category) {
 		super("Rotate", keyCode, category);
@@ -77,7 +77,7 @@ public class RotateKey extends LTKeyBase {
 			for (int row=3; row>=1; row--) {
 				stacksInColumn.add(mc.player.inventory.getStackInSlot(slot + row * InventoryPlayer.getHotbarSize()));
 			}
-			rowSelectors.add(new HorizontalItemSelector(stacksInColumn, slot));
+			rowSelectors.add(new ColumnItemSelector(stacksInColumn, slot));
 		}
 	}
 
@@ -143,7 +143,7 @@ public class RotateKey extends LTKeyBase {
 			selector.render(event.getResolution());
 		}
 		if (rowSelectors != null) {
-			for (HorizontalItemSelector selector : rowSelectors) {
+			for (ColumnItemSelector selector : rowSelectors) {
 				selector.render(event.getResolution());
 			}
 		}
