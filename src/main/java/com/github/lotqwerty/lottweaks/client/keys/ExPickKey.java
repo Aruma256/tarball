@@ -1,9 +1,15 @@
 package com.github.lotqwerty.lottweaks.client.keys;
 
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
 
-import com.github.lotqwerty.lottweaks.client.renderer.LTRenderer;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
+
+import com.github.lotqwerty.lottweaks.client.selector.CircleItemSelector;
+import com.github.lotqwerty.lottweaks.client.selector.HorizontalItemSelector;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -18,11 +24,12 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ExPickKey extends ItemSelectKeyBase {
+public class ExPickKey extends LTKeyBase {
 
 	private static final int HISTORY_SIZE = 10;
 
@@ -50,7 +57,8 @@ public class ExPickKey extends ItemSelectKeyBase {
 
 	private static final Deque<ItemStack> breakHistory = new LinkedList<>();
 
-	private boolean isHistoryMode = false;
+	private CircleItemSelector nearbyBlockSelector;
+	private HorizontalItemSelector historyBlockSelector;
 
 	public ExPickKey(int keyCode, String category) {
 		super("Ex Pick", keyCode, category);
@@ -59,7 +67,8 @@ public class ExPickKey extends ItemSelectKeyBase {
 	@Override
 	protected void onKeyPressStart() {
 		super.onKeyPressStart();
-		candidates.clear();
+		nearbyBlockSelector = null;
+		historyBlockSelector = null;
 		Minecraft mc = Minecraft.getMinecraft();
 		RayTraceResult rayTraceResult;
 
@@ -70,11 +79,8 @@ public class ExPickKey extends ItemSelectKeyBase {
 			}
 			return;
 		}
-		if (!mc.player.isSneaking()) {
-			normalModePick();
-		} else {
-			historyModePick();
-		}
+		normalModePick();
+		historyModePick();
 	}
 
 	private void normalModePick() {
@@ -87,37 +93,65 @@ public class ExPickKey extends ItemSelectKeyBase {
 		if (!succeeded) {
 			return;
 		}
-		ItemStack itemStack = mc.player.inventory.getCurrentItem();
-		if (itemStack.isEmpty()) {
-			return;
-		}
-		addToCandidatesWithDedup(itemStack);
+		List<ItemStack> results = new ArrayList<>();
+		results.add(mc.player.inventory.getCurrentItem());
 		BlockPos pos = rayTraceResult.getBlockPos();
 		for (BlockPos posDiff : SEARCH_POS) {
 			try {
 				BlockPos targetPos = pos.add(posDiff);
 				IBlockState state = mc.world.getBlockState(targetPos);
-				itemStack = state.getBlock().getPickBlock(state, new RayTraceResult(new Vec3d(targetPos), rayTraceResult.sideHit, targetPos), mc.world, targetPos, mc.player);
-				if (!itemStack.isEmpty()) {
-					addToCandidatesWithDedup(itemStack);
+				ItemStack pickedItemStack = state.getBlock().getPickBlock(state, new RayTraceResult(new Vec3d(targetPos), rayTraceResult.sideHit, targetPos), mc.world, targetPos, mc.player);
+				if (!pickedItemStack.isEmpty()) {
+					boolean isUnique = true;
+					for (ItemStack result : results) {
+						if (ItemStack.areItemStacksEqual(result, pickedItemStack)) {
+							isUnique = false;
+							break;
+						}
+					}
+					if (isUnique) {
+						results.add(pickedItemStack);
+					}
 				}
 			} catch (Exception e) {
 			}
+		}
+		if (results.size() > 1) {
+			nearbyBlockSelector = new CircleItemSelector(results, mc.player.inventory.currentItem);
 		}
 	}
 
 	private void historyModePick() {
 		if (!breakHistory.isEmpty()) {
-			candidates.addAll(breakHistory);
-			candidates.addFirst(Minecraft.getMinecraft().player.inventory.getCurrentItem());
-			isHistoryMode = true;
+			List<ItemStack> results = new LinkedList<>();
+			results.add(Minecraft.getMinecraft().player.inventory.getCurrentItem());
+			results.addAll(breakHistory);
+			historyBlockSelector = new HorizontalItemSelector(results, Minecraft.getMinecraft().player.inventory.currentItem);
 		}
 	}
 
 	@Override
 	protected void onKeyReleased() {
 		super.onKeyReleased();
-		isHistoryMode = false;
+		nearbyBlockSelector = null;
+		historyBlockSelector = null;
+	}
+
+	@SubscribeEvent
+	public void onRenderTick(final TickEvent.RenderTickEvent event) {
+		if (event.phase != TickEvent.Phase.START) {
+			return;
+		}
+		if (this.pressTime == 0) {
+			return;
+		}
+		if (nearbyBlockSelector == null) {
+			return;
+		}
+		boolean flag = Display.isActive(); // EntityRenderer#updateCameraAndRender
+		if (flag && Minecraft.getMinecraft().inGameHasFocus) {
+			nearbyBlockSelector.notifyMouseMovement(Mouse.getDX(), Mouse.getDY());
+		}
 	}
 
 	@SubscribeEvent
@@ -136,15 +170,10 @@ public class ExPickKey extends ItemSelectKeyBase {
 			return;
 		}
 		event.setCanceled(true);
-		if (candidates.isEmpty()) {
+		if (historyBlockSelector == null) {
 			return;
 		}
-		if (wheel > 0) {
-			this.rotateCandidatesForward();
-		}else {
-			this.rotateCandidatesBackward();
-		}
-		this.updateCurrentItemStack(candidates.getFirst());
+		historyBlockSelector.rotate(wheel);
 	}
 
 	@SubscribeEvent
@@ -158,18 +187,12 @@ public class ExPickKey extends ItemSelectKeyBase {
 		if (!Minecraft.getMinecraft().player.isCreative()) {
 			return;
 		}
-		if (candidates.isEmpty()) {
-			return;
-		}
 		ScaledResolution sr = event.getResolution();
-		if (!isHistoryMode) {
-			int x = sr.getScaledWidth() / 2 - 8;
-			int y = sr.getScaledHeight() / 2 - 8;
-			LTRenderer.renderItemStacks(candidates, x, y, pressTime, event.getPartialTicks(), lastRotateTime, rotateDirection);
-		} else {
-			int x = sr.getScaledWidth() / 2 - 90 + Minecraft.getMinecraft().player.inventory.currentItem * 20 + 2;
-			int y = sr.getScaledHeight() - 16 - 3;
-			LTRenderer.renderItemStacks(candidates, x, y, pressTime, event.getPartialTicks(), lastRotateTime, rotateDirection, LTRenderer.RenderMode.LINE);
+		if (nearbyBlockSelector != null) {
+			nearbyBlockSelector.render(sr);
+		}
+		if (historyBlockSelector != null) {
+			historyBlockSelector.render(sr);
 		}
 	}
 

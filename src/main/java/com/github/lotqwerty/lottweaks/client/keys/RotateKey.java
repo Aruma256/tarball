@@ -1,26 +1,35 @@
 package com.github.lotqwerty.lottweaks.client.keys;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
 
 import com.github.lotqwerty.lottweaks.LotTweaks;
 import com.github.lotqwerty.lottweaks.client.RotationHelper;
 import com.github.lotqwerty.lottweaks.client.RotationHelper.Group;
-import com.github.lotqwerty.lottweaks.client.renderer.LTRenderer;
+import com.github.lotqwerty.lottweaks.client.selector.CircleItemSelector;
+import com.github.lotqwerty.lottweaks.client.selector.ColumnItemSelector;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RotateKey extends ItemSelectKeyBase {
+public class RotateKey extends LTKeyBase {
 
 	private int phase = 0;
+
+	private CircleItemSelector selector;
+	private List<ColumnItemSelector> rowSelectors;
 
 	public RotateKey(int keyCode, String category) {
 		super("Rotate", keyCode, category);
@@ -46,25 +55,51 @@ public class RotateKey extends ItemSelectKeyBase {
 	protected void onKeyPressStart() {
 		super.onKeyPressStart();
 		this.updatePhase();
-		candidates.clear();
+		selector = null;
+		//
 		Minecraft mc = Minecraft.getMinecraft();
 		if (!mc.player.isCreative()) {
 			return;
 		}
+		//
 		ItemStack itemStack = mc.player.inventory.getCurrentItem();
-		if (itemStack.isEmpty()) {
-			return;
+		if (!itemStack.isEmpty()) {
+			List<ItemStack> results = RotationHelper.getAllRotateResult(itemStack, getGroup());
+			if (results != null && results.size() > 1) {
+				selector = new CircleItemSelector(results, mc.player.inventory.currentItem);
+			}
 		}
-		List<ItemStack> results = RotationHelper.getAllRotateResult(itemStack, getGroup());
-		if (results == null || results.size() <= 1) {
-			return;
+		//
+		rowSelectors = new ArrayList<>();
+		for (int slot=0; slot<InventoryPlayer.getHotbarSize(); slot++) {
+			List<ItemStack> stacksInColumn = new ArrayList<>();
+			stacksInColumn.add(mc.player.inventory.getStackInSlot(slot));
+			for (int row=3; row>=1; row--) {
+				stacksInColumn.add(mc.player.inventory.getStackInSlot(slot + row * InventoryPlayer.getHotbarSize()));
+			}
+			rowSelectors.add(new ColumnItemSelector(stacksInColumn, slot));
 		}
-		candidates.addAll(results);
 	}
 
 	@Override
 	protected void onKeyReleased() {
 		super.onKeyReleased();
+		selector = null;
+		rowSelectors = null;
+	}
+
+	@SubscribeEvent
+	public void onRenderTick(final TickEvent.RenderTickEvent event) {
+		if (event.phase != TickEvent.Phase.START) {
+			return;
+		}
+		if (this.pressTime == 0 || selector == null) {
+			return;
+		}
+		boolean flag = Display.isActive(); // EntityRenderer#updateCameraAndRender
+		if (flag && Minecraft.getMinecraft().inGameHasFocus) {
+			selector.notifyMouseMovement(Mouse.getDX(), Mouse.getDY());
+		}
 	}
 
 	@SubscribeEvent
@@ -79,20 +114,18 @@ public class RotateKey extends ItemSelectKeyBase {
 		if (event.isCanceled()) {
 			return;
 		}
+		if (rowSelectors == null) {
+			return;
+		}
 		int wheel = event.getDwheel();
 		if (wheel == 0) {
 			return;
 		}
 		event.setCanceled(true);
-		if (candidates.isEmpty()) {
-			return;
+		for (int slot=0; slot<InventoryPlayer.getHotbarSize(); slot++) {
+			rowSelectors.get(slot).rotate(wheel);
 		}
-		if (wheel > 0) {
-			this.rotateCandidatesForward();
-		}else {
-			this.rotateCandidatesBackward();
-		}
-		this.updateCurrentItemStack(candidates.getFirst());
+		this.selector = null;
 	}
 
 	@SubscribeEvent
@@ -101,20 +134,19 @@ public class RotateKey extends ItemSelectKeyBase {
 			return;
 		}
 		if (this.pressTime == 0) {
-			candidates.clear();
 			return;
 		}
 		if (!Minecraft.getMinecraft().player.isCreative()) {
 			return;
 		}
-		if (candidates.isEmpty()) {
-			return;
+		if (selector != null) {
+			selector.render(event.getResolution());
 		}
-		ScaledResolution sr = event.getResolution();
-		int x = sr.getScaledWidth() / 2 - 90 + Minecraft.getMinecraft().player.inventory.currentItem * 20 + 2;
-		int y = sr.getScaledHeight() - 16 - 3;
-		y -= 50 + (20 + candidates.size());
-		LTRenderer.renderItemStacks(candidates, x, y, pressTime, event.getPartialTicks(), lastRotateTime, rotateDirection);
+		if (rowSelectors != null) {
+			for (ColumnItemSelector selector : rowSelectors) {
+				selector.render(event.getResolution());
+			}
+		}
 	}
 
 }
