@@ -8,19 +8,17 @@ import net.minecraftforge.common.config.Config.RangeInt;
 import net.minecraftforge.common.config.Config.Type;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkCheckHandler;
 import net.minecraftforge.fml.relauncher.Side;
 
-import java.util.Arrays;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
 
+import com.github.lotqwerty.lottweaks.client.ItemGroupManager;
 import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
-import com.github.lotqwerty.lottweaks.client.RotationHelper;
 import com.github.lotqwerty.lottweaks.network.LTPacketHandler;
 import com.github.lotqwerty.lottweaks.network.ServerConnectionListener;
 
@@ -32,11 +30,8 @@ public class LotTweaks {
 	public static final String VERSION = "3.0.0";
 	public static Logger LOGGER;
 
-	private static final String HAS_BEEN_MOVED = String.format("'BLOCK_GROUPS' config has been moved to '%s'", RotationHelper.ITEMGROUP_CONFFILE_PRIMARY);
-
 	@Config(modid = MODID, type = Type.INSTANCE, name = NAME)
 	public static class CONFIG {
-		public static String[] BLOCK_GROUPS = {HAS_BEEN_MOVED};
 		@RangeInt(min = 0, max = 256)
 		public static int MAX_RANGE = 128;
 		@RangeInt(min = 1, max = 120)
@@ -68,26 +63,11 @@ public class LotTweaks {
 	@EventHandler
 	public void init(FMLPostInitializationEvent event) {
 		if (event.getSide() == Side.CLIENT) {
-			if (CONFIG.BLOCK_GROUPS.length > 0 && !CONFIG.BLOCK_GROUPS[0].equals(HAS_BEEN_MOVED)) {
-				RotationHelper.ITEM_GROUPS_STRLIST_PRIMARY = Arrays.asList(CONFIG.BLOCK_GROUPS);
-				RotationHelper.writeAllToFile();
-			}
-			RotationHelper.loadAllFromFile();
-			RotationHelper.loadAllItemGroupFromStrArray();
+			ItemGroupManager.instance.loadFromFile();
 		}
 		LTPacketHandler.init();
 		MinecraftForge.EVENT_BUS.register(new AdjustRangeHelper());
 		MinecraftForge.EVENT_BUS.register(new ServerConnectionListener());
-	}
-
-	@EventHandler
-	public void onLoadComplete(FMLLoadCompleteEvent event) {
-		if (event.getSide() == Side.CLIENT) {
-			if (CONFIG.BLOCK_GROUPS.length > 0 && !CONFIG.BLOCK_GROUPS[0].equals(HAS_BEEN_MOVED)) {
-				CONFIG.BLOCK_GROUPS = new String[]{HAS_BEEN_MOVED};
-				onConfigUpdate();
-			}
-		}
 	}
 
 	@NetworkCheckHandler
