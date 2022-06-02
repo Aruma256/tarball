@@ -106,7 +106,56 @@ public class ItemGroupManager {
 		return tmpChain;
 	}
 
+	public void save() {
+		try {
+			JsonWriter jsonWriter = new JsonWriter(new BufferedWriter(new FileWriter(CONFIG_FILE)));
+			jsonWriter.setIndent(JSON_INDENT);
+			jsonWriter.beginObject();
+				jsonWriter.name("primary");
+				writeGroup(jsonWriter, this.primaryGroupList);
+				jsonWriter.name("secondary");
+				writeGroup(jsonWriter, this.secondaryGroupList);
+			jsonWriter.endObject();
+			jsonWriter.close();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private void writeGroup(JsonWriter jsonWriter, List<List<ItemState>> groupList) throws IOException {
+		jsonWriter.beginArray();
+		for (List<ItemState> group : groupList) {
+			jsonWriter.beginArray();
+			for (ItemState itemState : group) {
+				jsonWriter.beginObject();
+				//
+				Item item = itemState.cachedStack.getItem();
+				int meta = itemState.cachedStack.getItemDamage();
+				String nbt = itemState.cachedStack.hasTagCompound() ? itemState.cachedStack.getTagCompound().toString() : null;
+				//
+				jsonWriter.setIndent("");
+				jsonWriter.name("id").value(Item.REGISTRY.getNameForObject(item).toString());
+				if (meta > 0) {
+					jsonWriter.name("meta").value(meta);
+				}
+				if (nbt != null) {
+					jsonWriter.name("nbt").value(nbt);
+				}
+				jsonWriter.endObject();
+				jsonWriter.setIndent(JSON_INDENT);
+			}
+			jsonWriter.endArray();
+		}
+		jsonWriter.endArray();
+	}
+
 	public void loadFromFile() {
+		if (!CONFIG_FILE.exists()) {
+			if (oldFileExists()) {
+				convertOldFile();
+			}
+		}
+		//
 		JsonObject json;
 		try {
 			json = new JsonParser().parse(new JsonReader(new BufferedReader(new FileReader(CONFIG_FILE)))).getAsJsonObject();
@@ -121,6 +170,17 @@ public class ItemGroupManager {
 		} catch (NBTException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private boolean oldFileExists() {
+		return new File(new File("config"), RotationHelper.ITEMGROUP_CONFFILE_PRIMARY).exists();
+	}
+
+	private void convertOldFile() {
+		RotationHelper.loadAllFromFile();
+		this.primaryGroupList = RotationHelper.loadPrimaryGroup();
+		this.secondaryGroupList = RotationHelper.loadSecondaryGroup();
+		save();
 	}
 
 }

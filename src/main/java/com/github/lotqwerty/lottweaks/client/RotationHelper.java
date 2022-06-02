@@ -26,27 +26,7 @@ public class RotationHelper {
 
 	public static final String ITEMGROUP_CONFFILE_PRIMARY = "LotTweaks-BlockGroups.txt";
 	private static final String ITEMGROUP_CONFFILE_SECONDARY = "LotTweaks-BlockGroups2.txt";
-
-	private static class ItemState {
-		private Item item;
-		private int meta;
-
-		public ItemState(Item item, int meta) {
-			this.item = item;
-			this.meta = meta;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			ItemState o = (ItemState)obj;
-			return this.item.equals(o.item) && this.meta == o.meta;
-		}
-		@Override
-		public int hashCode() {
-			return this.item.hashCode() + this.meta;
-		}
-	}
-
+/*
 	private static final HashMap<ItemState, ItemState> ITEM_CHAIN_PRIMARY = new HashMap<>();
 	private static final HashMap<ItemState, ItemState> ITEM_CHAIN_SECONDARY = new HashMap<>();
 
@@ -163,23 +143,23 @@ public class RotationHelper {
 		"//BLACK",
 		toSameColorsStr(15),
 	};
-
-	public static List<String> ITEM_GROUPS_STRLIST_PRIMARY = new ArrayList<>(Arrays.asList(DEFAULT_ITEM_GROUP_STRLIST_PRIMARY));
-	private static final List<String> ITEM_GROUPS_STRLIST_SECONDARY = new ArrayList<>(Arrays.asList(DEFAULT_ITEM_GROUP_STRLIST_SECONDARY));
+*/
+	public static List<String> ITEM_GROUPS_STRLIST_PRIMARY = new ArrayList<>();
+	private static final List<String> ITEM_GROUPS_STRLIST_SECONDARY = new ArrayList<>();
 
 	public static final List<String> LOG_GROUP_CONFIG = new ArrayList<>();
 
-	public enum Group {
+	private enum Group {
 		PRIMARY,
 		SECONDARY,
 	}
 
 	private static void warnGroupConfigErrors(String msg, int lineCount, Group group) {
-		String fullMsg =  String.format("%s (Line %d of %s group)", msg, lineCount, group.name());
-		LOG_GROUP_CONFIG.add(fullMsg);
-		LotTweaks.LOGGER.warn(fullMsg);
+//		String fullMsg =  String.format("%s (Line %d of %s group)", msg, lineCount, group.name());
+//		LOG_GROUP_CONFIG.add(fullMsg);
+//		LotTweaks.LOGGER.warn(fullMsg);
 	}
-
+/*
 	private static String toMetaVariationsStr(String name, int max) {
 		StringJoiner joiner = new StringJoiner(",");
 		for (int i=0;i<max;i++) {
@@ -205,7 +185,7 @@ public class RotationHelper {
 	private static HashMap<ItemState, ItemState> getItemChain(Group group) {
 		return (group == Group.PRIMARY) ? ITEM_CHAIN_PRIMARY : ITEM_CHAIN_SECONDARY;
 	}
-
+*/
 	private static List<String> getItemGroupStrList(Group group) {
 		return (group == Group.PRIMARY) ? ITEM_GROUPS_STRLIST_PRIMARY : ITEM_GROUPS_STRLIST_SECONDARY;
 	}
@@ -213,21 +193,12 @@ public class RotationHelper {
 	private static String getFileName(Group group) {
 		return (group == Group.PRIMARY) ? ITEMGROUP_CONFFILE_PRIMARY : ITEMGROUP_CONFFILE_SECONDARY;
 	}
-
+/*
 	public static boolean canRotate(ItemStack itemStack, Group group) {
 		if (itemStack == null || itemStack.isEmpty()) {
 			return false;
 		}
-		Item item = itemStack.getItem();
-		if (item == null || item == Items.AIR) {
-			return false;
-		}
-		int meta = itemStack.getItemDamage();
-		return getItemChain(group).containsKey(new ItemState(item, meta));
-	}
-	
-	private static ItemStack toItemStack(ItemState state) {
-		return new ItemStack(state.item, 1, state.meta);
+		return getItemChain(group).containsKey(new ItemState(itemStack));
 	}
 
 	public static List<ItemStack> getAllRotateResult(ItemStack itemStack, Group group){
@@ -235,12 +206,7 @@ public class RotationHelper {
 		if (itemStack == null || itemStack.isEmpty()) {
 			return null;
 		}
-		Item item = itemStack.getItem();
-		if (item == null || item == Items.AIR) {
-			return null;
-		}
-		int meta = itemStack.getItemDamage();
-		ItemState srcState = new ItemState(item, meta);
+		ItemState srcState = new ItemState(itemStack);
 		if (!getItemChain(group).containsKey(srcState)) {
 			return null;
 		}
@@ -248,7 +214,7 @@ public class RotationHelper {
 		ItemState state = getItemChain(group).get(srcState);
 		int counter = 0;
 		while (!state.equals(srcState)) {
-			stacks.add(toItemStack(state));
+			stacks.add(state.toItemStack());
 			state = getItemChain(group).get(state);
 			counter++;
 			if (counter >= 50000) {
@@ -267,8 +233,19 @@ public class RotationHelper {
 		}
 		return flag;
 	}
+*/
 
-	private static boolean loadItemGroupFromStrArray(Group group) {
+	public static List<List<ItemState>> loadPrimaryGroup() {
+		return loadItemGroupFromStrArray(Group.PRIMARY);
+	}
+
+	public static List<List<ItemState>> loadSecondaryGroup() {
+		return loadItemGroupFromStrArray(Group.SECONDARY);
+	}
+
+	private static List<List<ItemState>> loadItemGroupFromStrArray(Group group) {
+		List<List<ItemState>> res = new ArrayList<>();
+
 		HashMap<ItemState, ItemState> newItemChain = new HashMap<>();
 		try {
 			int lineCount = 0;
@@ -306,7 +283,7 @@ public class RotationHelper {
 						warnGroupConfigErrors(String.format("'%s' is not supported.", part), lineCount, group);
 						continue;
 					}
-					ItemState state = new ItemState(item, meta);
+					ItemState state = new ItemState(new ItemStack(item, 1, meta));
 					if (states.contains(state) || newItemChain.containsKey(state)) {
 						warnGroupConfigErrors(String.format("'%s' is duplicated.", part), lineCount, group);
 						continue;
@@ -320,16 +297,18 @@ public class RotationHelper {
 				for (int i=0;i<states.size();i++) {
 					newItemChain.put(states.get(i), states.get((i+1)%states.size()));
 				}
+				res.add(states);
 			}
 		} catch (Exception e) {
 			LotTweaks.LOGGER.error(e);
-			return false;
+//			return false;
 		}
-		getItemChain(group).clear();
-		getItemChain(group).putAll(newItemChain);
-		return true;
+//		getItemChain(group).clear();
+//		getItemChain(group).putAll(newItemChain);
+//		return true;
+		return res;
 	}
-
+/*
 	public static boolean tryToAddItemGroupFromCommand(String newItemGroup, Group group) {
 		List<String> strList = getItemGroupStrList(group);
 		strList.add(newItemGroup);
@@ -342,7 +321,7 @@ public class RotationHelper {
 			return false;
 		}
 	}
-
+*/
 	public static boolean loadAllFromFile() {
 		boolean flag = true;
 		for(Group group : Group.values()) {
@@ -356,7 +335,7 @@ public class RotationHelper {
 		try {
 			if (!file.exists()) {
 				LotTweaks.LOGGER.debug("Config file does not exist.");
-				writeToFile(group);
+//				writeToFile(group);
 			} else {
 				List<String> listFromFile = loadFile(file);
 				List<String> listOnMemory = getItemGroupStrList(group);
@@ -382,7 +361,7 @@ public class RotationHelper {
 		}
 		return Files.readAllLines(file.toPath(), Charset.defaultCharset());
 	}
-
+/*
 	public static void writeAllToFile() {
 		for(Group group : Group.values()) {
 			writeToFile(group);
@@ -407,5 +386,5 @@ public class RotationHelper {
 		}
 		LotTweaks.LOGGER.debug("Finished.");
 	}
-	
+*/
 }
