@@ -27,7 +27,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
-import net.minecraft.nbt.NBTTagCompound;
 
 public class ItemGroupManager {
 
@@ -90,8 +89,11 @@ public class ItemGroupManager {
 				JsonObject dict = element.getAsJsonObject();
 				Item item = Item.getByNameOrId(dict.get("id").getAsString());
 				int meta = dict.has("meta") ? dict.get("meta").getAsInt() : 0;
-				NBTTagCompound nbt = dict.has("nbt") ? JsonToNBT.getTagFromJson(dict.get("nbt").getAsString()) : null;
-				group.add(new ItemState(new ItemStack(item, 1, meta, nbt)));
+				ItemStack itemStack = new ItemStack(item, 1, meta);
+				if (dict.has("nbt")) {
+					itemStack.setTagCompound(JsonToNBT.getTagFromJson(dict.get("nbt").getAsString()));
+				}
+				group.add(new ItemState(itemStack));
 			}
 			groupList.add(group);
 		}
