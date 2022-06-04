@@ -33,34 +33,119 @@ public class ItemGroupManager {
 	public static final File CONFIG_FILE = new File(new File("config"), "LotTweaks-ItemGroup.json");
 	public static final String[] LOG_GROUP_CONFIG = {"Not implemented"};
 
-	public static ItemGroupManager instance = new ItemGroupManager();
+	private static ItemGroupManager instance;
 
 	public static enum Group {
 		PRIMARY,
 		SECONDARY
 	}
 
+	public static ItemGroupManager getInstance() {
+		return instance;
+	}
+
+	public static void init() {
+		if (!CONFIG_FILE.exists()) {
+			if (oldFileExists()) {
+				convertOldFile();
+			}
+		}
+		instance = loadFromFile();
+	}
+
+	private static ItemGroupManager loadFromFile() {
+		JsonObject json;
+		List<List<ItemState>> primaryGroupList;
+		List<List<ItemState>> secondaryGroupList;
+		try {
+			json = new JsonParser().parse(new JsonReader(new BufferedReader(new FileReader(CONFIG_FILE)))).getAsJsonObject();
+		} catch (JsonIOException | JsonSyntaxException | FileNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+		try {
+			primaryGroupList = readGroupFromJsonFile(json.get("primary").getAsJsonArray());
+			secondaryGroupList = readGroupFromJsonFile(json.get("secondary").getAsJsonArray());
+		} catch (NBTException e) {
+			throw new RuntimeException(e);
+		}
+		return new ItemGroupManager(primaryGroupList, secondaryGroupList);
+	}
+
+	private static List<List<ItemState>> readGroupFromJsonFile(JsonArray groupJsonArray) throws NBTException {
+		List<List<ItemState>> groupList = new ArrayList<>();
+		for(JsonElement groupJson : groupJsonArray) {
+			List<ItemState> group = new ArrayList<>();
+			for (JsonElement element : groupJson.getAsJsonArray()) {
+				JsonObject dict = element.getAsJsonObject();
+				Item item = Item.getByNameOrId(dict.get("id").getAsString());
+				int meta = dict.has("meta") ? dict.get("meta").getAsInt() : 0;
+				NBTTagCompound nbt = dict.has("nbt") ? JsonToNBT.getTagFromJson(dict.get("nbt").getAsString()) : null;
+				group.add(new ItemState(new ItemStack(item, 1, meta, nbt)));
+			}
+			groupList.add(group);
+		}
+		return groupList;
+	}
+
+	private static boolean oldFileExists() {
+		return new File(new File("config"), RotationHelper.ITEMGROUP_CONFFILE_PRIMARY).exists();
+	}
+
+	private static void convertOldFile() {
+		RotationHelper.loadAllFromFile();
+		new ItemGroupManager(RotationHelper.loadPrimaryGroup(), RotationHelper.loadSecondaryGroup()).save();
+	}
+
+	////////////////////////////////////////////////
+	////////////////////////////////////////////////
+	////////////////////////////////////////////////
+
 	private List<List<ItemState>> primaryGroupList;
 	private List<List<ItemState>> secondaryGroupList;
-	private Map<ItemState, ItemState> primaryChain;
-	private Map<ItemState, ItemState> secondaryChain;
+	private final Map<ItemState, ItemState> primaryChain = new HashMap<ItemState, ItemState>();
+	private final Map<ItemState, ItemState> secondaryChain = new HashMap<ItemState, ItemState>();
 
-	private ItemGroupManager() {
+	private ItemGroupManager(List<List<ItemState>> primaryGroupList, List<List<ItemState>> secondaryGroupList) {
+		this.primaryGroupList = primaryGroupList;
+		this.secondaryGroupList = secondaryGroupList;
+		createChain(primaryGroupList, Group.PRIMARY);
+		createChain(secondaryGroupList, Group.SECONDARY);
+	}
+
+	private Map<ItemState, ItemState> getChain(Group groupType) {
+		switch(groupType) {
+		case PRIMARY:
+			return this.primaryChain;
+		case SECONDARY:
+			return this.secondaryChain;
+		default:
+			throw new RuntimeException();
+		}
+	}
+
+	private void createChain(List<List<ItemState>> groupList, Group groupType) {
+		for (List<ItemState> group : groupList) {
+			addGroup(group, groupType);
+		}
+	}
+
+	public boolean addGroup(List<ItemState> group, Group groupType) {
+		Map<ItemState, ItemState> chain = getChain(groupType);
+		// check
+		for (ItemState itemState : group) {
+			if (chain.containsKey(itemState)) {
+				return false;
+			}
+		}
+		// add
+		for (int i=0; i<group.size(); i++) {
+			chain.put(group.get(i), group.get((i+1)%group.size()));
+		}
+		return true;
 	}
 
 	public boolean canRotate(ItemStack itemStack, Group group) {
 		return getChain(group).containsKey(new ItemState(itemStack));
-	}
-
-	private Map<ItemState, ItemState> getChain(Group group) {
-		switch(group) {
-		case PRIMARY:
-			return primaryChain;
-		case SECONDARY:
-			return secondaryChain;
-		default:
-			throw new RuntimeException();
-		}
 	}
 
 	public List<ItemStack> getVariantsList(ItemStack itemStack, Group group) {
@@ -78,32 +163,6 @@ public class ItemGroupManager {
 			if (loopCount >= 50000) throw new RuntimeException("Infinite loop!!");
 		}
 		return results;
-	}
-
-	private List<List<ItemState>> readGroup(JsonArray groupJsonArray) throws NBTException {
-		List<List<ItemState>> tmpGroupList = new ArrayList<>();
-		for(JsonElement groupJson : groupJsonArray) {
-			List<ItemState> group = new ArrayList<>();
-			for (JsonElement element : groupJson.getAsJsonArray()) {
-				JsonObject dict = element.getAsJsonObject();
-				Item item = Item.getByNameOrId(dict.get("id").getAsString());
-				int meta = dict.has("meta") ? dict.get("meta").getAsInt() : 0;
-				NBTTagCompound nbt = dict.has("nbt") ? JsonToNBT.getTagFromJson(dict.get("nbt").getAsString()) : null;
-				group.add(new ItemState(new ItemStack(item, 1, meta, nbt)));
-			}
-			tmpGroupList.add(group);
-		}
-		return tmpGroupList;
-	}
-
-	private Map<ItemState, ItemState> createChain(List<List<ItemState>> groupList) {
-		Map<ItemState, ItemState> tmpChain = new HashMap<>();
-		for (List<ItemState> group : groupList) {
-			for (int i=0; i<group.size(); i++) {
-				tmpChain.put(group.get(i), group.get((i+1)%group.size()));
-			}
-		}
-		return tmpChain;
 	}
 
 	public void save() {
@@ -147,40 +206,6 @@ public class ItemGroupManager {
 			jsonWriter.endArray();
 		}
 		jsonWriter.endArray();
-	}
-
-	public void loadFromFile() {
-		if (!CONFIG_FILE.exists()) {
-			if (oldFileExists()) {
-				convertOldFile();
-			}
-		}
-		//
-		JsonObject json;
-		try {
-			json = new JsonParser().parse(new JsonReader(new BufferedReader(new FileReader(CONFIG_FILE)))).getAsJsonObject();
-		} catch (JsonIOException | JsonSyntaxException | FileNotFoundException e) {
-			throw new RuntimeException(e);
-		}
-		try {
-			this.primaryGroupList = readGroup(json.get("primary").getAsJsonArray());
-			this.secondaryGroupList = readGroup(json.get("secondary").getAsJsonArray());
-			this.primaryChain = createChain(primaryGroupList);
-			this.secondaryChain = createChain(secondaryGroupList);
-		} catch (NBTException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	private boolean oldFileExists() {
-		return new File(new File("config"), RotationHelper.ITEMGROUP_CONFFILE_PRIMARY).exists();
-	}
-
-	private void convertOldFile() {
-		RotationHelper.loadAllFromFile();
-		this.primaryGroupList = RotationHelper.loadPrimaryGroup();
-		this.secondaryGroupList = RotationHelper.loadSecondaryGroup();
-		save();
 	}
 
 }
