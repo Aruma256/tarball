@@ -63,7 +63,7 @@ public class LotTweaks {
 	@EventHandler
 	public void init(FMLPostInitializationEvent event) {
 		if (event.getSide() == Side.CLIENT) {
-			ItemGroupManager.instance.loadFromFile();
+			ItemGroupManager.init();
 		}
 		LTPacketHandler.init();
 		MinecraftForge.EVENT_BUS.register(new AdjustRangeHelper());

@@ -64,7 +64,7 @@ public class RotateKey extends LTKeyBase {
 		//
 		ItemStack itemStack = mc.player.inventory.getCurrentItem();
 		if (!itemStack.isEmpty()) {
-			List<ItemStack> results = ItemGroupManager.instance.getVariantsList(itemStack, getGroup());
+			List<ItemStack> results = ItemGroupManager.getInstance(getGroup()).getVariantsList(itemStack);
 			if (results != null && results.size() > 1) {
 				selector = new CircleItemSelector(results, mc.player.inventory.currentItem);
 			}

@@ -9,8 +9,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -33,15 +35,23 @@ public class ItemGroupManager {
 	public static final File CONFIG_FILE = new File(new File("config"), "LotTweaks-ItemGroup.json");
 	public static final String[] LOG_GROUP_CONFIG = {"Not implemented"};
 
-	private static ItemGroupManager instance;
+	private static ItemGroupManager primaryInstance;
+	private static ItemGroupManager secondaryInstance;
 
 	public static enum Group {
 		PRIMARY,
 		SECONDARY
 	}
 
-	public static ItemGroupManager getInstance() {
-		return instance;
+	public static ItemGroupManager getInstance(Group groupType) {
+		switch(groupType) {
+		case PRIMARY:
+			return primaryInstance;
+		case SECONDARY:
+			return secondaryInstance;
+		default:
+			throw new RuntimeException();
+		}
 	}
 
 	public static void init() {
@@ -50,10 +60,10 @@ public class ItemGroupManager {
 				convertOldFile();
 			}
 		}
-		instance = loadFromFile();
+		loadFromFile();
 	}
 
-	private static ItemGroupManager loadFromFile() {
+	private static void loadFromFile() {
 		JsonObject json;
 		List<List<ItemState>> primaryGroupList;
 		List<List<ItemState>> secondaryGroupList;
@@ -68,7 +78,8 @@ public class ItemGroupManager {
 		} catch (NBTException e) {
 			throw new RuntimeException(e);
 		}
-		return new ItemGroupManager(primaryGroupList, secondaryGroupList);
+		primaryInstance = new ItemGroupManager(primaryGroupList, Group.PRIMARY);
+		secondaryInstance = new ItemGroupManager(secondaryGroupList, Group.SECONDARY);
 	}
 
 	private static List<List<ItemState>> readGroupFromJsonFile(JsonArray groupJsonArray) throws NBTException {
@@ -87,69 +98,100 @@ public class ItemGroupManager {
 		return groupList;
 	}
 
+	public static void save() {
+		save(getInstance(Group.PRIMARY), getInstance(Group.SECONDARY));
+	}
+
+	private static void save(ItemGroupManager primaryManager, ItemGroupManager secondaryManager) {
+		try {
+			JsonWriter jsonWriter = new JsonWriter(new BufferedWriter(new FileWriter(CONFIG_FILE)));
+			jsonWriter.setIndent(JSON_INDENT);
+			jsonWriter.beginObject();
+				jsonWriter.name("primary");
+				primaryManager.writeToJson(jsonWriter);
+				jsonWriter.name("secondary");
+				secondaryManager.writeToJson(jsonWriter);
+			jsonWriter.endObject();
+			jsonWriter.close();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	private static boolean oldFileExists() {
 		return new File(new File("config"), RotationHelper.ITEMGROUP_CONFFILE_PRIMARY).exists();
 	}
 
 	private static void convertOldFile() {
 		RotationHelper.loadAllFromFile();
-		new ItemGroupManager(RotationHelper.loadPrimaryGroup(), RotationHelper.loadSecondaryGroup()).save();
+		save(
+			new ItemGroupManager(RotationHelper.loadPrimaryGroup(), Group.PRIMARY),
+			new ItemGroupManager(RotationHelper.loadSecondaryGroup(), Group.SECONDARY)
+		);
 	}
 
 	////////////////////////////////////////////////
 	////////////////////////////////////////////////
 	////////////////////////////////////////////////
 
-	private List<List<ItemState>> primaryGroupList;
-	private List<List<ItemState>> secondaryGroupList;
-	private final Map<ItemState, ItemState> primaryChain = new HashMap<ItemState, ItemState>();
-	private final Map<ItemState, ItemState> secondaryChain = new HashMap<ItemState, ItemState>();
+	private List<List<ItemState>> groupList;
+	private final Map<ItemState, ItemState> chain = new HashMap<ItemState, ItemState>();
 
-	private ItemGroupManager(List<List<ItemState>> primaryGroupList, List<List<ItemState>> secondaryGroupList) {
-		this.primaryGroupList = primaryGroupList;
-		this.secondaryGroupList = secondaryGroupList;
-		createChain(primaryGroupList, Group.PRIMARY);
-		createChain(secondaryGroupList, Group.SECONDARY);
+	private ItemGroupManager(List<List<ItemState>> groupList, Group groupType) {
+		this.groupList = groupList;
+		initializeChain(groupList);
 	}
 
-	private Map<ItemState, ItemState> getChain(Group groupType) {
-		switch(groupType) {
-		case PRIMARY:
-			return this.primaryChain;
-		case SECONDARY:
-			return this.secondaryChain;
-		default:
-			throw new RuntimeException();
+	private void initializeChain(List<List<ItemState>> groupList) {
+		for (List<ItemState> rawGroup : groupList) {
+			addGroupToChain(rawGroup);
 		}
 	}
 
-	private void createChain(List<List<ItemState>> groupList, Group groupType) {
-		for (List<ItemState> group : groupList) {
-			addGroup(group, groupType);
+	public boolean addGroupFromCommand(List<ItemState> rawGroup) {
+		if (addGroupToChain(rawGroup)) {
+			this.groupList.add(rawGroup);
+			return true;
 		}
+		return false;
 	}
 
-	public boolean addGroup(List<ItemState> group, Group groupType) {
-		Map<ItemState, ItemState> chain = getChain(groupType);
+	private boolean addGroupToChain(List<ItemState> rawGroup) {
+		List<ItemState> validGroup = new ArrayList<>();
+		Set<ItemState> _set = new HashSet<>();
 		// check
-		for (ItemState itemState : group) {
+		for (ItemState itemState : rawGroup) {
 			if (chain.containsKey(itemState)) {
-				return false;
+				//TODO already exists
+				continue;
 			}
+			if (_set.contains(itemState)) {
+				//TODO duplicated
+				continue;
+			}
+			_set.add(itemState);
+			validGroup.add(itemState);
+		}
+		if (validGroup.size() <= 1) {
+			//TODO A group must contain 2 or more items
+			return false;
 		}
 		// add
-		for (int i=0; i<group.size(); i++) {
-			chain.put(group.get(i), group.get((i+1)%group.size()));
+		for (int i=0; i<validGroup.size(); i++) {
+			chain.put(validGroup.get(i), validGroup.get((i+1)%validGroup.size()));
 		}
 		return true;
 	}
 
-	public boolean canRotate(ItemStack itemStack, Group group) {
-		return getChain(group).containsKey(new ItemState(itemStack));
+	public boolean isRegistered(ItemStack itemStack) {
+		return chain.containsKey(new ItemState(itemStack));
 	}
 
-	public List<ItemStack> getVariantsList(ItemStack itemStack, Group group) {
-		final Map<ItemState, ItemState> chain = getChain(group);
+	public boolean canRotate(ItemStack itemStack) {
+		return chain.containsKey(new ItemState(itemStack));
+	}
+
+	public List<ItemStack> getVariantsList(ItemStack itemStack) {
 		List<ItemStack> results = new ArrayList<>();
 		results.add(itemStack);
 		//
@@ -165,23 +207,7 @@ public class ItemGroupManager {
 		return results;
 	}
 
-	public void save() {
-		try {
-			JsonWriter jsonWriter = new JsonWriter(new BufferedWriter(new FileWriter(CONFIG_FILE)));
-			jsonWriter.setIndent(JSON_INDENT);
-			jsonWriter.beginObject();
-				jsonWriter.name("primary");
-				writeGroup(jsonWriter, this.primaryGroupList);
-				jsonWriter.name("secondary");
-				writeGroup(jsonWriter, this.secondaryGroupList);
-			jsonWriter.endObject();
-			jsonWriter.close();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	private void writeGroup(JsonWriter jsonWriter, List<List<ItemState>> groupList) throws IOException {
+	private void writeToJson(JsonWriter jsonWriter) throws IOException {
 		jsonWriter.beginArray();
 		for (List<ItemState> group : groupList) {
 			jsonWriter.beginArray();
