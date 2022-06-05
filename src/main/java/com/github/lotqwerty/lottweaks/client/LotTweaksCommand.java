@@ -75,14 +75,18 @@ public class LotTweaksCommand extends CommandBase implements IClientCommand {
 			ItemGroupManager.save();
 			mc.ingameGUI.addChatMessage(ChatType.SYSTEM, new TextComponentString(String.format("LotTweaks: added %d items", count)));
 		} else {
-			mc.ingameGUI.addChatMessage(ChatType.SYSTEM, new TextComponentString(TextFormatting.RED + "LotTweaks: failed to add items"));
+			mc.ingameGUI.addChatMessage(ChatType.SYSTEM, new TextComponentString(TextFormatting.RED + "LotTweaks: failed to create a new group"));
+			LotTweaksClient.showErrorLogToChat();
 		}
 	}
 
 	private void executeReload() {
 		Minecraft mc = Minecraft.getMinecraft();
-		ItemGroupManager.init();
-		mc.ingameGUI.addChatMessage(ChatType.SYSTEM, new TextComponentString("LotTweaks: reload succeeded!"));
+		if (ItemGroupManager.init()) {
+			mc.ingameGUI.addChatMessage(ChatType.SYSTEM, new TextComponentString("LotTweaks: reload succeeded!"));
+		} else {
+			mc.ingameGUI.addChatMessage(ChatType.SYSTEM, new TextComponentString("LotTweaks: reload failed"));
+		}
 		LotTweaksClient.showErrorLogToChat();
 	}
 

@@ -7,11 +7,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 import com.google.gson.JsonArray;
@@ -32,7 +34,7 @@ public class ItemGroupManager {
 
 	private static final String JSON_INDENT = "  ";
 	public static final File CONFIG_FILE = new File(new File("config"), "LotTweaks-ItemGroup.json");
-	public static final String[] LOG_GROUP_CONFIG = {"Not implemented"};
+	public static final Queue<String> LOG_GROUP_CONFIG = new ArrayDeque<>();
 
 	private static ItemGroupManager primaryInstance;
 	private static ItemGroupManager secondaryInstance;
@@ -53,35 +55,39 @@ public class ItemGroupManager {
 		}
 	}
 
-	public static void init() {
+	public static boolean init() {
 		if (!CONFIG_FILE.exists()) {
 			if (oldFileExists()) {
 				convertOldFile();
 			}
 		}
-		loadFromFile();
+		return loadFromFile();
 	}
 
-	private static void loadFromFile() {
+	private static boolean loadFromFile() {
 		JsonObject json;
 		List<List<ItemState>> primaryGroupList;
 		List<List<ItemState>> secondaryGroupList;
 		try {
 			json = new JsonParser().parse(new JsonReader(new BufferedReader(new FileReader(CONFIG_FILE)))).getAsJsonObject();
-		} catch (JsonIOException | JsonSyntaxException | FileNotFoundException e) {
-			throw new RuntimeException(e);
-		}
-		try {
 			primaryGroupList = readGroupFromJsonFile(json.get("primary").getAsJsonArray());
 			secondaryGroupList = readGroupFromJsonFile(json.get("secondary").getAsJsonArray());
-		} catch (NBTException e) {
-			throw new RuntimeException(e);
+		} catch (JsonIOException e1) {
+			LOG_GROUP_CONFIG.add("JsonIOError");
+			return false;
+		} catch (JsonSyntaxException | IllegalStateException e1) {
+			LOG_GROUP_CONFIG.add("JsonSyntaxError");
+			return false;
+		} catch (FileNotFoundException e1) {
+			LOG_GROUP_CONFIG.add("ERROR FileNotFound");
+			return false;
 		}
 		primaryInstance = new ItemGroupManager(primaryGroupList, Group.PRIMARY);
 		secondaryInstance = new ItemGroupManager(secondaryGroupList, Group.SECONDARY);
+		return true;
 	}
 
-	private static List<List<ItemState>> readGroupFromJsonFile(JsonArray groupJsonArray) throws NBTException {
+	private static List<List<ItemState>> readGroupFromJsonFile(JsonArray groupJsonArray) {
 		List<List<ItemState>> groupList = new ArrayList<>();
 		for(JsonElement groupJson : groupJsonArray) {
 			List<ItemState> group = new ArrayList<>();
@@ -91,7 +97,13 @@ public class ItemGroupManager {
 				int meta = dict.has("meta") ? dict.get("meta").getAsInt() : 0;
 				ItemStack itemStack = new ItemStack(item, 1, meta);
 				if (dict.has("nbt")) {
-					itemStack.setTagCompound(JsonToNBT.getTagFromJson(dict.get("nbt").getAsString()));
+					String nbtString = dict.get("nbt").getAsString();
+					try {
+						itemStack.setTagCompound(JsonToNBT.getTagFromJson(nbtString));
+					} catch (NBTException e) {
+						LOG_GROUP_CONFIG.add("NBTException -> " + nbtString);
+						continue;
+					}
 				}
 				group.add(new ItemState(itemStack));
 			}
@@ -146,36 +158,39 @@ public class ItemGroupManager {
 
 	private void initializeChain(List<List<ItemState>> groupList) {
 		for (List<ItemState> rawGroup : groupList) {
-			addGroupToChain(rawGroup);
+			addGroupToChain(rawGroup, false);
 		}
 	}
 
 	public boolean addGroupFromCommand(List<ItemState> rawGroup) {
-		if (addGroupToChain(rawGroup)) {
+		if (addGroupToChain(rawGroup, true)) {
 			this.groupList.add(rawGroup);
 			return true;
 		}
 		return false;
 	}
 
-	private boolean addGroupToChain(List<ItemState> rawGroup) {
+	private boolean addGroupToChain(List<ItemState> rawGroup, boolean strict) {
 		List<ItemState> validGroup = new ArrayList<>();
 		Set<ItemState> _set = new HashSet<>();
 		// check
 		for (ItemState itemState : rawGroup) {
-			if (chain.containsKey(itemState)) {
-				//TODO already exists
-				continue;
-			}
-			if (_set.contains(itemState)) {
-				//TODO duplicated
+			if (chain.containsKey(itemState) || _set.contains(itemState)) {
+				String itemName = Item.REGISTRY.getNameForObject(itemState.cachedStack.getItem()).toString();
+				int meta = itemState.cachedStack.getItemDamage();
+				if (itemState.cachedStack.hasTagCompound()) {
+					LOG_GROUP_CONFIG.add(String.format("Item config '%s/%d/%s' is duplicated.", itemName, meta, itemState.cachedStack.getTagCompound().toString()));
+				} else {
+					LOG_GROUP_CONFIG.add(String.format("Item config '%s/%d' is duplicated.", itemName, meta));
+				}
+				if (strict) return false;
 				continue;
 			}
 			_set.add(itemState);
 			validGroup.add(itemState);
 		}
 		if (validGroup.size() <= 1) {
-			//TODO A group must contain 2 or more items
+			LOG_GROUP_CONFIG.add("A group must have 2 or more elements");
 			return false;
 		}
 		// add
