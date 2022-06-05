@@ -1,9 +1,10 @@
 package com.github.lotqwerty.lottweaks.client;
 
-import java.util.StringJoiner;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.github.lotqwerty.lottweaks.LotTweaks;
-import com.github.lotqwerty.lottweaks.client.RotationHelper.Group;
+import com.github.lotqwerty.lottweaks.client.ItemGroupManager.Group;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
@@ -11,8 +12,6 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.ChatType;
@@ -57,59 +56,36 @@ public class LotTweaksCommand extends CommandBase implements IClientCommand {
 		}
 	}
 
-	private void executeAdd(Group group) throws CommandException {
+	private void executeAdd(Group groupType) throws CommandException {
 		Minecraft mc = Minecraft.getMinecraft();
-		StringJoiner stringJoiner = new StringJoiner(",");
+		List<ItemState> group = new ArrayList<>();
 		int count = 0;
 		for (int i = 0; i < InventoryPlayer.getHotbarSize(); i++) {
 			ItemStack itemStack = mc.player.inventory.getStackInSlot(i);
-			if (RotationHelper.canRotate(itemStack, group)) {
-				throw new CommandException(String.format("Already exists (%d)", i + 1), new Object[0]);
-			}
-			System.out.println("Hello");
 			if (itemStack.isEmpty()) {
 				break;
 			}
-			Item item = itemStack.getItem();
-			int meta = itemStack.getItemDamage();
-			if (item == Items.AIR) {
-				throw new CommandException(String.format("Failed to get item instance. (%d)", i + 1), new Object[0]);
+			if (ItemGroupManager.getInstance(groupType).isRegistered(itemStack)) {
+				throw new CommandException(String.format("LotTweaks: The item in the slot %d is already registered.", i+1), new Object[0]);
 			}
-			String name = Item.REGISTRY.getNameForObject(item).toString();
-			if (meta == 0) {
-				stringJoiner.add(name);
-			} else {
-				stringJoiner.add(String.format("%s/%d", name, meta));
-			}
+			group.add(new ItemState(itemStack));
 			count++;
 		}
-		String line = stringJoiner.toString();
-		if (line.isEmpty()) {
-			throw new CommandException(String.format("Hotbar is empty."), new Object[0]);
-		}
-		LotTweaks.LOGGER.debug("adding a new block/item-group from /lottweaks command");
-		LotTweaks.LOGGER.debug(line);
-		boolean succeeded = RotationHelper.tryToAddItemGroupFromCommand(line, group);
-		if (succeeded) {
-			mc.ingameGUI.addChatMessage(ChatType.SYSTEM,
-					new TextComponentString(String.format("LotTweaks: added %d blocks/items", count)));
+		if (ItemGroupManager.getInstance(groupType).addGroupFromCommand(group)) {
+			ItemGroupManager.save();
+			mc.ingameGUI.addChatMessage(ChatType.SYSTEM, new TextComponentString(String.format("LotTweaks: added %d items", count)));
 		} else {
-			mc.ingameGUI.addChatMessage(ChatType.SYSTEM,
-					new TextComponentString(TextFormatting.RED + "LotTweaks: failed to add blocks/items"));
+			mc.ingameGUI.addChatMessage(ChatType.SYSTEM, new TextComponentString(TextFormatting.RED + "LotTweaks: failed to create a new group"));
+			LotTweaksClient.showErrorLogToChat();
 		}
 	}
 
 	private void executeReload() {
 		Minecraft mc = Minecraft.getMinecraft();
-		try {
-			boolean f;
-			f = RotationHelper.loadAllFromFile();
-			if (!f) throw new CommandException("LotTweaks: failed to reload config file", new Object[0]);
-			f = RotationHelper.loadAllItemGroupFromStrArray();
-			if (!f) throw new CommandException("LotTweaks: failed to reload blocks", new Object[0]);
+		if (ItemGroupManager.init()) {
 			mc.ingameGUI.addChatMessage(ChatType.SYSTEM, new TextComponentString("LotTweaks: reload succeeded!"));
-		} catch (CommandException e) {
-			mc.ingameGUI.addChatMessage(ChatType.SYSTEM, new TextComponentString(TextFormatting.RED + e.getMessage()));
+		} else {
+			mc.ingameGUI.addChatMessage(ChatType.SYSTEM, new TextComponentString("LotTweaks: reload failed"));
 		}
 		LotTweaksClient.showErrorLogToChat();
 	}

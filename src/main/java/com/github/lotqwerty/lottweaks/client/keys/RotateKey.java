@@ -7,8 +7,8 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
 import com.github.lotqwerty.lottweaks.LotTweaks;
-import com.github.lotqwerty.lottweaks.client.RotationHelper;
-import com.github.lotqwerty.lottweaks.client.RotationHelper.Group;
+import com.github.lotqwerty.lottweaks.client.ItemGroupManager;
+import com.github.lotqwerty.lottweaks.client.ItemGroupManager.Group;
 import com.github.lotqwerty.lottweaks.client.selector.CircleItemSelector;
 import com.github.lotqwerty.lottweaks.client.selector.ColumnItemSelector;
 
@@ -64,7 +64,7 @@ public class RotateKey extends LTKeyBase {
 		//
 		ItemStack itemStack = mc.player.inventory.getCurrentItem();
 		if (!itemStack.isEmpty()) {
-			List<ItemStack> results = RotationHelper.getAllRotateResult(itemStack, getGroup());
+			List<ItemStack> results = ItemGroupManager.getInstance(getGroup()).getVariantsList(itemStack);
 			if (results != null && results.size() > 1) {
 				selector = new CircleItemSelector(results, mc.player.inventory.currentItem);
 			}
