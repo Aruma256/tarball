@@ -199,7 +199,16 @@ public class ItemGroupManager {
 		//
 		int loopCount = 0;
 		ItemState baseState = new ItemState(itemStack);
+		if (!chain.containsKey(baseState)) {
+			itemStack = itemStack.copy();
+			itemStack.setTagCompound(null);
+			baseState = new ItemState(itemStack);
+			if (!chain.containsKey(baseState)) {
+				return null;
+			}
+		}
 		ItemState nextState = chain.get(baseState);
+		//
 		while(!baseState.equals(nextState)) {
 			results.add(nextState.toItemStack());
 			nextState = chain.get(nextState);
