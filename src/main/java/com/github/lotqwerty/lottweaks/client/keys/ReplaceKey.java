@@ -62,7 +62,7 @@ public class ReplaceKey extends LTKeyBase {
 		if (lockedBlockState == null) {
 			return;
 		}
-		if (SelectionBoxRenderer.render(event.getCamera(), event.getPoseStack(), event.getMultiBufferSource().getBuffer(RenderType.lines()), event.getTarget().getBlockPos(), event.getPartialTicks(), 1f, 0f, 0f)) {
+		if (SelectionBoxRenderer.render(event.getCamera(), event.getPoseStack(), event.getMultiBufferSource().getBuffer(RenderType.lines()), event.getTarget().getBlockPos(), event.getPartialTick(), 1f, 0f, 0f)) {
 			event.setCanceled(true);
 		}
 	}

@@ -9,10 +9,11 @@ import com.github.lotqwerty.lottweaks.client.keys.ReplaceKey;
 import com.github.lotqwerty.lottweaks.client.keys.RotateKey;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.Util;
 import net.minecraft.network.chat.ChatType;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -68,7 +69,7 @@ public class LotTweaksClient
 		if (LotTweaks.CONFIG.SHOW_BLOCKCONFIG_ERROR_LOG_TO_CHAT.get()) {
 			Minecraft mc = Minecraft.getInstance();
 			for (String line : RotationHelper.LOG_GROUP_CONFIG) {
-				mc.gui.handleChat(ChatType.SYSTEM, new TextComponent(String.format("LotTweaks: %s%s", ChatFormatting.RED, line)), Util.NIL_UUID);
+				mc.gui.handleSystemChat(BuiltinRegistries.CHAT_TYPE.get(ChatType.SYSTEM), Component.literal(String.format("LotTweaks: %s%s", ChatFormatting.RED, line)));
 			}
 		}
 	}
