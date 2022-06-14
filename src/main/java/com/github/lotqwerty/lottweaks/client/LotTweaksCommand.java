@@ -58,9 +58,6 @@ public class LotTweaksCommand extends LiteralArgumentBuilder<CommandSourceStack>
 		int count = 0;
 		for (int i = 0; i < Inventory.getSelectionSize(); i++) {
 			ItemStack itemStack = mc.player.getInventory().getItem(i);
-			if (RotationHelper.canRotate(itemStack, group)) {
-				throw new CommandRuntimeException(Component.literal(String.format("Already exists (%d)", i + 1)));
-			}
 			if (itemStack.isEmpty()) {
 				break;
 			}
@@ -69,6 +66,9 @@ public class LotTweaksCommand extends LiteralArgumentBuilder<CommandSourceStack>
 				throw new CommandRuntimeException(Component.literal(String.format("Failed to get item instance. (%d)", i + 1)));
 			}
 			String name = ForgeRegistries.ITEMS.getKey(item).toString();
+			if (RotationHelper.canRotate(itemStack, group)) {
+				throw new CommandRuntimeException(Component.literal(String.format("'%s' already exists (slot %d)", name, i + 1)));
+			}
 			stringJoiner.add(name);
 			count++;
 		}
