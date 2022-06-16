@@ -19,17 +19,18 @@ import com.github.lotqwerty.lottweaks.fabric.ScrollEvent.ScrollListener;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.network.chat.ChatType;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 
 @Environment(EnvType.CLIENT)
 public class LotTweaksClient implements ClientModInitializer, ClientPlayConnectionEvents.Init, ClientPlayConnectionEvents.Join
@@ -49,7 +50,7 @@ public class LotTweaksClient implements ClientModInitializer, ClientPlayConnecti
 		ClientPlayConnectionEvents.INIT.register(this);
 		ClientPlayConnectionEvents.JOIN.register(this);
 		//
-		registerToMyEventBus(new LotTweaksCommand());
+		ClientCommandRegistrationCallback.EVENT.register(new LotTweaksCommand());
 		//
 		LTPacketHandlerClient.initClient();
 	}
@@ -97,7 +98,7 @@ public class LotTweaksClient implements ClientModInitializer, ClientPlayConnecti
 		if (LotTweaks.CONFIG.SHOW_BLOCKCONFIG_ERROR_LOG_TO_CHAT) {
 			Minecraft mc = Minecraft.getInstance();
 			for (String line : RotationHelper.LOG_GROUP_CONFIG) {
-				mc.gui.handleChat(ChatType.SYSTEM, new TextComponent(String.format("LotTweaks: %s%s", ChatFormatting.RED, line)), Util.NIL_UUID);
+				mc.gui.handleSystemChat(BuiltinRegistries.CHAT_TYPE.get(ChatType.SYSTEM), Component.literal(String.format("LotTweaks: %s%s", ChatFormatting.RED, line)));
 			}
 		}
 	}
