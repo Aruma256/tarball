@@ -9,8 +9,7 @@
     "MouseScrollRedirector",
     "HotbarRendererHook",
     "VanillaPickInvoker",
-    "DrawShapeOutlineInjector",
-    "ClientSendChatHook"
+    "DrawShapeOutlineInjector"
   ],
   "server": [
   ],
