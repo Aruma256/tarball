@@ -3,10 +3,13 @@ package com.github.lotqwerty.lottweaks.client;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,7 +72,7 @@ public class ItemGroupManager {
 		List<List<ItemState>> primaryGroupList;
 		List<List<ItemState>> secondaryGroupList;
 		try {
-			json = new JsonParser().parse(new JsonReader(new BufferedReader(new FileReader(CONFIG_FILE)))).getAsJsonObject();
+			json = new JsonParser().parse(new JsonReader(new BufferedReader(new InputStreamReader(new FileInputStream(CONFIG_FILE), StandardCharsets.UTF_8)))).getAsJsonObject();
 			primaryGroupList = readGroupFromJsonFile(json.get("primary").getAsJsonArray());
 			secondaryGroupList = readGroupFromJsonFile(json.get("secondary").getAsJsonArray());
 		} catch (JsonIOException e1) {
@@ -118,7 +121,7 @@ public class ItemGroupManager {
 
 	private static void save(ItemGroupManager primaryManager, ItemGroupManager secondaryManager) {
 		try {
-			JsonWriter jsonWriter = new JsonWriter(new BufferedWriter(new FileWriter(CONFIG_FILE)));
+			JsonWriter jsonWriter = new JsonWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(CONFIG_FILE), StandardCharsets.UTF_8)));
 			jsonWriter.setIndent(JSON_INDENT);
 			jsonWriter.beginObject();
 				jsonWriter.name("primary");
