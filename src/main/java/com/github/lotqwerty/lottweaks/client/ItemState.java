@@ -1,20 +1,10 @@
 package com.github.lotqwerty.lottweaks.client;
 
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 public class ItemState {
 
 	protected ItemStack cachedStack;
-
-	public ItemState(Block block) {
-		this(new ItemStack(block));
-	}
-
-	public ItemState(Item item) {
-		this(new ItemStack(item));
-	}
 
 	public ItemState(ItemStack itemStack) {
 		this.cachedStack = itemStack;

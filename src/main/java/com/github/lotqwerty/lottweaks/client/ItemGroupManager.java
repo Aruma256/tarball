@@ -62,9 +62,18 @@ public class ItemGroupManager {
 		if (!CONFIG_FILE.exists()) {
 			if (oldFileExists()) {
 				convertOldFile();
+			} else {
+				generateDefaultConfig();
 			}
 		}
 		return loadFromFile();
+	}
+
+	private static void generateDefaultConfig() {
+		save(
+			new ItemGroupManager(DefaultGroup.getDefaultPrimaryGroupList(), Group.PRIMARY),
+			new ItemGroupManager(DefaultGroup.getDefaultSecondaryGroupList(), Group.SECONDARY)
+		);
 	}
 
 	private static boolean loadFromFile() {
