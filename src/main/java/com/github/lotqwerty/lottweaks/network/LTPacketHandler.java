@@ -4,7 +4,6 @@ import java.nio.charset.StandardCharsets;
 
 import com.github.lotqwerty.lottweaks.AdjustRangeHelper;
 import com.github.lotqwerty.lottweaks.LotTweaks;
-import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
@@ -29,16 +28,22 @@ public class LTPacketHandler {
 	public static void init() {
 		int id = 0;
 		INSTANCE.registerMessage(ReplaceMessageHandler.class, ReplaceMessage.class, id++, Side.SERVER);
-		INSTANCE.registerMessage(AdjustRangeMessageHandler.class, AdjustRangeMessage.class, id++, Side.SERVER);
+		id++;
 		INSTANCE.registerMessage(HelloMessageHandler.class, HelloMessage.class, id++, Side.CLIENT);
+		INSTANCE.registerMessage(SetReachBaseMessageHandler.class, SetReachBaseMessage.class, id++, Side.SERVER);
+		INSTANCE.registerMessage(UpdateReachExtensionMessageHandler.class, UpdateReachExtensionMessage.class, id++, Side.SERVER);
 	}
 
 	public static void sendReplaceMessage(BlockPos pos, Block block, int meta, Block checkBlock) {
 		INSTANCE.sendToServer(new ReplaceMessage(pos, block, meta, checkBlock));
 	}
 
-	public static void sendReachRangeMessage(double dist) {
-		INSTANCE.sendToServer(new AdjustRangeMessage(dist));
+	public static void sendReachRangeMessage(int dist) {
+		INSTANCE.sendToServer(new SetReachBaseMessage(dist));
+	}
+
+	public static void sendReachExtensionMessage(int dist) {
+		INSTANCE.sendToServer(new UpdateReachExtensionMessage(dist));
 	}
 
 	public static void sendHelloMessage(EntityPlayerMP player) {
@@ -122,46 +127,88 @@ public class LTPacketHandler {
 		}
 	}
 
-	// AdjustRange
+	// SetBaseReach
 
-	public static class AdjustRangeMessage implements IMessage {
+	public static class SetReachBaseMessage implements IMessage {
 
-		private double dist;
+		private int dist;
 
-		public AdjustRangeMessage(double dist) {
+		public SetReachBaseMessage(int dist) {
 			this.dist = dist;
 		}
 
-		public AdjustRangeMessage() {
+		public SetReachBaseMessage() {
 		}
 
 		@Override
 		public void toBytes(ByteBuf buf) {
-			buf.writeDouble(this.dist);
+			buf.writeInt(this.dist);
 		}
 
 		@Override
 		public void fromBytes(ByteBuf buf) {
-			this.dist = buf.readDouble();
+			this.dist = buf.readInt();
 		}
 
 	}
 
-	public static class AdjustRangeMessageHandler implements IMessageHandler<AdjustRangeMessage, IMessage> {
+	public static class SetReachBaseMessageHandler implements IMessageHandler<SetReachBaseMessage, IMessage> {
 
 		@Override
-		public IMessage onMessage(AdjustRangeMessage message, MessageContext ctx) {
+		public IMessage onMessage(SetReachBaseMessage message, MessageContext ctx) {
 			final EntityPlayerMP player = ctx.getServerHandler().player;
 			if (!player.isCreative()) {
 				return null;
 			}
 			player.getServerWorld().addScheduledTask(() -> {
-				double dist = message.dist;
-				if (dist < 0) {
-					return;
-				}
+				int dist = message.dist;
 				dist = Math.min(LotTweaks.CONFIG.MAX_RANGE, dist);
-				AdjustRangeHelper.changeRangeModifier(player, dist);
+				AdjustRangeHelper.setV3BaseModifier(player, dist);
+			});
+			return null;
+		}
+	}
+
+	// SetBaseReach
+
+	public static class UpdateReachExtensionMessage implements IMessage {
+
+		private int dist;
+
+		public UpdateReachExtensionMessage(int dist) {
+			this.dist = dist;
+		}
+
+		public UpdateReachExtensionMessage() {
+		}
+
+		@Override
+		public void toBytes(ByteBuf buf) {
+			buf.writeInt(this.dist);
+		}
+
+		@Override
+		public void fromBytes(ByteBuf buf) {
+			this.dist = buf.readInt();
+		}
+
+	}
+
+	public static class UpdateReachExtensionMessageHandler implements IMessageHandler<UpdateReachExtensionMessage, IMessage> {
+
+		@Override
+		public IMessage onMessage(UpdateReachExtensionMessage message, MessageContext ctx) {
+			final EntityPlayerMP player = ctx.getServerHandler().player;
+			if (!player.isCreative()) {
+				return null;
+			}
+			player.getServerWorld().addScheduledTask(() -> {
+				int dist = message.dist;
+				if (dist != 0) {
+					AdjustRangeHelper.setV3ExtentionModifier(player, dist);
+				} else {
+					AdjustRangeHelper.clearV3ExtentionModifier(player);
+				}
 			});
 			return null;
 		}
@@ -195,9 +242,17 @@ public class LTPacketHandler {
 
 	public static class HelloMessageHandler implements IMessageHandler<HelloMessage, IMessage> {
 
+		public static HelloCallback callback = null;
+
+		public static interface HelloCallback {
+			public void onHello(String version);
+		}
+
 		@Override
 		public IMessage onMessage(HelloMessage message, MessageContext ctx) {
-			LotTweaksClient.setServerVersion(message.version);
+			if (callback != null) {
+				callback.onHello(message.version);
+			}
 			return null;
 		}
 

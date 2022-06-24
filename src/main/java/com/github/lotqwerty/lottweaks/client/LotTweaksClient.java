@@ -7,6 +7,8 @@ import com.github.lotqwerty.lottweaks.client.keys.ExPickKey;
 import com.github.lotqwerty.lottweaks.client.keys.AdjustRangeKey;
 import com.github.lotqwerty.lottweaks.client.keys.ReplaceKey;
 import com.github.lotqwerty.lottweaks.client.keys.RotateKey;
+import com.github.lotqwerty.lottweaks.network.LTPacketHandler;
+import com.github.lotqwerty.lottweaks.network.LTPacketHandler.HelloMessageHandler.HelloCallback;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
@@ -24,7 +26,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class LotTweaksClient
+public class LotTweaksClient implements HelloCallback
 {
 	private static String serverVersion = "0";
 
@@ -43,7 +45,9 @@ public class LotTweaksClient
 		MinecraftForge.EVENT_BUS.register(key);
 		ClientRegistry.registerKeyBinding(key);
 		//
-		MinecraftForge.EVENT_BUS.register(new LotTweaksClient());
+		LotTweaksClient instance = new LotTweaksClient();
+		MinecraftForge.EVENT_BUS.register(instance);
+		LTPacketHandler.HelloMessageHandler.callback = instance;
 		//
 		ClientCommandHandler.instance.registerCommand(new LotTweaksCommand());
 	}
@@ -89,6 +93,12 @@ public class LotTweaksClient
 		if (event.getModID().equals(LotTweaks.MODID)) {
 			LotTweaks.onConfigUpdate();
 		}
+	}
+
+	@Override
+	public void onHello(String version) {
+		LotTweaksClient.setServerVersion(version);
+		LTPacketHandler.sendReachRangeMessage(10);
 	}
 
 }
