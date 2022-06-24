@@ -1,4 +1,4 @@
-package com.github.lotqwerty.lottweaks.client;
+package com.github.aruma256.lottweaks.client;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.github.lotqwerty.lottweaks.LotTweaks;
+import com.github.aruma256.lottweaks.LotTweaks;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;

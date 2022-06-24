@@ -1,10 +1,10 @@
-package com.github.lotqwerty.lottweaks.client;
+package com.github.aruma256.lottweaks.client;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.lotqwerty.lottweaks.LotTweaks;
-import com.github.lotqwerty.lottweaks.client.ItemGroupManager.Group;
+import com.github.aruma256.lottweaks.LotTweaks;
+import com.github.aruma256.lottweaks.client.ItemGroupManager.Group;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;

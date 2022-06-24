@@ -1,10 +1,10 @@
-package com.github.lotqwerty.lottweaks.client.keys;
+package com.github.aruma256.lottweaks.client.keys;
 
-import com.github.lotqwerty.lottweaks.LotTweaks;
-import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
-import com.github.lotqwerty.lottweaks.client.renderer.LTTextRenderer;
-import com.github.lotqwerty.lottweaks.client.renderer.SelectionBoxRenderer;
-import com.github.lotqwerty.lottweaks.network.LTPacketHandler;
+import com.github.aruma256.lottweaks.LotTweaks;
+import com.github.aruma256.lottweaks.client.LotTweaksClient;
+import com.github.aruma256.lottweaks.client.renderer.LTTextRenderer;
+import com.github.aruma256.lottweaks.client.renderer.SelectionBoxRenderer;
+import com.github.aruma256.lottweaks.network.LTPacketHandler;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;

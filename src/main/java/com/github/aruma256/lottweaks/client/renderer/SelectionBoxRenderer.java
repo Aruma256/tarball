@@ -1,4 +1,4 @@
-package com.github.lotqwerty.lottweaks.client.renderer;
+package com.github.aruma256.lottweaks.client.renderer;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;

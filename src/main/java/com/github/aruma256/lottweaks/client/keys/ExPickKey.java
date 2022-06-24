@@ -1,4 +1,4 @@
-package com.github.lotqwerty.lottweaks.client.keys;
+package com.github.aruma256.lottweaks.client.keys;
 
 import java.util.ArrayList;
 import java.util.Deque;
@@ -8,8 +8,8 @@ import java.util.List;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
-import com.github.lotqwerty.lottweaks.client.selector.CircleItemSelector;
-import com.github.lotqwerty.lottweaks.client.selector.HorizontalItemSelector;
+import com.github.aruma256.lottweaks.client.selector.CircleItemSelector;
+import com.github.aruma256.lottweaks.client.selector.HorizontalItemSelector;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;

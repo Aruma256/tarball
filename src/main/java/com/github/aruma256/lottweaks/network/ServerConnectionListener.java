@@ -1,6 +1,6 @@
-package com.github.lotqwerty.lottweaks.network;
+package com.github.aruma256.lottweaks.network;
 
-import com.github.lotqwerty.lottweaks.AdjustRangeHelper;
+import com.github.aruma256.lottweaks.AdjustRangeHelper;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;

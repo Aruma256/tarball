@@ -1,4 +1,4 @@
-package com.github.lotqwerty.lottweaks.client.selector;
+package com.github.aruma256.lottweaks.client.selector;
 
 import java.util.List;
 

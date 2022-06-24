@@ -1,14 +1,14 @@
-package com.github.lotqwerty.lottweaks.client;
+package com.github.aruma256.lottweaks.client;
 
 import org.lwjgl.input.Keyboard;
 
-import com.github.lotqwerty.lottweaks.LotTweaks;
-import com.github.lotqwerty.lottweaks.client.keys.ExPickKey;
-import com.github.lotqwerty.lottweaks.client.keys.AdjustRangeKey;
-import com.github.lotqwerty.lottweaks.client.keys.ReplaceKey;
-import com.github.lotqwerty.lottweaks.client.keys.RotateKey;
-import com.github.lotqwerty.lottweaks.network.LTPacketHandler;
-import com.github.lotqwerty.lottweaks.network.LTPacketHandler.HelloMessageHandler.HelloCallback;
+import com.github.aruma256.lottweaks.LotTweaks;
+import com.github.aruma256.lottweaks.client.keys.AdjustRangeKey;
+import com.github.aruma256.lottweaks.client.keys.ExPickKey;
+import com.github.aruma256.lottweaks.client.keys.ReplaceKey;
+import com.github.aruma256.lottweaks.client.keys.RotateKey;
+import com.github.aruma256.lottweaks.network.LTPacketHandler;
+import com.github.aruma256.lottweaks.network.LTPacketHandler.HelloMessageHandler.HelloCallback;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;

@@ -1,4 +1,4 @@
-package com.github.lotqwerty.lottweaks;
+package com.github.aruma256.lottweaks;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
@@ -17,10 +17,10 @@ import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
 
-import com.github.lotqwerty.lottweaks.client.ItemGroupManager;
-import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
-import com.github.lotqwerty.lottweaks.network.LTPacketHandler;
-import com.github.lotqwerty.lottweaks.network.ServerConnectionListener;
+import com.github.aruma256.lottweaks.client.ItemGroupManager;
+import com.github.aruma256.lottweaks.client.LotTweaksClient;
+import com.github.aruma256.lottweaks.network.LTPacketHandler;
+import com.github.aruma256.lottweaks.network.ServerConnectionListener;
 
 @Mod(modid = LotTweaks.MODID, name = LotTweaks.NAME, version = LotTweaks.VERSION)
 public class LotTweaks {

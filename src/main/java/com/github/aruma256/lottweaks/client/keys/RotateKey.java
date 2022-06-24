@@ -1,4 +1,4 @@
-package com.github.lotqwerty.lottweaks.client.keys;
+package com.github.aruma256.lottweaks.client.keys;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,11 +6,11 @@ import java.util.List;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
-import com.github.lotqwerty.lottweaks.LotTweaks;
-import com.github.lotqwerty.lottweaks.client.ItemGroupManager;
-import com.github.lotqwerty.lottweaks.client.ItemGroupManager.Group;
-import com.github.lotqwerty.lottweaks.client.selector.CircleItemSelector;
-import com.github.lotqwerty.lottweaks.client.selector.ColumnItemSelector;
+import com.github.aruma256.lottweaks.LotTweaks;
+import com.github.aruma256.lottweaks.client.ItemGroupManager;
+import com.github.aruma256.lottweaks.client.ItemGroupManager.Group;
+import com.github.aruma256.lottweaks.client.selector.CircleItemSelector;
+import com.github.aruma256.lottweaks.client.selector.ColumnItemSelector;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.InventoryPlayer;

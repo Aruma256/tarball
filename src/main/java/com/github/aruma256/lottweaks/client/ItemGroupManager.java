@@ -1,4 +1,4 @@
-package com.github.lotqwerty.lottweaks.client;
+package com.github.aruma256.lottweaks.client;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

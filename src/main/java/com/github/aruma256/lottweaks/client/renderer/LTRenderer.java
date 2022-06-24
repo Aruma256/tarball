@@ -1,11 +1,11 @@
-package com.github.lotqwerty.lottweaks.client.renderer;
+package com.github.aruma256.lottweaks.client.renderer;
 
 import java.util.Collection;
 import java.util.Deque;
 
 import org.lwjgl.opengl.GL11;
 
-import com.github.lotqwerty.lottweaks.LotTweaks;
+import com.github.aruma256.lottweaks.LotTweaks;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;

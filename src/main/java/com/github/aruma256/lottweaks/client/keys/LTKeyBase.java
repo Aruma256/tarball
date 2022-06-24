@@ -1,4 +1,4 @@
-package com.github.lotqwerty.lottweaks.client.keys;
+package com.github.aruma256.lottweaks.client.keys;
 
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
