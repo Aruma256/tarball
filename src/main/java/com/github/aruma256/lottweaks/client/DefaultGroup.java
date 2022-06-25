@@ -10,7 +10,7 @@ import net.minecraft.item.ItemStack;
 
 public class DefaultGroup {
 
-	public static List<List<ItemState>> getDefaultPrimaryGroupList() {
+	public static List<List<ItemState>> getDefaultGroupList0() {
 		List<List<ItemState>> l = new ArrayList<>();
 		l.add(toList(
 			Blocks.GRASS,
@@ -35,7 +35,7 @@ public class DefaultGroup {
 		return l;
 	}
 
-	public static List<List<ItemState>> getDefaultSecondaryGroupList() {
+	public static List<List<ItemState>> getDefaultGroupList1() {
 		List<List<ItemState>> groupList = new ArrayList<>();
 		return groupList;
 	}

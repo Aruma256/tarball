@@ -8,7 +8,6 @@ import org.lwjgl.opengl.Display;
 
 import com.github.aruma256.lottweaks.LotTweaks;
 import com.github.aruma256.lottweaks.client.ItemGroupManager;
-import com.github.aruma256.lottweaks.client.ItemGroupManager.Group;
 import com.github.aruma256.lottweaks.client.selector.CircleItemSelector;
 import com.github.aruma256.lottweaks.client.selector.ColumnItemSelector;
 
@@ -43,11 +42,11 @@ public class RotateKey extends LTKeyBase {
 		}
 	}
 
-	private Group getGroup() {
+	private int getGroupListId() {
 		if (LotTweaks.CONFIG.SNEAK_TO_SWITCH_GROUP) {
-			return (!Minecraft.getMinecraft().player.isSneaking()) ? Group.PRIMARY : Group.SECONDARY;
+			return (!Minecraft.getMinecraft().player.isSneaking()) ? 0 : 1;
 		} else {
-			return this.phase==0 ? Group.PRIMARY : Group.SECONDARY;
+			return this.phase==0 ? 0 : 1;
 		}
 	}
 
@@ -64,7 +63,7 @@ public class RotateKey extends LTKeyBase {
 		//
 		ItemStack itemStack = mc.player.inventory.getCurrentItem();
 		if (!itemStack.isEmpty()) {
-			List<ItemStack> results = ItemGroupManager.getInstance(getGroup()).getVariantsList(itemStack);
+			List<ItemStack> results = ItemGroupManager.getInstance(getGroupListId()).getVariantsList(itemStack);
 			if (results != null && results.size() > 1) {
 				selector = new CircleItemSelector(results, mc.player.inventory.currentItem);
 			}

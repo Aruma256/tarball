@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.aruma256.lottweaks.LotTweaks;
-import com.github.aruma256.lottweaks.client.ItemGroupManager.Group;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
@@ -41,22 +40,22 @@ public class LotTweaksCommand extends CommandBase implements IClientCommand {
 		}
 		if (args[0].equals("add")) {
 			if (args.length == 2) {
-				if (args[1].equals("1") || args[1].equals("main") || args[1].equals("primary")) {
-					executeAdd(Group.PRIMARY);
-				} else if (args[1].equals("2") || args[1].equals("sub") || args[1].equals("secondary")) {
-					executeAdd(Group.SECONDARY);
+				if (args[1].equals("0") || args[1].equals("main") || args[1].equals("primary")) {
+					executeAdd(0);
+				} else if (args[1].equals("1") || args[1].equals("sub") || args[1].equals("secondary")) {
+					executeAdd(1);
 				} else {
 					throw new WrongUsageException(getUsage(sender), new Object[0]);
 				}
 			} else {
-				executeAdd(Group.PRIMARY);
+				executeAdd(0);
 			}
 		} else if (args[0].equals("reload")) {
 			executeReload();
 		}
 	}
 
-	private void executeAdd(Group groupType) throws CommandException {
+	private void executeAdd(int listId) throws CommandException {
 		Minecraft mc = Minecraft.getMinecraft();
 		List<ItemState> group = new ArrayList<>();
 		int count = 0;
@@ -65,13 +64,13 @@ public class LotTweaksCommand extends CommandBase implements IClientCommand {
 			if (itemStack.isEmpty()) {
 				break;
 			}
-			if (ItemGroupManager.getInstance(groupType).isRegistered(itemStack)) {
+			if (ItemGroupManager.getInstance(listId).isRegistered(itemStack)) {
 				throw new CommandException(String.format("LotTweaks: The item in the slot %d is already registered.", i+1), new Object[0]);
 			}
 			group.add(new ItemState(itemStack));
 			count++;
 		}
-		if (ItemGroupManager.getInstance(groupType).addGroupFromCommand(group)) {
+		if (ItemGroupManager.getInstance(listId).addGroupFromCommand(group)) {
 			ItemGroupManager.save();
 			mc.ingameGUI.addChatMessage(ChatType.SYSTEM, new TextComponentString(String.format("LotTweaks: added %d items", count)));
 		} else {

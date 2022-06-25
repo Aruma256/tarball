@@ -12,6 +12,7 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -39,23 +40,10 @@ public class ItemGroupManager {
 	public static final File CONFIG_FILE = new File(new File("config"), "LotTweaks-ItemGroup.json");
 	public static final Queue<String> LOG_GROUP_CONFIG = new ArrayDeque<>();
 
-	private static ItemGroupManager primaryInstance;
-	private static ItemGroupManager secondaryInstance;
+	private static List<ItemGroupManager> managerList = new ArrayList<>();
 
-	public static enum Group {
-		PRIMARY,
-		SECONDARY
-	}
-
-	public static ItemGroupManager getInstance(Group groupType) {
-		switch(groupType) {
-		case PRIMARY:
-			return primaryInstance;
-		case SECONDARY:
-			return secondaryInstance;
-		default:
-			throw new RuntimeException();
-		}
+	public static ItemGroupManager getInstance(int groupListId) {
+		return managerList.get(groupListId);
 	}
 
 	public static boolean init() {
@@ -71,19 +59,19 @@ public class ItemGroupManager {
 
 	private static void generateDefaultConfig() {
 		save(
-			new ItemGroupManager(DefaultGroup.getDefaultPrimaryGroupList(), Group.PRIMARY),
-			new ItemGroupManager(DefaultGroup.getDefaultSecondaryGroupList(), Group.SECONDARY)
+			new ItemGroupManager(DefaultGroup.getDefaultGroupList0()),
+			new ItemGroupManager(DefaultGroup.getDefaultGroupList1())
 		);
 	}
 
 	private static boolean loadFromFile() {
 		JsonObject json;
-		List<List<ItemState>> primaryGroupList;
-		List<List<ItemState>> secondaryGroupList;
+		List<List<ItemState>> groupList0;
+		List<List<ItemState>> groupList1;
 		try {
 			json = new JsonParser().parse(new JsonReader(new BufferedReader(new InputStreamReader(new FileInputStream(CONFIG_FILE), StandardCharsets.UTF_8)))).getAsJsonObject();
-			primaryGroupList = readGroupFromJsonFile(json.get("primary").getAsJsonArray());
-			secondaryGroupList = readGroupFromJsonFile(json.get("secondary").getAsJsonArray());
+			groupList0 = readGroupFromJsonFile(json.get("grouplist-0").getAsJsonArray());
+			groupList1 = readGroupFromJsonFile(json.get("grouplist-1").getAsJsonArray());
 		} catch (JsonIOException e1) {
 			LOG_GROUP_CONFIG.add("JsonIOError");
 			return false;
@@ -94,8 +82,10 @@ public class ItemGroupManager {
 			LOG_GROUP_CONFIG.add("ERROR FileNotFound");
 			return false;
 		}
-		primaryInstance = new ItemGroupManager(primaryGroupList, Group.PRIMARY);
-		secondaryInstance = new ItemGroupManager(secondaryGroupList, Group.SECONDARY);
+		managerList = Arrays.asList(
+			new ItemGroupManager(groupList0),
+			new ItemGroupManager(groupList1)
+		);
 		return true;
 	}
 
@@ -125,18 +115,22 @@ public class ItemGroupManager {
 	}
 
 	public static void save() {
-		save(getInstance(Group.PRIMARY), getInstance(Group.SECONDARY));
+		save(managerList);
 	}
 
-	private static void save(ItemGroupManager primaryManager, ItemGroupManager secondaryManager) {
+	public static void save(ItemGroupManager ... groupManagers) {
+		save(Arrays.asList(groupManagers));
+	}
+
+	private static void save(List<ItemGroupManager> managers) {
 		try {
 			JsonWriter jsonWriter = new JsonWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(CONFIG_FILE), StandardCharsets.UTF_8)));
 			jsonWriter.setIndent(JSON_INDENT);
 			jsonWriter.beginObject();
-				jsonWriter.name("primary");
-				primaryManager.writeToJson(jsonWriter);
-				jsonWriter.name("secondary");
-				secondaryManager.writeToJson(jsonWriter);
+			for(int i=0; i<managers.size(); i++) {
+				jsonWriter.name(String.format("grouplist-%d", i));
+				managers.get(i).writeToJson(jsonWriter);
+			}
 			jsonWriter.endObject();
 			jsonWriter.close();
 		} catch (IOException e) {
@@ -151,8 +145,8 @@ public class ItemGroupManager {
 	private static void convertOldFile() {
 		RotationHelper.loadAllFromFile();
 		save(
-			new ItemGroupManager(RotationHelper.loadPrimaryGroup(), Group.PRIMARY),
-			new ItemGroupManager(RotationHelper.loadSecondaryGroup(), Group.SECONDARY)
+			new ItemGroupManager(RotationHelper.loadPrimaryGroup()),
+			new ItemGroupManager(RotationHelper.loadSecondaryGroup())
 		);
 	}
 
@@ -163,7 +157,7 @@ public class ItemGroupManager {
 	private List<List<ItemState>> groupList;
 	private final Map<ItemState, ItemState> chain = new HashMap<ItemState, ItemState>();
 
-	private ItemGroupManager(List<List<ItemState>> groupList, Group groupType) {
+	private ItemGroupManager(List<List<ItemState>> groupList) {
 		this.groupList = groupList;
 		initializeChain(groupList);
 	}
