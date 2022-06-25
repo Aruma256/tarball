@@ -7,7 +7,8 @@ public class ItemState {
 	protected ItemStack cachedStack;
 
 	public ItemState(ItemStack itemStack) {
-		this.cachedStack = itemStack;
+		this.cachedStack = itemStack.copy();
+		this.cachedStack.setCount(1);
 	}
 
 	public ItemStack toItemStack() {
@@ -16,11 +17,8 @@ public class ItemState {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof ItemState)) {
-			return false;
-		}
 		ItemState other = (ItemState)obj;
-		return ItemStack.areItemsEqual(this.cachedStack, other.cachedStack) && ItemStack.areItemStackTagsEqual(this.cachedStack, other.cachedStack);
+		return ItemStack.areItemStacksEqual(this.cachedStack, other.cachedStack);
 	}
 
 	@Override

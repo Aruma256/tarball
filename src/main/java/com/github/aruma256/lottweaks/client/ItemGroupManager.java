@@ -210,10 +210,6 @@ public class ItemGroupManager {
 		return chain.containsKey(new ItemState(itemStack));
 	}
 
-	public boolean canRotate(ItemStack itemStack) {
-		return chain.containsKey(new ItemState(itemStack));
-	}
-
 	public List<ItemStack> getVariantsList(ItemStack itemStack) {
 		List<ItemStack> results = new ArrayList<>();
 		results.add(itemStack);
