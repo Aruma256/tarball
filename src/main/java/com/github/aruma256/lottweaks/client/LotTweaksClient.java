@@ -28,7 +28,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class LotTweaksClient implements HelloCallback
 {
-	private static String serverVersion = "0";
 
 	public static void init() {
     	KeyBinding key;
@@ -52,22 +51,6 @@ public class LotTweaksClient implements HelloCallback
 		ClientCommandHandler.instance.registerCommand(new LotTweaksCommand());
 	}
 
-	public static boolean requireServerVersion(String requiredVersion) {
-		return (serverVersion.compareTo(requiredVersion) >= 0);
-	}
-
-	public static void clearServerVersion() {
-		setServerVersion("0");
-	}
-
-	public static void setServerVersion(String version) {
-		serverVersion = version;
-	}
-
-	public static String getServerVersion() {
-		return serverVersion;
-	}
-
 	public static void showErrorLogToChat() {
 		if (LotTweaks.CONFIG.SHOW_BLOCKCONFIG_ERROR_LOG_TO_CHAT) {
 			Minecraft mc = Minecraft.getMinecraft();
@@ -85,7 +68,7 @@ public class LotTweaksClient implements HelloCallback
 
 	@SubscribeEvent
 	public void onClientDisconnectionFromServer(final ClientDisconnectionFromServerEvent event) {
-		clearServerVersion();
+		ServerLTInfo.instance.clearServerLTVersion();
 	}
 
 	@SubscribeEvent
@@ -97,7 +80,7 @@ public class LotTweaksClient implements HelloCallback
 
 	@Override
 	public void onHello(String version) {
-		LotTweaksClient.setServerVersion(version);
+		ServerLTInfo.instance.setServerLTVersion(version);
 		LTPacketHandler.sendReachRangeMessage(10);
 	}
 

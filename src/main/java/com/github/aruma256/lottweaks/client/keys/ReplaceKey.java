@@ -1,7 +1,7 @@
 package com.github.aruma256.lottweaks.client.keys;
 
 import com.github.aruma256.lottweaks.LotTweaks;
-import com.github.aruma256.lottweaks.client.LotTweaksClient;
+import com.github.aruma256.lottweaks.client.ServerLTInfo;
 import com.github.aruma256.lottweaks.client.renderer.LTTextRenderer;
 import com.github.aruma256.lottweaks.client.renderer.SelectionBoxRenderer;
 import com.github.aruma256.lottweaks.network.LTPacketHandler;
@@ -73,7 +73,7 @@ public class ReplaceKey extends LTKeyBase {
 		if (this.pressTime == 0) {
 			return;
 		}
-		if (!LotTweaksClient.requireServerVersion("2.2.1")) {
+		if (!ServerLTInfo.instance.requireServerLTVersion("2.2.1")) {
 			LTTextRenderer.showServerSideRequiredMessage("2.2.1");
 			return;
 		}

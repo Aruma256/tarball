@@ -1,6 +1,7 @@
 package com.github.aruma256.lottweaks.client.keys;
 
 import com.github.aruma256.lottweaks.client.LotTweaksClient;
+import com.github.aruma256.lottweaks.client.ServerLTInfo;
 import com.github.aruma256.lottweaks.client.renderer.LTTextRenderer;
 import com.github.aruma256.lottweaks.network.LTPacketHandler;
 
@@ -20,14 +21,14 @@ public class AdjustRangeKey extends LTKeyBase {
 
 	@Override
 	protected void onKeyPressStart() {
-		if (LotTweaksClient.requireServerVersion("3.0.0")) {
+		if (ServerLTInfo.instance.requireServerLTVersion("3.0.0")) {
 			LTPacketHandler.sendReachExtensionMessage(20);
 		}
 	}
 
 	@Override
 	protected void onKeyReleased() {
-		if (LotTweaksClient.requireServerVersion("3.0.0")) {
+		if (ServerLTInfo.instance.requireServerLTVersion("3.0.0")) {
 			LTPacketHandler.sendReachExtensionMessage(0);
 		}
 	}
@@ -43,7 +44,7 @@ public class AdjustRangeKey extends LTKeyBase {
 		if (!Minecraft.getMinecraft().player.isCreative()) {
 			return;
 		}
-		if (!LotTweaksClient.requireServerVersion("3.0.0")) {
+		if (!ServerLTInfo.instance.requireServerLTVersion("3.0.0")) {
 			LTTextRenderer.showServerSideRequiredMessage(event.getResolution(), "3.0.0");
 			return;
 		}
