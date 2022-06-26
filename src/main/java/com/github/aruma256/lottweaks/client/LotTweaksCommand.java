@@ -70,7 +70,7 @@ public class LotTweaksCommand extends CommandBase implements IClientCommand {
 			group.add(new ItemState(itemStack));
 			count++;
 		}
-		if (ItemGroupManager.getInstance(listId).addGroupFromCommand(group)) {
+		if (ItemGroupManager.getInstance(listId).addGroup(group)) {
 			ItemGroupManager.save();
 			mc.ingameGUI.addChatMessage(ChatType.SYSTEM, new TextComponentString(String.format("LotTweaks: added %d items", count)));
 		} else {

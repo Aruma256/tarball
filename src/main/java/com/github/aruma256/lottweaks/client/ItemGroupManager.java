@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -154,34 +155,34 @@ public class ItemGroupManager {
 	////////////////////////////////////////////////
 	////////////////////////////////////////////////
 
-	private List<List<ItemState>> groupList;
-	private final Map<ItemState, ItemState> chain = new HashMap<ItemState, ItemState>();
+	private List<List<ItemState>> groupList = new ArrayList<>();
+	private final Map<ItemState, List<ItemState>> cache = new HashMap<>();
 
-	private ItemGroupManager(List<List<ItemState>> groupList) {
-		this.groupList = groupList;
-		initializeChain(groupList);
-	}
-
-	private void initializeChain(List<List<ItemState>> groupList) {
-		for (List<ItemState> rawGroup : groupList) {
-			addGroupToChain(rawGroup, false);
+	private ItemGroupManager(Iterable<List<ItemState>> groupList) {
+		for (List<ItemState> group : groupList) {
+			addGroup(group);
 		}
 	}
 
-	public boolean addGroupFromCommand(List<ItemState> rawGroup) {
-		if (addGroupToChain(rawGroup, true)) {
-			this.groupList.add(rawGroup);
+	public boolean addGroup(List<ItemState> group) {
+		if (canBeAdded(group)) {
+			groupList.add(group);
+			for (ItemState state : group) {
+				cache.put(state, group);
+			}
 			return true;
 		}
 		return false;
 	}
 
-	private boolean addGroupToChain(List<ItemState> rawGroup, boolean strict) {
-		List<ItemState> validGroup = new ArrayList<>();
-		Set<ItemState> _set = new HashSet<>();
-		// check
-		for (ItemState itemState : rawGroup) {
-			if (chain.containsKey(itemState) || _set.contains(itemState)) {
+	private boolean canBeAdded(List<ItemState> group) {
+		if (group.size() <= 1) {
+			LOG_GROUP_CONFIG.add("A group must have 2 or more elements");
+			return false;
+		}
+		Set<ItemState> dupCheck = new HashSet<>();
+		for (ItemState itemState : group) {
+			if (isRegistered(itemState) || dupCheck.contains(itemState)) {
 				String itemName = Item.REGISTRY.getNameForObject(itemState.cachedStack.getItem()).toString();
 				int meta = itemState.cachedStack.getItemDamage();
 				if (itemState.cachedStack.hasTagCompound()) {
@@ -189,50 +190,34 @@ public class ItemGroupManager {
 				} else {
 					LOG_GROUP_CONFIG.add(String.format("Item config '%s/%d' is duplicated.", itemName, meta));
 				}
-				if (strict) return false;
-				continue;
+				return false;
 			}
-			_set.add(itemState);
-			validGroup.add(itemState);
-		}
-		if (validGroup.size() <= 1) {
-			LOG_GROUP_CONFIG.add("A group must have 2 or more elements");
-			return false;
-		}
-		// add
-		for (int i=0; i<validGroup.size(); i++) {
-			chain.put(validGroup.get(i), validGroup.get((i+1)%validGroup.size()));
+			dupCheck.add(itemState);
 		}
 		return true;
 	}
 
 	public boolean isRegistered(ItemStack itemStack) {
-		return chain.containsKey(new ItemState(itemStack));
+		return isRegistered(new ItemState(itemStack));
+	}
+
+	private boolean isRegistered(ItemState itemState) {
+		return cache.containsKey(itemState);
 	}
 
 	public List<ItemStack> getVariantsList(ItemStack itemStack) {
-		List<ItemStack> results = new ArrayList<>();
-		results.add(itemStack);
-		//
-		int loopCount = 0;
-		ItemState baseState = new ItemState(itemStack);
-		if (!chain.containsKey(baseState)) {
+		List<ItemState> resultsState = null;
+		ItemState itemState = new ItemState(itemStack);
+		resultsState = cache.get(itemState);
+		if (resultsState == null) {
 			itemStack = itemStack.copy();
 			itemStack.setTagCompound(null);
-			baseState = new ItemState(itemStack);
-			if (!chain.containsKey(baseState)) {
-				return null;
-			}
+			itemState = new ItemState(itemStack);
+			resultsState = cache.get(itemState);
 		}
-		ItemState nextState = chain.get(baseState);
 		//
-		while(!baseState.equals(nextState)) {
-			results.add(nextState.toItemStack());
-			nextState = chain.get(nextState);
-			loopCount++;
-			if (loopCount >= 50000) throw new RuntimeException("Infinite loop!!");
-		}
-		return results;
+		if (resultsState == null) return null;
+		return resultsState.stream().map(e -> e.toItemStack()).collect(Collectors.toList());
 	}
 
 	private void writeToJson(JsonWriter jsonWriter) throws IOException {
