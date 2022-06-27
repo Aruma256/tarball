@@ -1,4 +1,3 @@
-
 on:
   push:
     branches: ['1.12.2']
@@ -21,4 +20,4 @@ jobs:
       with:
         gradle-version: 4.9
         arguments: test
-
+        cache-read-only: ${{ github.ref != 'refs/heads/1.12.2' }}
