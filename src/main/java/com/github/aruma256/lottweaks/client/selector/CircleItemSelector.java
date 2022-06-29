@@ -30,15 +30,13 @@ public class CircleItemSelector extends AbstractItemSelector {
 		if (mouseDx == 0 && mouseDy == 0) {
 			return 0;
 		}
-		double theta = 2*Math.PI - Math.atan2(mouseDy, mouseDx);
-		theta += 0.5*Math.PI;
-		theta += 2*Math.PI / (2*stacks.size());
-		while (theta > 2*Math.PI) {
-			theta -= 2*Math.PI;
+		double theta = -2*Math.PI - Math.atan2(mouseDy, mouseDx);
+		theta -= 0.5*Math.PI; //base-offset
+		theta += 2*Math.PI / stacks.size() / 2; //half-section-offset
+		while (theta < 0) {
+			theta += 2*Math.PI;
 		}
-		double ratio = theta / (2*Math.PI);
-		double zone = stacks.size() * ratio;
-		int id = (((int)zone) + stacks.size()) % stacks.size();
+		int id = (int) (theta / (2*Math.PI) * stacks.size());
 		return id;
 	}
 
