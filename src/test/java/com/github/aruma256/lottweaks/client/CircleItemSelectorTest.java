@@ -44,26 +44,26 @@ class CircleItemSelectorTest {
 		mouseDy.setAccessible(true);
 		assertEquals(0, method.invoke(instance)); // defualt (0, 0) -> 0
 		// bottom left
-		mouseDx.setInt(instance, -173);
-		mouseDy.setInt(instance, -100);
-		assertEquals(0, method.invoke(instance)); // (-173, -100) -> 0
-		mouseDx.setInt(instance, -174);
-		mouseDy.setInt(instance, -100);
-		assertEquals(1, method.invoke(instance)); // (-174, -100) -> 1
+		mouseDx.setDouble(instance, -1.73);
+		mouseDy.setDouble(instance, -1.00);
+		assertEquals(0, method.invoke(instance)); // (-1.73, -1.00) -> 0
+		mouseDx.setDouble(instance, -1.74);
+		mouseDy.setDouble(instance, -1.00);
+		assertEquals(1, method.invoke(instance)); // (-1.74, -1.00) -> 1
 		// top
-		mouseDx.setInt(instance, -1);
-		mouseDy.setInt(instance, 100);
-		assertEquals(1, method.invoke(instance)); // (-1, 100) -> 1
-		mouseDx.setInt(instance, 1);
-		mouseDy.setInt(instance, 100);
-		assertEquals(2, method.invoke(instance)); // (1, 100) -> 2
+		mouseDx.setDouble(instance, -0.01);
+		mouseDy.setDouble(instance, 1);
+		assertEquals(1, method.invoke(instance)); // (-0.01, 1) -> 1
+		mouseDx.setDouble(instance, 0.01);
+		mouseDy.setDouble(instance, 1);
+		assertEquals(2, method.invoke(instance)); // (0.01, 1) -> 2
 		// bottom right
-		mouseDx.setInt(instance, 174);
-		mouseDy.setInt(instance, -100);
-		assertEquals(2, method.invoke(instance)); // (174, -100) -> 2
-		mouseDx.setInt(instance, 173);
-		mouseDy.setInt(instance, -100);
-		assertEquals(0, method.invoke(instance)); // (173, -100) -> 0
+		mouseDx.setDouble(instance, 1.74);
+		mouseDy.setDouble(instance, -1.00);
+		assertEquals(2, method.invoke(instance)); // (1.74, -1.00) -> 2
+		mouseDx.setDouble(instance, 1.73);
+		mouseDy.setDouble(instance, -1.00);
+		assertEquals(0, method.invoke(instance)); // (1.73, -1.00) -> 0
 	}
 
 }

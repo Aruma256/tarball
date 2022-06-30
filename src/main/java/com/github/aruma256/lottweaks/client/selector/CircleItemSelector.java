@@ -17,8 +17,8 @@ public class CircleItemSelector extends AbstractItemSelector {
     private static final double R_SCALE_MIN = 0.5;
     private static final double R_SCALE_MAX = 1.5;
     
-    private int mouseDx = 0;
-    private int mouseDy = 0;
+    private double mouseDx = 0;
+    private double mouseDy = 0;
 
     private int selectedId = 0;
 
@@ -53,17 +53,18 @@ public class CircleItemSelector extends AbstractItemSelector {
         mc.playerController.sendSlotPacket(itemStack, 36 + this.slot);
 	}
 
-	public void notifyMouseMovement(int dx, int dy) {
-		double x = this.mouseDx + dx;
-		double y = this.mouseDy - dy;
-		double r = Math.sqrt(x*x + y*y);
+	private void normalizeMouseDxDy() {
+		double r = Math.sqrt(mouseDx*mouseDx + mouseDy*mouseDy);
 		if (r > 40) {
-			x /= r / 40;
-			y /= r / 40;
+			mouseDx *= 40 / r;
+			mouseDy *= 40 / r;
 		}
-		this.mouseDx = (int) x;
-		this.mouseDy = (int) y;
-		//
+	}
+
+	public void notifyMouseMovement(int dx, int dy) {
+		mouseDx += dx;
+		mouseDy += dy;
+		normalizeMouseDxDy();
 		int newSelectedId = getSelectedId();
 		if (this.selectedId != newSelectedId) {
 			this.selectedId = newSelectedId;
