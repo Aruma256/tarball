@@ -17,6 +17,8 @@ import net.minecraft.item.ItemStack;
 
 class CircleItemSelectorTest {
 
+	private static final double DELTA = 1e-8;
+
 	private static CircleItemSelector getSharedExample() {
 		return new CircleItemSelector(
 			Arrays.asList(
@@ -64,6 +66,20 @@ class CircleItemSelectorTest {
 		mouseDx.setDouble(instance, 1.73);
 		mouseDy.setDouble(instance, -1.00);
 		assertEquals(0, method.invoke(instance)); // (1.73, -1.00) -> 0
+	}
+
+	@Test
+	final void test_getTheta() throws Exception {
+		CircleItemSelector instance = getSharedExample();
+		Method method = CircleItemSelector.class.getDeclaredMethod("getTheta", int.class);
+		method.setAccessible(true);
+		double theta;
+		theta = (double) method.invoke(instance, 0);
+		assertEquals(0, Math.cos(theta), DELTA);
+		assertEquals(-1, Math.sin(theta), DELTA);
+		theta = (double) method.invoke(instance, 1);
+		assertEquals(Math.cos(Math.PI/6*5), Math.cos(theta), DELTA);
+		assertEquals(Math.sin(Math.PI/6*5), Math.sin(theta), DELTA);
 	}
 
 }

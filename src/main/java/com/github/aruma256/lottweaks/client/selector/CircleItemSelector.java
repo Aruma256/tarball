@@ -72,12 +72,8 @@ public class CircleItemSelector extends AbstractItemSelector {
 		}
 	}
 
-	private double getTheta(int i, double shift) {
-		return -((double)i + shift) / stacks.size() * 2 * Math.PI + Math.PI / 2;
-	}
-
 	private double getTheta(int i) {
-		return getTheta(i, 0d);
+		return (2*Math.PI) * (((double)-i) / stacks.size()) - Math.PI/2;
 	}
 
 	@Override
@@ -101,6 +97,7 @@ public class CircleItemSelector extends AbstractItemSelector {
         GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         GlStateManager.translate(8F, 8F, 8F);
 
+        /*
         GlStateManager.color(1, 1, 1, 0.25f);
         bufferbuilder.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION);
         for(int i=0; i<=stacks.size(); i++) {
@@ -109,11 +106,12 @@ public class CircleItemSelector extends AbstractItemSelector {
             bufferbuilder.pos(cx + R_SCALE_MAX*radius*Math.cos(theta), cy + R_SCALE_MAX*radius*Math.sin(theta), 0).endVertex();
         }
         tessellator.draw();
+        */
 
         GlStateManager.color(1, 0, 0, 1f);
         bufferbuilder.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
         bufferbuilder.pos(cx, cy, 0).endVertex();
-        bufferbuilder.pos(cx + mouseDx, cy + mouseDy, 0).endVertex();
+        bufferbuilder.pos(cx + mouseDx, cy - mouseDy, 0).endVertex();
         tessellator.draw();
 
         GlStateManager.enableTexture2D();
@@ -128,7 +126,7 @@ public class CircleItemSelector extends AbstractItemSelector {
 			double theta = getTheta(i);
 			double dx = (i==selectedId ? radius*1.3 : radius) * Math.cos(theta);
 			double dy = (i==selectedId ? radius*1.3 : radius) * Math.sin(theta);
-			Minecraft.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI(c, (int)Math.round(cx + dx), (int)Math.round(cy + dy));
+			Minecraft.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI(c, (int)Math.round(cx + dx), (int)Math.round(cy - dy));
 			i++;
 		}
 		glItemRenderFinalize();
