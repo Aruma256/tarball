@@ -69,9 +69,9 @@ class CircleItemSelectorTest {
 	}
 
 	@Test
-	final void test_getTheta() throws Exception {
+	final void test_convertIndexToAngle() throws Exception {
 		CircleItemSelector instance = getSharedExample();
-		Method method = CircleItemSelector.class.getDeclaredMethod("getTheta", int.class);
+		Method method = CircleItemSelector.class.getDeclaredMethod("convertIndexToAngle", int.class);
 		method.setAccessible(true);
 		double theta;
 		theta = (double) method.invoke(instance, 0);
