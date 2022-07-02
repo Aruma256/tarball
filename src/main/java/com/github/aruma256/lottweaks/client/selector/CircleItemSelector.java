@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 
 public class CircleItemSelector extends AbstractItemSelector {
 
+    private static final double CENTER_CIRCLE_SCALE = 0.25;
     private static final double R_SCALE_MIN = 0.5;
     private static final double R_SCALE_MAX = 1.5;
     
@@ -108,11 +109,30 @@ public class CircleItemSelector extends AbstractItemSelector {
         tessellator.draw();
         */
 
+        GlStateManager.color(1, 1, 1, 1);
+        bufferbuilder.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION);
+        bufferbuilder.pos(cx, cy, 0).endVertex();
+        for(int i=0; i<=256; i++) {
+            double angle = -2*Math.PI * ((double)i)/256;
+            bufferbuilder.pos(cx + CENTER_CIRCLE_SCALE*radius*Math.cos(angle), cy + CENTER_CIRCLE_SCALE*radius*Math.sin(angle), 0).endVertex();
+        }
+        tessellator.draw();
+
+        GlStateManager.color(1, 1, 1, 0.6f);
+        bufferbuilder.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION);
+        double pointedAngle = Math.atan2(mouseDy, mouseDx);
+        bufferbuilder.pos(cx + CENTER_CIRCLE_SCALE*radius*Math.cos(pointedAngle+Math.PI/2), cy - CENTER_CIRCLE_SCALE*radius*Math.sin(pointedAngle+Math.PI/2), 0).endVertex();
+        bufferbuilder.pos(cx + CENTER_CIRCLE_SCALE*radius*Math.cos(pointedAngle-Math.PI/2), cy - CENTER_CIRCLE_SCALE*radius*Math.sin(pointedAngle-Math.PI/2), 0).endVertex();
+        bufferbuilder.pos(cx + radius*Math.cos(pointedAngle), cy - radius*Math.sin(pointedAngle), 0).endVertex();
+        tessellator.draw();
+
+        /*
         GlStateManager.color(1, 0, 0, 1f);
         bufferbuilder.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
         bufferbuilder.pos(cx, cy, 0).endVertex();
         bufferbuilder.pos(cx + mouseDx, cy - mouseDy, 0).endVertex();
         tessellator.draw();
+        */
 
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
