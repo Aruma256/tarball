@@ -28,10 +28,8 @@ public class LTPacketHandler {
 	public static void init() {
 		int id = 0;
 		INSTANCE.registerMessage(ReplaceMessageHandler.class, ReplaceMessage.class, id++, Side.SERVER);
-		id++;
+		INSTANCE.registerMessage(AdjustRangeMessageHandler.class, AdjustRangeMessage.class, id++, Side.SERVER);
 		INSTANCE.registerMessage(HelloMessageHandler.class, HelloMessage.class, id++, Side.CLIENT);
-		INSTANCE.registerMessage(SetReachBaseMessageHandler.class, SetReachBaseMessage.class, id++, Side.SERVER);
-		INSTANCE.registerMessage(UpdateReachExtensionMessageHandler.class, UpdateReachExtensionMessage.class, id++, Side.SERVER);
 	}
 
 	public static void sendReplaceMessage(BlockPos pos, Block block, int meta, Block checkBlock) {
@@ -39,11 +37,7 @@ public class LTPacketHandler {
 	}
 
 	public static void sendReachRangeMessage(int dist) {
-		INSTANCE.sendToServer(new SetReachBaseMessage(dist));
-	}
-
-	public static void sendReachExtensionMessage(int dist) {
-		INSTANCE.sendToServer(new UpdateReachExtensionMessage(dist));
+		INSTANCE.sendToServer(new AdjustRangeMessage(dist));
 	}
 
 	public static void sendHelloMessage(EntityPlayerMP player) {
@@ -127,17 +121,17 @@ public class LTPacketHandler {
 		}
 	}
 
-	// SetBaseReach
+	// AdjustRange
 
-	public static class SetReachBaseMessage implements IMessage {
+	public static class AdjustRangeMessage implements IMessage {
 
 		private int dist;
 
-		public SetReachBaseMessage(int dist) {
+		public AdjustRangeMessage(int dist) {
 			this.dist = dist;
 		}
 
-		public SetReachBaseMessage() {
+		public AdjustRangeMessage() {
 		}
 
 		@Override
@@ -152,10 +146,10 @@ public class LTPacketHandler {
 
 	}
 
-	public static class SetReachBaseMessageHandler implements IMessageHandler<SetReachBaseMessage, IMessage> {
+	public static class AdjustRangeMessageHandler implements IMessageHandler<AdjustRangeMessage, IMessage> {
 
 		@Override
-		public IMessage onMessage(SetReachBaseMessage message, MessageContext ctx) {
+		public IMessage onMessage(AdjustRangeMessage message, MessageContext ctx) {
 			final EntityPlayerMP player = ctx.getServerHandler().player;
 			if (!player.isCreative()) {
 				return null;
@@ -163,56 +157,12 @@ public class LTPacketHandler {
 			player.getServerWorld().addScheduledTask(() -> {
 				int dist = message.dist;
 				dist = Math.min(LotTweaks.CONFIG.MAX_RANGE, dist);
-				AdjustRangeHelper.setV3BaseModifier(player, dist);
+				AdjustRangeHelper.setV2Modifier(player, dist);
 			});
 			return null;
 		}
 	}
 
-	// SetBaseReach
-
-	public static class UpdateReachExtensionMessage implements IMessage {
-
-		private int dist;
-
-		public UpdateReachExtensionMessage(int dist) {
-			this.dist = dist;
-		}
-
-		public UpdateReachExtensionMessage() {
-		}
-
-		@Override
-		public void toBytes(ByteBuf buf) {
-			buf.writeInt(this.dist);
-		}
-
-		@Override
-		public void fromBytes(ByteBuf buf) {
-			this.dist = buf.readInt();
-		}
-
-	}
-
-	public static class UpdateReachExtensionMessageHandler implements IMessageHandler<UpdateReachExtensionMessage, IMessage> {
-
-		@Override
-		public IMessage onMessage(UpdateReachExtensionMessage message, MessageContext ctx) {
-			final EntityPlayerMP player = ctx.getServerHandler().player;
-			if (!player.isCreative()) {
-				return null;
-			}
-			player.getServerWorld().addScheduledTask(() -> {
-				int dist = message.dist;
-				if (dist != 0) {
-					AdjustRangeHelper.setV3ExtentionModifier(player, dist);
-				} else {
-					AdjustRangeHelper.clearV3ExtentionModifier(player);
-				}
-			});
-			return null;
-		}
-	}
 
 	// Hello
 

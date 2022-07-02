@@ -1,6 +1,6 @@
 package com.github.aruma256.lottweaks.client.keys;
 
-import com.github.aruma256.lottweaks.client.LotTweaksClient;
+import com.github.aruma256.lottweaks.LotTweaks;
 import com.github.aruma256.lottweaks.client.ServerLTInfo;
 import com.github.aruma256.lottweaks.client.renderer.LTTextRenderer;
 import com.github.aruma256.lottweaks.network.LTPacketHandler;
@@ -21,15 +21,15 @@ public class AdjustRangeKey extends LTKeyBase {
 
 	@Override
 	protected void onKeyPressStart() {
-		if (ServerLTInfo.instance.requireServerLTVersion("3.0.0")) {
-			LTPacketHandler.sendReachExtensionMessage(20);
+		if (ServerLTInfo.instance.requireServerLTVersion("2.2.1")) {
+			LTPacketHandler.sendReachRangeMessage(LotTweaks.CONFIG.REACH_RANGE_AT_DEFAULT + LotTweaks.CONFIG.REACH_RANGE_AT_EXTENSION);
 		}
 	}
 
 	@Override
 	protected void onKeyReleased() {
-		if (ServerLTInfo.instance.requireServerLTVersion("3.0.0")) {
-			LTPacketHandler.sendReachExtensionMessage(0);
+		if (ServerLTInfo.instance.requireServerLTVersion("2.2.1")) {
+			LTPacketHandler.sendReachRangeMessage(LotTweaks.CONFIG.REACH_RANGE_AT_DEFAULT);
 		}
 	}
 

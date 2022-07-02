@@ -81,7 +81,7 @@ public class LotTweaksClient implements HelloCallback
 	@Override
 	public void onHello(String version) {
 		ServerLTInfo.instance.setServerLTVersion(version);
-		LTPacketHandler.sendReachRangeMessage(10);
+		LTPacketHandler.sendReachRangeMessage(LotTweaks.CONFIG.REACH_RANGE_AT_DEFAULT);
 	}
 
 }
