@@ -9,9 +9,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import net.minecraft.block.Block;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Bootstrap;
+import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 class DefaultGroupTest {
@@ -54,6 +57,13 @@ class DefaultGroupTest {
 			),
 			method.invoke(null, Blocks.WOOL, 3)
 		);
+	}
+
+	@Test
+	final void test_getEnchantedStack() throws Exception {
+		Method method = DefaultGroup.class.getDeclaredMethod("getEnchantedStack", Item.class, String.class);
+		method.setAccessible(true);
+		assertEquals(1, EnchantmentHelper.getEnchantmentLevel(Enchantments.INFINITY, (ItemStack)method.invoke(null, Items.BOW, "{ench:[{lvl:1s,id:51s}]}")));
 	}
 
 	@Test

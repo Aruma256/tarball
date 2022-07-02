@@ -5,8 +5,11 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.JsonToNBT;
+import net.minecraft.nbt.NBTException;
 
 public class DefaultGroup {
 
@@ -31,7 +34,14 @@ public class DefaultGroup {
 		// color variations
 		l.add(toList(Blocks.GLASS, toMetaVariants(Blocks.STAINED_GLASS, 16)));
 		l.add(toMetaVariants(Blocks.WOOL, 16));
-
+		// enchanted item example
+		l.add(toList(
+			Items.BOW,
+			getEnchantedStack(Items.BOW, "{ench:[{lvl:5s,id:48s}]}"),
+			getEnchantedStack(Items.BOW, "{ench:[{lvl:2s,id:49s}]}"),
+			getEnchantedStack(Items.BOW, "{ench:[{lvl:1s,id:50s}]}"),
+			getEnchantedStack(Items.BOW, "{ench:[{lvl:1s,id:51s}]}")
+		));
 		return l;
 	}
 
@@ -60,6 +70,16 @@ public class DefaultGroup {
 			group.add(new ItemState(new ItemStack(block, 1, meta)));
 		}
 		return group;
+	}
+
+	private static ItemStack getEnchantedStack(Item item, String nbtStr) {
+		ItemStack itemStack = new ItemStack(item);
+		try {
+			itemStack.setTagCompound(JsonToNBT.getTagFromJson(nbtStr));
+		} catch (NBTException e) {
+			throw new RuntimeException(e);
+		}
+		return itemStack;
 	}
 
 	private static List<ItemState> toList(Object ... objects) {
