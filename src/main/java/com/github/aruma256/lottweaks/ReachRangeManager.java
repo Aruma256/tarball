@@ -35,7 +35,7 @@ public class ReachRangeManager {
 		instance.applyModifier(new AttributeModifier(_UUID, NAME, dist - instance.getBaseValue(), 0));
 	}
 
-	public static void removeV2Modifier(EntityPlayer player) {
+	private static void removeV2Modifier(EntityPlayer player) {
 		_removeReachRangeModifier(player, _UUID);
 	}
 
