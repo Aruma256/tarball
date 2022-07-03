@@ -70,7 +70,7 @@ public class LotTweaks {
 			ItemGroupManager.init();
 		}
 		LTPacketHandler.init();
-		MinecraftForge.EVENT_BUS.register(new AdjustRangeHelper());
+		MinecraftForge.EVENT_BUS.register(new ReachRangeManager());
 		MinecraftForge.EVENT_BUS.register(new ServerConnectionListener());
 	}
 

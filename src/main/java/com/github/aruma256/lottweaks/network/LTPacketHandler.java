@@ -2,7 +2,7 @@ package com.github.aruma256.lottweaks.network;
 
 import java.nio.charset.StandardCharsets;
 
-import com.github.aruma256.lottweaks.AdjustRangeHelper;
+import com.github.aruma256.lottweaks.ReachRangeManager;
 import com.github.aruma256.lottweaks.LotTweaks;
 
 import io.netty.buffer.ByteBuf;
@@ -157,7 +157,7 @@ public class LTPacketHandler {
 			player.getServerWorld().addScheduledTask(() -> {
 				int dist = message.dist;
 				dist = Math.min(LotTweaks.CONFIG.MAX_RANGE, dist);
-				AdjustRangeHelper.setV2Modifier(player, dist);
+				ReachRangeManager.setV2Modifier(player, dist);
 			});
 			return null;
 		}
