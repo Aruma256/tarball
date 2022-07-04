@@ -1,5 +1,6 @@
 package com.github.aruma256.lottweaks.client;
 
+import static com.github.aruma256.lottweaks.TestHelper.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.Constructor;
@@ -13,7 +14,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Bootstrap;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.JsonToNBT;
 
 class ItemGroupManagerTest {
 
@@ -21,11 +21,6 @@ class ItemGroupManagerTest {
 		Constructor<ItemGroupManager> constructor = ItemGroupManager.class.getDeclaredConstructor(Iterable.class);
 		constructor.setAccessible(true);
 		return constructor.newInstance(groupList);
-	}
-
-	private static ItemStack createNBTstack(ItemStack itemStack, String nbtString) throws Exception {
-		itemStack.setTagCompound(JsonToNBT.getTagFromJson(nbtString));
-		return itemStack;
 	}
 
 	private static ItemGroupManager getSharedExample() throws Exception {

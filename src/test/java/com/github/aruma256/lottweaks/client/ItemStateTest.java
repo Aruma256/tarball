@@ -1,5 +1,6 @@
 package com.github.aruma256.lottweaks.client;
 
+import static com.github.aruma256.lottweaks.TestHelper.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -9,14 +10,8 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Bootstrap;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.JsonToNBT;
 
 class ItemStateTest {
-
-	private static ItemStack createNBTstack(ItemStack itemStack, String nbtString) throws Exception {
-		itemStack.setTagCompound(JsonToNBT.getTagFromJson(nbtString));
-		return itemStack;
-	}
 
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
@@ -24,14 +19,14 @@ class ItemStateTest {
 	}
 
 	@Test
-	void test_toItemStack() throws Exception {
+	void test_toItemStack() {
 		ItemStack sampleStack = createNBTstack(new ItemStack(Items.IRON_HELMET), "{ench:[{lvl:4s,id:4s}],RepairCost:1}");
 		assertTrue(ItemStack.areItemStacksEqual(sampleStack, new ItemState(sampleStack).toItemStack()));
 		assertFalse(ItemStack.areItemStacksEqual(new ItemStack(Items.IRON_HELMET), new ItemState(sampleStack).toItemStack()));
 	}
 
 	@Test
-	void test_equals() throws Exception {
+	void test_equals() {
 		assertEquals(
 			new ItemState(new ItemStack(Blocks.WOOL, 1, 5)),
 			new ItemState(new ItemStack(Blocks.WOOL, 44, 5))
@@ -59,7 +54,7 @@ class ItemStateTest {
 	}
 
 	@Test
-	void test_hashCode() throws Exception {
+	void test_hashCode() {
 		assertEquals(
 			new ItemState(new ItemStack(Blocks.WOOL, 1, 5)).hashCode(),
 			new ItemState(new ItemStack(Blocks.WOOL, 44, 5)).hashCode()
