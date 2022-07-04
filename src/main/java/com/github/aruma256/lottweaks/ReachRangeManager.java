@@ -31,6 +31,7 @@ public class ReachRangeManager {
 
 	public static void setV2Modifier(EntityPlayer player, int dist) {
 		removeV2Modifier(player);
+		if (!player.isCreative()) return;
 		IAttributeInstance instance = player.getEntityAttribute(EntityPlayer.REACH_DISTANCE);
 		instance.applyModifier(new AttributeModifier(_UUID, NAME, dist - instance.getBaseValue(), 0));
 	}
