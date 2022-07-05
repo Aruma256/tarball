@@ -15,8 +15,6 @@ import net.minecraft.item.ItemStack;
 public class CircleItemSelector extends AbstractItemSelector {
 
     private static final double CENTER_CIRCLE_SCALE = 0.25;
-    private static final double R_SCALE_MIN = 0.5;
-    private static final double R_SCALE_MAX = 1.5;
     
     private double mouseDx = 0;
     private double mouseDy = 0;
@@ -98,17 +96,6 @@ public class CircleItemSelector extends AbstractItemSelector {
         GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         GlStateManager.translate(8F, 8F, 8F);
 
-        /*
-        GlStateManager.color(1, 1, 1, 0.25f);
-        bufferbuilder.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION);
-        for(int i=0; i<=stacks.size(); i++) {
-            double theta = getTheta(i, 0.5);
-            bufferbuilder.pos(cx + R_SCALE_MIN*radius*Math.cos(theta), cy + R_SCALE_MIN*radius*Math.sin(theta), 0).endVertex();
-            bufferbuilder.pos(cx + R_SCALE_MAX*radius*Math.cos(theta), cy + R_SCALE_MAX*radius*Math.sin(theta), 0).endVertex();
-        }
-        tessellator.draw();
-        */
-
         GlStateManager.color(1, 1, 1, 1);
         bufferbuilder.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION);
         bufferbuilder.pos(cx, cy, 0).endVertex();
@@ -125,14 +112,6 @@ public class CircleItemSelector extends AbstractItemSelector {
         bufferbuilder.pos(cx + CENTER_CIRCLE_SCALE*radius*Math.cos(pointedAngle-Math.PI/2), cy - CENTER_CIRCLE_SCALE*radius*Math.sin(pointedAngle-Math.PI/2), 0).endVertex();
         bufferbuilder.pos(cx + radius*Math.cos(pointedAngle), cy - radius*Math.sin(pointedAngle), 0).endVertex();
         tessellator.draw();
-
-        /*
-        GlStateManager.color(1, 0, 0, 1f);
-        bufferbuilder.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
-        bufferbuilder.pos(cx, cy, 0).endVertex();
-        bufferbuilder.pos(cx + mouseDx, cy - mouseDy, 0).endVertex();
-        tessellator.draw();
-        */
 
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
