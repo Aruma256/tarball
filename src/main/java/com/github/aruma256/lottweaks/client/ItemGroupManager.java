@@ -96,7 +96,16 @@ public class ItemGroupManager {
 			List<ItemState> group = new ArrayList<>();
 			for (JsonElement element : groupJson.getAsJsonArray()) {
 				JsonObject dict = element.getAsJsonObject();
-				Item item = Item.getByNameOrId(dict.get("id").getAsString());
+				if (!dict.has("id")) {
+					LOG_GROUP_CONFIG.add("'id' is missing");
+					continue;
+				}
+				String itemStr = dict.get("id").getAsString();
+				Item item = Item.getByNameOrId(itemStr);
+				if (item == null) {
+					LOG_GROUP_CONFIG.add(String.format("'%s' not found", itemStr));
+					continue;
+				}
 				int meta = dict.has("meta") ? dict.get("meta").getAsInt() : 0;
 				ItemStack itemStack = new ItemStack(item, 1, meta);
 				if (dict.has("nbt")) {
