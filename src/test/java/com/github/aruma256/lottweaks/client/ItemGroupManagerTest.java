@@ -82,6 +82,13 @@ class ItemGroupManagerTest {
 			method.invoke(null, toJsonArray("[[{'id':'minecraft:golden_pickaxe','nbt':'{ench:[{lvl:5s,id:32s}],display:{Name:\\'Golden Pickaxe222\\'}}'}]]".replace('\'', '"')))
 		);
 		assertTrue(ItemGroupManager.LOG_GROUP_CONFIG.isEmpty());
+		// Ignore entries containing invalid NBT
+		assertEquals(
+			Arrays.asList(Collections.EMPTY_LIST),
+			method.invoke(null, toJsonArray("[[{'id':'minecraft:golden_pickaxe','nbt':'[[[['}]]".replace('\'', '"')))
+		);
+		assertTrue(ItemGroupManager.LOG_GROUP_CONFIG.poll().contains("NBTException"));
+		assertTrue(ItemGroupManager.LOG_GROUP_CONFIG.isEmpty());
 		// accepts nested arrays
 		assertEquals(
 			Arrays.asList(
