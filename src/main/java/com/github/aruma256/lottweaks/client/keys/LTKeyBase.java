@@ -12,11 +12,16 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class LTKeyBase extends KeyBinding {
 
 	protected int pressTime = 0;
-	protected int doubleTapTick = 0;
-	private static final int DOUBLE_TAP_MAX = 5;
+	private int mode = 0;
+	private int modeSwitchTick = 0;
+	private static final int MODE_SWITCH_TICKS_THRESHOLD = 5;
 	
 	public LTKeyBase(String description, int keyCode, String category) {
 		super(description, keyCode, category);
+	}
+
+	protected int getMode() {
+		return this.mode - 1;
 	}
 
 	@SubscribeEvent
@@ -30,8 +35,9 @@ public class LTKeyBase extends KeyBinding {
 			if (this.isKeyDown()) {
 				this.pressTime = Math.min(12345, this.pressTime + 1);
 				if (this.pressTime == 1) {
+					this.mode++;
 					this.onKeyPressStart();
-					this.doubleTapTick = DOUBLE_TAP_MAX;
+					this.modeSwitchTick = MODE_SWITCH_TICKS_THRESHOLD;
 				}
 				whilePressed();
 			} else {
@@ -39,8 +45,11 @@ public class LTKeyBase extends KeyBinding {
 					this.onKeyReleased();
 					this.pressTime = 0;
 				}
-				if (this.doubleTapTick > 0) {
-					this.doubleTapTick--;
+				if (this.modeSwitchTick > 0) {
+					this.modeSwitchTick--;
+					if (this.modeSwitchTick == 0) {
+						this.mode = 0;
+					}
 				}
 			}
 		}

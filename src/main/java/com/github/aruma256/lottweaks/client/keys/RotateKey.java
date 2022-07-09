@@ -25,8 +25,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RotateKey extends LTKeyBase {
 
-	private int phase = 0;
-
 	private CircleItemSelector selector;
 	private List<ColumnItemSelector> rowSelectors;
 
@@ -34,26 +32,18 @@ public class RotateKey extends LTKeyBase {
 		super("Rotate", keyCode, category);
 	}
 
-	private void updatePhase() {
-		if (this.doubleTapTick == 0) {
-			phase = 0;
-		} else {
-			phase ^= 1;
-		}
-	}
-
-	private int getGroupListId() {
+	@Override
+	protected int getMode() {
 		if (LotTweaks.CONFIG.SNEAK_TO_SWITCH_GROUP) {
 			return (!Minecraft.getMinecraft().player.isSneaking()) ? 0 : 1;
 		} else {
-			return this.phase==0 ? 0 : 1;
+			return super.getMode() % ItemGroupManager.getSize();
 		}
 	}
 
 	@Override
 	protected void onKeyPressStart() {
 		super.onKeyPressStart();
-		this.updatePhase();
 		selector = null;
 		//
 		Minecraft mc = Minecraft.getMinecraft();
@@ -63,7 +53,7 @@ public class RotateKey extends LTKeyBase {
 		//
 		ItemStack itemStack = mc.player.inventory.getCurrentItem();
 		if (!itemStack.isEmpty()) {
-			List<ItemStack> results = ItemGroupManager.getInstance(getGroupListId()).getVariantsList(itemStack);
+			List<ItemStack> results = ItemGroupManager.getInstance(getMode()).getVariantsList(itemStack);
 			if (results != null && results.size() > 1) {
 				selector = new CircleItemSelector(results, mc.player.inventory.currentItem);
 			}

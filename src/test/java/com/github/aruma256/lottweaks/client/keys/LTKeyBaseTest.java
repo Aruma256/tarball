@@ -2,7 +2,6 @@ package com.github.aruma256.lottweaks.client.keys;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -11,15 +10,12 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 
 class LTKeyBaseTest {
 
-	@BeforeAll
-	static void setUpBeforeClass() throws Exception {
-	}
-
 	@Test
 	final void test_onClientTick() {
-		DummyLTKeyBase key = new DummyLTKeyBase("", 0, "");
 		ClientTickEvent event = new ClientTickEvent(Phase.END);
 		event.setPhase(EventPriority.NORMAL);
+		DummyLTKeyBase key;
+		key = new DummyLTKeyBase("", 0, "");
 		// if the key is not pressed, pressTime should be 0
 		key.isKeyDown = false;
 		for (int i=0; i<4; i++) key.onClientTick(event);
@@ -46,6 +42,34 @@ class LTKeyBaseTest {
 		assertEquals(1, key.onKeyPressStart);
 		assertEquals(4, key.whilePressed);
 		assertEquals(1, key.onKeyReleased);
+
+		//////////////
+		// test "mode" filed
+		//////////////
+
+		key = new DummyLTKeyBase("", 0, "");
+		// default mode is 0
+		key.isKeyDown = true;
+		key.onClientTick(event);
+		assertEquals(0, key.getMode());
+		// mode is incremented if the key is pressed again within 4 ticks
+		key.isKeyDown = false;
+		for (int i=0; i<4; i++) key.onClientTick(event);
+		key.isKeyDown = true;
+		key.onClientTick(event);
+		assertEquals(1, key.getMode());
+		// mode is incremented if the key is pressed again within 4 ticks
+		key.isKeyDown = false;
+		for (int i=0; i<4; i++) key.onClientTick(event);
+		key.isKeyDown = true;
+		key.onClientTick(event);
+		assertEquals(2, key.getMode());
+		// mode is reset to 0 if the key is pressed again after 5 ticks
+		key.isKeyDown = false;
+		for (int i=0; i<5; i++) key.onClientTick(event);
+		key.isKeyDown = true;
+		key.onClientTick(event);
+		assertEquals(0, key.getMode());
 	}
 
 	private static class DummyLTKeyBase extends LTKeyBase {

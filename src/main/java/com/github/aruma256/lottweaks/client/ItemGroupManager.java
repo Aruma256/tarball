@@ -43,6 +43,10 @@ public class ItemGroupManager {
 
 	private static List<ItemGroupManager> managerList = new ArrayList<>();
 
+	public static int getSize() {
+		return managerList.size();
+	}
+
 	public static ItemGroupManager getInstance(int groupListId) {
 		return managerList.get(groupListId);
 	}
