@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.github.aruma256.lottweaks.client.selector.CircleItemSelector;
+import com.github.aruma256.lottweaks.client.selector.CircleItemSelector.Angle;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Bootstrap;
@@ -27,7 +28,11 @@ class CircleItemSelectorTest {
 				new ItemStack(Blocks.DIAMOND_BLOCK)
 			),
 			0
-		);
+		) {
+			@Override
+			protected void replaceInventory() {
+			}
+		};
 	}
 	
 	@BeforeAll
@@ -48,29 +53,29 @@ class CircleItemSelectorTest {
 		double x, y;
 		x = -1.73;
 		y = -1.00;
-		angleField.setDouble(instance, Math.atan2(y, x));
+		angleField.set(instance, new Angle(Math.atan2(y, x)));
 		assertEquals(0, method.invoke(instance)); // (-1.73, -1.00) -> 0
 		x = -1.74;
 		y = -1.00;
-		angleField.setDouble(instance, Math.atan2(y, x));
+		angleField.set(instance, new Angle(Math.atan2(y, x)));
 		assertEquals(1, method.invoke(instance)); // (-1.74, -1.00) -> 1
 		// top
 		x = -0.01;
 		y = 1;
-		angleField.setDouble(instance, Math.atan2(y, x));
+		angleField.set(instance, new Angle(Math.atan2(y, x)));
 		assertEquals(1, method.invoke(instance)); // (-0.01, 1) -> 1
 		x = 0.01;
 		y = 1;
-		angleField.setDouble(instance, Math.atan2(y, x));
+		angleField.set(instance, new Angle(Math.atan2(y, x)));
 		assertEquals(2, method.invoke(instance)); // (0.01, 1) -> 2
 		// bottom right
 		x = 1.74;
 		y = -1.00;
-		angleField.setDouble(instance, Math.atan2(y, x));
+		angleField.set(instance, new Angle(Math.atan2(y, x)));
 		assertEquals(2, method.invoke(instance)); // (1.74, -1.00) -> 2
 		x = 1.73;
 		y = -1.00;
-		angleField.setDouble(instance, Math.atan2(y, x));
+		angleField.set(instance, new Angle(Math.atan2(y, x)));
 		assertEquals(0, method.invoke(instance)); // (1.73, -1.00) -> 0
 	}
 
@@ -86,6 +91,25 @@ class CircleItemSelectorTest {
 		theta = (double) method.invoke(instance, 1);
 		assertEquals(Math.cos(Math.PI/6*5), Math.cos(theta), DELTA);
 		assertEquals(Math.sin(Math.PI/6*5), Math.sin(theta), DELTA);
+	}
+
+	@Test
+	void test_Angle() throws Exception {
+		Angle instance = new Angle(0d);
+		// 0 -> 0
+		assertEquals(0d, instance.value(), DELTA);
+		// 1.999PI -> 1.999PI
+		instance.add(1.999*Math.PI);
+		assertEquals(1.999*Math.PI, instance.value(), DELTA);
+		// 2.001PI -> 0.001PI
+		instance.add(0.002*Math.PI);
+		assertEquals(0.001*Math.PI, instance.value(), DELTA);
+		// 6.001PI -> 0.001PI
+		instance.add(6*Math.PI);
+		assertEquals(0.001*Math.PI, instance.value(), DELTA);
+		// -0.001PI -> 1.999PI
+		instance.add(-0.002*Math.PI);
+		assertEquals(1.999*Math.PI, instance.value(), DELTA);
 	}
 
 }

@@ -16,7 +16,7 @@ public class CircleItemSelector extends AbstractItemSelector {
 
     private static final double CENTER_CIRCLE_SCALE = 0.25;
 
-    private double angle = -0.5*Math.PI;
+    private Angle angle = new Angle(-0.5*Math.PI);
     private double mouseDx = 0;
     private double mouseDy = 0;
 
@@ -27,19 +27,24 @@ public class CircleItemSelector extends AbstractItemSelector {
 	}
 
 	private int getSelectedId() {
-		double theta = -2*Math.PI - angle;
-		theta -= 0.5*Math.PI; //base-offset
-		theta += 2*Math.PI / stacks.size() / 2; //half-section-offset
-		while (theta < 0) {
-			theta += 2*Math.PI;
-		}
-		int id = (int) (theta / (2*Math.PI) * stacks.size());
+		Angle theta = new Angle(-2*Math.PI - angle.value());
+		theta.add(-0.5*Math.PI); //base-offset
+		theta.add(2*Math.PI / stacks.size() / 2); //half-section-offset
+		int id = (int) (theta.value() / (2*Math.PI) * stacks.size());
 		return id;
 	}
 
 	private ItemStack getSelectedItemStack() {
 		int id = getSelectedId();
 		return this.stacks.get(id);
+	}
+
+	@Override
+	public void rotate(int direction) {
+		angle.set(convertIndexToAngle(selectedId + (direction > 0 ? 1 : -1)));
+		mouseDx = 0;
+		mouseDy = 0;
+		updateSelectedItem();
 	}
 
 	@Override
@@ -58,20 +63,23 @@ public class CircleItemSelector extends AbstractItemSelector {
 		}
 	}
 
-	private void updateMouse(int dx, int dy) {
-		mouseDx += dx;
-		mouseDy += dy;
-		normalizeMouseDxDy();
-		angle = Math.atan2(mouseDy, mouseDx);
-	}
-
-	public void notifyMouseMovement(int dx, int dy) {
-		updateMouse(dx, dy);
+	private boolean updateSelectedItem() {
 		int newSelectedId = getSelectedId();
 		if (this.selectedId != newSelectedId) {
 			this.selectedId = newSelectedId;
 			this.replaceInventory();
+			return true;
 		}
+		return false;
+	}
+
+	public void notifyMouseMovement(int dx, int dy) {
+		if (dx == 0 && dy == 0) return;
+		mouseDx += dx;
+		mouseDy += dy;
+		normalizeMouseDxDy();
+		angle.set(Math.atan2(mouseDy, mouseDx));
+		updateSelectedItem();
 	}
 
 	private double convertIndexToAngle(int i) {
@@ -110,7 +118,7 @@ public class CircleItemSelector extends AbstractItemSelector {
 
         GlStateManager.color(1, 1, 1, 0.6f);
         bufferbuilder.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION);
-        double pointedAngle = angle;
+        double pointedAngle = angle.value();
         bufferbuilder.pos(cx + CENTER_CIRCLE_SCALE*radius*Math.cos(pointedAngle+Math.PI/2), cy - CENTER_CIRCLE_SCALE*radius*Math.sin(pointedAngle+Math.PI/2), 0).endVertex();
         bufferbuilder.pos(cx + CENTER_CIRCLE_SCALE*radius*Math.cos(pointedAngle-Math.PI/2), cy - CENTER_CIRCLE_SCALE*radius*Math.sin(pointedAngle-Math.PI/2), 0).endVertex();
         bufferbuilder.pos(cx + radius*Math.cos(pointedAngle), cy - radius*Math.sin(pointedAngle), 0).endVertex();
@@ -132,6 +140,38 @@ public class CircleItemSelector extends AbstractItemSelector {
 			i++;
 		}
 		glItemRenderFinalize();
+
+	}
+
+	public static class Angle {
+
+		private double angle = 0;
+
+		public Angle(double initialAngle) {
+			add(initialAngle);
+		}
+
+		public void set(double angle) {
+			this.angle = angle;
+		}
+
+		public void add(double theta) {
+			angle += theta;
+			normalize();
+		}
+
+		public double value() {
+			return angle;
+		}
+
+		private void normalize() {
+			while(angle < 0) {
+				angle += 2*Math.PI;
+			}
+			while(angle >= 2*Math.PI) {
+				angle -= 2*Math.PI;
+			}
+		}
 
 	}
 

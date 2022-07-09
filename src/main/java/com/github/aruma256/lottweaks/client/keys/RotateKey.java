@@ -91,6 +91,7 @@ public class RotateKey extends LTKeyBase {
 		if (wheel == 0) {
 			return;
 		}
+		selector.rotate(wheel);
 		event.setCanceled(true);
 	}
 
