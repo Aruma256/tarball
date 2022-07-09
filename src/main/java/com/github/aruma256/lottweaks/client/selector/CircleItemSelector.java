@@ -15,7 +15,8 @@ import net.minecraft.item.ItemStack;
 public class CircleItemSelector extends AbstractItemSelector {
 
     private static final double CENTER_CIRCLE_SCALE = 0.25;
-    
+
+    private double angle = -0.5*Math.PI;
     private double mouseDx = 0;
     private double mouseDy = 0;
 
@@ -26,10 +27,7 @@ public class CircleItemSelector extends AbstractItemSelector {
 	}
 
 	private int getSelectedId() {
-		if (mouseDx == 0 && mouseDy == 0) {
-			return 0;
-		}
-		double theta = -2*Math.PI - Math.atan2(mouseDy, mouseDx);
+		double theta = -2*Math.PI - angle;
 		theta -= 0.5*Math.PI; //base-offset
 		theta += 2*Math.PI / stacks.size() / 2; //half-section-offset
 		while (theta < 0) {
@@ -60,10 +58,15 @@ public class CircleItemSelector extends AbstractItemSelector {
 		}
 	}
 
-	public void notifyMouseMovement(int dx, int dy) {
+	private void updateMouse(int dx, int dy) {
 		mouseDx += dx;
 		mouseDy += dy;
 		normalizeMouseDxDy();
+		angle = Math.atan2(mouseDy, mouseDx);
+	}
+
+	public void notifyMouseMovement(int dx, int dy) {
+		updateMouse(dx, dy);
 		int newSelectedId = getSelectedId();
 		if (this.selectedId != newSelectedId) {
 			this.selectedId = newSelectedId;
@@ -107,7 +110,7 @@ public class CircleItemSelector extends AbstractItemSelector {
 
         GlStateManager.color(1, 1, 1, 0.6f);
         bufferbuilder.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION);
-        double pointedAngle = Math.atan2(mouseDy, mouseDx);
+        double pointedAngle = angle;
         bufferbuilder.pos(cx + CENTER_CIRCLE_SCALE*radius*Math.cos(pointedAngle+Math.PI/2), cy - CENTER_CIRCLE_SCALE*radius*Math.sin(pointedAngle+Math.PI/2), 0).endVertex();
         bufferbuilder.pos(cx + CENTER_CIRCLE_SCALE*radius*Math.cos(pointedAngle-Math.PI/2), cy - CENTER_CIRCLE_SCALE*radius*Math.sin(pointedAngle-Math.PI/2), 0).endVertex();
         bufferbuilder.pos(cx + radius*Math.cos(pointedAngle), cy - radius*Math.sin(pointedAngle), 0).endVertex();

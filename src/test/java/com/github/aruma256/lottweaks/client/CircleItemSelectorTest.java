@@ -40,31 +40,37 @@ class CircleItemSelectorTest {
 		CircleItemSelector instance = getSharedExample();
 		Method method = CircleItemSelector.class.getDeclaredMethod("getSelectedId");
 		method.setAccessible(true);
-		Field mouseDx = CircleItemSelector.class.getDeclaredField("mouseDx");
-		mouseDx.setAccessible(true);
-		Field mouseDy = CircleItemSelector.class.getDeclaredField("mouseDy");
-		mouseDy.setAccessible(true);
-		assertEquals(0, method.invoke(instance)); // defualt (0, 0) -> 0
+		Field angleField = CircleItemSelector.class.getDeclaredField("angle");
+		angleField.setAccessible(true);
+		// default is 0
+		assertEquals(0, method.invoke(instance));
 		// bottom left
-		mouseDx.setDouble(instance, -1.73);
-		mouseDy.setDouble(instance, -1.00);
+		double x, y;
+		x = -1.73;
+		y = -1.00;
+		angleField.setDouble(instance, Math.atan2(y, x));
 		assertEquals(0, method.invoke(instance)); // (-1.73, -1.00) -> 0
-		mouseDx.setDouble(instance, -1.74);
-		mouseDy.setDouble(instance, -1.00);
+		x = -1.74;
+		y = -1.00;
+		angleField.setDouble(instance, Math.atan2(y, x));
 		assertEquals(1, method.invoke(instance)); // (-1.74, -1.00) -> 1
 		// top
-		mouseDx.setDouble(instance, -0.01);
-		mouseDy.setDouble(instance, 1);
+		x = -0.01;
+		y = 1;
+		angleField.setDouble(instance, Math.atan2(y, x));
 		assertEquals(1, method.invoke(instance)); // (-0.01, 1) -> 1
-		mouseDx.setDouble(instance, 0.01);
-		mouseDy.setDouble(instance, 1);
+		x = 0.01;
+		y = 1;
+		angleField.setDouble(instance, Math.atan2(y, x));
 		assertEquals(2, method.invoke(instance)); // (0.01, 1) -> 2
 		// bottom right
-		mouseDx.setDouble(instance, 1.74);
-		mouseDy.setDouble(instance, -1.00);
+		x = 1.74;
+		y = -1.00;
+		angleField.setDouble(instance, Math.atan2(y, x));
 		assertEquals(2, method.invoke(instance)); // (1.74, -1.00) -> 2
-		mouseDx.setDouble(instance, 1.73);
-		mouseDy.setDouble(instance, -1.00);
+		x = 1.73;
+		y = -1.00;
+		angleField.setDouble(instance, Math.atan2(y, x));
 		assertEquals(0, method.invoke(instance)); // (1.73, -1.00) -> 0
 	}
 
