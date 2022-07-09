@@ -7,6 +7,7 @@ import com.github.aruma256.lottweaks.client.keys.AdjustRangeKey;
 import com.github.aruma256.lottweaks.client.keys.ExPickKey;
 import com.github.aruma256.lottweaks.client.keys.ReplaceKey;
 import com.github.aruma256.lottweaks.client.keys.RotateKey;
+import com.github.aruma256.lottweaks.client.keys.RotateRowKey;
 import com.github.aruma256.lottweaks.network.LTPacketHandler;
 import com.github.aruma256.lottweaks.network.LTPacketHandler.HelloMessageHandler.HelloCallback;
 
@@ -35,6 +36,9 @@ public class LotTweaksClient implements HelloCallback
 		MinecraftForge.EVENT_BUS.register(key);
 		ClientRegistry.registerKeyBinding(key);
 		key = new RotateKey(Keyboard.KEY_R, LotTweaks.NAME);
+		MinecraftForge.EVENT_BUS.register(key);
+		ClientRegistry.registerKeyBinding(key);
+		key = new RotateRowKey(Keyboard.KEY_K, LotTweaks.NAME);
 		MinecraftForge.EVENT_BUS.register(key);
 		ClientRegistry.registerKeyBinding(key);
 		key = new ReplaceKey(Keyboard.KEY_G, LotTweaks.NAME);
