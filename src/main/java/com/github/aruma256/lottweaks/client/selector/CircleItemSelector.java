@@ -41,7 +41,11 @@ public class CircleItemSelector extends AbstractItemSelector {
 
 	@Override
 	public void rotate(int direction) {
-		angle.set(convertIndexToAngle(selectedId + (direction > 0 ? 1 : -1)));
+		overwriteSelectedIndex((selectedId + Integer.signum(direction)) % stacks.size());
+	}
+
+	public void overwriteSelectedIndex(int index) {
+		angle.set(convertIndexToAngle(index));
 		mouseDx = 0;
 		mouseDy = 0;
 		updateSelectedItem();
