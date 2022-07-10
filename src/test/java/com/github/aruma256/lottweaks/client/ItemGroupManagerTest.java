@@ -70,6 +70,10 @@ class ItemGroupManagerTest {
 		assertEquals(Arrays.asList(Collections.EMPTY_LIST), method.invoke(null, toJsonArray("[[{'id':'minecraft:item_that_doesnt_exist'}]]".replace('\'', '"'))));
 		assertEquals("'minecraft:item_that_doesnt_exist' not found", ItemGroupManager.LOG_GROUP_CONFIG.poll());
 		assertTrue(ItemGroupManager.LOG_GROUP_CONFIG.isEmpty());
+		// ignores minecraft:air
+		assertEquals(Arrays.asList(Collections.EMPTY_LIST), method.invoke(null, toJsonArray("[[{'id':'minecraft:air'}]]".replace('\'', '"'))));
+		assertEquals("'minecraft:air' is not supported", ItemGroupManager.LOG_GROUP_CONFIG.poll());
+		assertTrue(ItemGroupManager.LOG_GROUP_CONFIG.isEmpty());
 		// meta value can be specified
 		assertEquals(Arrays.asList(Arrays.asList(new ItemState(new ItemStack(Blocks.WOOL, 1, 1)))), method.invoke(null, toJsonArray("[[{'id':'minecraft:wool','meta':1}]]".replace('\'', '"'))));
 		assertTrue(ItemGroupManager.LOG_GROUP_CONFIG.isEmpty());

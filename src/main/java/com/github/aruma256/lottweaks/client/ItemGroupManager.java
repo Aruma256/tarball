@@ -30,6 +30,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
@@ -108,6 +109,10 @@ public class ItemGroupManager {
 				Item item = Item.getByNameOrId(itemStr);
 				if (item == null) {
 					LOG_GROUP_CONFIG.add(String.format("'%s' not found", itemStr));
+					continue;
+				}
+				if (item == Items.AIR) {
+					LOG_GROUP_CONFIG.add(String.format("'%s' is not supported", itemStr));
 					continue;
 				}
 				int meta = dict.has("meta") ? dict.get("meta").getAsInt() : 0;
