@@ -108,7 +108,7 @@ public class ItemGroupManager {
 				String itemStr = dict.get("id").getAsString();
 				Item item = Item.getByNameOrId(itemStr);
 				if (item == null) {
-					LOG_GROUP_CONFIG.add(String.format("'%s' not found", itemStr));
+					LOG_GROUP_CONFIG.add(String.format("'%s' was not found", itemStr));
 					continue;
 				}
 				if (item == Items.AIR) {

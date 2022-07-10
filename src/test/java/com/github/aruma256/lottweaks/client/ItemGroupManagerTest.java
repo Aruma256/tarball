@@ -68,7 +68,7 @@ class ItemGroupManagerTest {
 		assertTrue(ItemGroupManager.LOG_GROUP_CONFIG.isEmpty());
 		// ignores dictionaries with invalid item names
 		assertEquals(Arrays.asList(Collections.EMPTY_LIST), method.invoke(null, toJsonArray("[[{'id':'minecraft:item_that_doesnt_exist'}]]".replace('\'', '"'))));
-		assertEquals("'minecraft:item_that_doesnt_exist' not found", ItemGroupManager.LOG_GROUP_CONFIG.poll());
+		assertEquals("'minecraft:item_that_doesnt_exist' was not found", ItemGroupManager.LOG_GROUP_CONFIG.poll());
 		assertTrue(ItemGroupManager.LOG_GROUP_CONFIG.isEmpty());
 		// ignores minecraft:air
 		assertEquals(Arrays.asList(Collections.EMPTY_LIST), method.invoke(null, toJsonArray("[[{'id':'minecraft:air'}]]".replace('\'', '"'))));
