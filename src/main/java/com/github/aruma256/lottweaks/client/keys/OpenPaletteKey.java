@@ -20,12 +20,12 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RotateKey extends LTKeyBase {
+public class OpenPaletteKey extends LTKeyBase {
 
 	private CircleItemSelector selector;
 
-	public RotateKey(int keyCode, String category) {
-		super("Rotate", keyCode, category);
+	public OpenPaletteKey(int keyCode, String category) {
+		super("Open Palette", keyCode, category);
 	}
 
 	@Override
