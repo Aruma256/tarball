@@ -13,10 +13,10 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class AdjustRangeKey extends LTKeyBase {
+public class ExtendReachRangeKey extends LTKeyBase {
 
-	public AdjustRangeKey(int keyCode, String category) {
-		super("AdjustRange", keyCode, category);
+	public ExtendReachRangeKey(int keyCode, String category) {
+		super("Extend Reach Range", keyCode, category);
 	}
 
 	@Override

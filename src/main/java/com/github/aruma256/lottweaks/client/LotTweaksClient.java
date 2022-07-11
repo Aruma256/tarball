@@ -3,7 +3,7 @@ package com.github.aruma256.lottweaks.client;
 import org.lwjgl.input.Keyboard;
 
 import com.github.aruma256.lottweaks.LotTweaks;
-import com.github.aruma256.lottweaks.client.keys.AdjustRangeKey;
+import com.github.aruma256.lottweaks.client.keys.ExtendReachRangeKey;
 import com.github.aruma256.lottweaks.client.keys.ExPickKey;
 import com.github.aruma256.lottweaks.client.keys.ReplaceKey;
 import com.github.aruma256.lottweaks.client.keys.OpenPaletteKey;
@@ -44,7 +44,7 @@ public class LotTweaksClient implements HelloCallback
 		key = new ReplaceKey(Keyboard.KEY_G, LotTweaks.NAME);
 		MinecraftForge.EVENT_BUS.register(key);
 		ClientRegistry.registerKeyBinding(key);
-		key = new AdjustRangeKey(Keyboard.KEY_U, LotTweaks.NAME);
+		key = new ExtendReachRangeKey(Keyboard.KEY_U, LotTweaks.NAME);
 		MinecraftForge.EVENT_BUS.register(key);
 		ClientRegistry.registerKeyBinding(key);
 		//
