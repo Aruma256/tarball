@@ -44,8 +44,8 @@ public class ExtendReachRangeKey extends LTKeyBase {
 		if (!Minecraft.getMinecraft().player.isCreative()) {
 			return;
 		}
-		if (!ServerLTInfo.instance.requireServerLTVersion("3.0.0")) {
-			LTTextRenderer.showServerSideRequiredMessage(event.getResolution(), "3.0.0");
+		if (!ServerLTInfo.instance.requireServerLTVersion("2.2.1")) {
+			LTTextRenderer.showServerSideRequiredMessage(event.getResolution(), "2.2.1");
 			return;
 		}
 	}
