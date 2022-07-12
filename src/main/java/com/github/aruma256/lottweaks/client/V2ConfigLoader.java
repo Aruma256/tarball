@@ -24,16 +24,16 @@ public class V2ConfigLoader {
 		return ITEMGROUP_CONFFILE_PRIMARY.exists();
 	}
 
-	public static List<List<ItemState>> loadPrimaryGroup() throws IOException {
+	public static List<List<ItemState>> loadPrimaryGroup() {
 		return createGroupList(ITEMGROUP_CONFFILE_PRIMARY);
 	}
 
-	public static List<List<ItemState>> loadSecondaryGroup() throws IOException {
+	public static List<List<ItemState>> loadSecondaryGroup() {
 		return createGroupList(ITEMGROUP_CONFFILE_SECONDARY);
 	}
 
 	@Nonnull
-	private static List<List<ItemState>> createGroupList(File file) throws IOException {
+	private static List<List<ItemState>> createGroupList(File file) {
 		List<List<ItemState>> groupList = new ArrayList<>();
 		if (!file.exists()) return groupList;
 		List<String> lines = loadFile(file);
@@ -77,7 +77,7 @@ public class V2ConfigLoader {
 		return new ItemState(new ItemStack(item, 1, meta));
 	}
 
-	private static List<String> loadFile(File file) throws IOException {
+	private static List<String> loadFile(File file) {
 		try {
 			return Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
 		} catch (IOException e) {
@@ -86,7 +86,12 @@ public class V2ConfigLoader {
 			return Files.readAllLines(file.toPath(), Charset.forName("Shift_JIS"));
 		} catch (IOException e) {
 		}
-		return Files.readAllLines(file.toPath(), Charset.defaultCharset());
+		try {
+			return Files.readAllLines(file.toPath(), Charset.defaultCharset());
+		} catch (IOException e) {
+			ItemGroupManager.LOG_GROUP_CONFIG.add(String.format("Failed to convert config file '%s'", file.getName()));
+			return new ArrayList<>();
+		}
 	}
 
 }

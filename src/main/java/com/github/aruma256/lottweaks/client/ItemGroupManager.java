@@ -54,7 +54,7 @@ public class ItemGroupManager {
 
 	public static boolean init() {
 		if (!CONFIG_FILE.exists()) {
-			if (oldFileExists()) {
+			if (V2ConfigLoader.V2configFileExists()) {
 				convertOldFile();
 			} else {
 				generateDefaultConfig();
@@ -159,15 +159,10 @@ public class ItemGroupManager {
 		}
 	}
 
-	private static boolean oldFileExists() {
-		return new File(new File("config"), RotationHelper.ITEMGROUP_CONFFILE_PRIMARY).exists();
-	}
-
 	private static void convertOldFile() {
-		RotationHelper.loadAllFromFile();
 		save(
-			new ItemGroupManager(RotationHelper.loadPrimaryGroup()),
-			new ItemGroupManager(RotationHelper.loadSecondaryGroup())
+			new ItemGroupManager(V2ConfigLoader.loadPrimaryGroup()),
+			new ItemGroupManager(V2ConfigLoader.loadSecondaryGroup())
 		);
 	}
 
