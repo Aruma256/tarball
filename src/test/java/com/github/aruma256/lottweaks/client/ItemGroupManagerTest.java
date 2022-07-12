@@ -9,18 +9,17 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import com.github.aruma256.lottweaks.testhelper.MinecraftTestBase;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Bootstrap;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
-class ItemGroupManagerTest {
+class ItemGroupManagerTest extends MinecraftTestBase {
 
 	private static ItemGroupManager getItemGroupManagerInstance(List<List<ItemState>> groupList) throws Exception {
 		Constructor<ItemGroupManager> constructor = ItemGroupManager.class.getDeclaredConstructor(Iterable.class);
@@ -44,11 +43,6 @@ class ItemGroupManagerTest {
 				)
 			)
 		);
-	}
-
-	@BeforeAll
-	static void setUpBeforeClass() throws Exception {
-		if (!Bootstrap.isRegistered()) Bootstrap.register();
 	}
 
 	private JsonArray toJsonArray(String str) {

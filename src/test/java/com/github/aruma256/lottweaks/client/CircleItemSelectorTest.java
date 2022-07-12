@@ -6,17 +6,16 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.github.aruma256.lottweaks.client.selector.CircleItemSelector;
 import com.github.aruma256.lottweaks.client.selector.CircleItemSelector.Angle;
+import com.github.aruma256.lottweaks.testhelper.MinecraftTestBase;
 
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Bootstrap;
 import net.minecraft.item.ItemStack;
 
-class CircleItemSelectorTest {
+class CircleItemSelectorTest extends MinecraftTestBase {
 
 	private static final double DELTA = 1e-8;
 
@@ -35,11 +34,6 @@ class CircleItemSelectorTest {
 		};
 	}
 	
-	@BeforeAll
-	static void setUpBeforeClass() throws Exception {
-		if (!Bootstrap.isRegistered()) Bootstrap.register();
-	}
-
 	@Test
 	final void test_getSelectedId() throws Exception {
 		CircleItemSelector instance = getSharedExample();

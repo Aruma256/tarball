@@ -5,15 +5,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.lang.reflect.Field;
 import java.util.UUID;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import com.github.aruma256.lottweaks.testhelper.MinecraftTestBase;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Bootstrap;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.WorldProviderSurface;
@@ -25,12 +24,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
-class ReachRangeManagerTest {
-
-	@BeforeAll
-	static void setUpBeforeClass() throws Exception {
-		if (!Bootstrap.isRegistered()) Bootstrap.register();
-	}
+class ReachRangeManagerTest extends MinecraftTestBase {
 
 	@Test
 	final void test_onLogin() throws Exception {

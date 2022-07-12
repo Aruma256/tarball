@@ -3,20 +3,15 @@ package com.github.aruma256.lottweaks.client;
 import static com.github.aruma256.lottweaks.testhelper.TestHelper.createNBTstack;
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import com.github.aruma256.lottweaks.testhelper.MinecraftTestBase;
+
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Bootstrap;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
-class ItemStateTest {
-
-	@BeforeAll
-	static void setUpBeforeClass() throws Exception {
-		if (!Bootstrap.isRegistered()) Bootstrap.register();
-	}
+class ItemStateTest extends MinecraftTestBase {
 
 	@Test
 	void test_toItemStack() {

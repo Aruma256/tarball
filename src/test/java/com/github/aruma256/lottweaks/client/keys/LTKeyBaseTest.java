@@ -4,11 +4,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.aruma256.lottweaks.testhelper.MinecraftTestBase;
+
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 
-class LTKeyBaseTest {
+class LTKeyBaseTest extends MinecraftTestBase {
 
 	@Test
 	final void test_onClientTick() {

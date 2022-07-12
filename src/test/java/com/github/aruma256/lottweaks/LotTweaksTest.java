@@ -5,32 +5,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Collections;
 import java.util.HashMap;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import com.github.aruma256.lottweaks.testhelper.MinecraftTestBase;
 
 import net.minecraftforge.fml.relauncher.Side;
 
-class LotTweaksTest {
-
-	@BeforeAll
-	static void setUpBeforeClass() throws Exception {
-	}
-
-	@Test @Disabled
-	final void test_onConfigUpdate() {
-		fail("Not yet implemented"); // TODO
-	}
-
-	@Test @Disabled
-	final void test_preInit() {
-		fail("Not yet implemented"); // TODO
-	}
-
-	@Test @Disabled
-	final void test_init() {
-		fail("Not yet implemented"); // TODO
-	}
+class LotTweaksTest extends MinecraftTestBase {
 
 	@Test
 	final void test_networkCheckHandler() {

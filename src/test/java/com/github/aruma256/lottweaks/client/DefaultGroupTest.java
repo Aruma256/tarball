@@ -5,24 +5,19 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import com.github.aruma256.lottweaks.testhelper.MinecraftTestBase;
 
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Bootstrap;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-class DefaultGroupTest {
-
-	@BeforeAll
-	static void setUpBeforeClass() throws Exception {
-		if (!Bootstrap.isRegistered()) Bootstrap.register();
-	}
+class DefaultGroupTest extends MinecraftTestBase {
 
 	@Test
 	final void test_getDefaultGroupList0() {
