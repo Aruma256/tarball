@@ -1,6 +1,6 @@
 package com.github.aruma256.lottweaks.client;
 
-import static com.github.aruma256.lottweaks.TestHelper.*;
+import static com.github.aruma256.lottweaks.testhelper.TestHelper.createNBTstack;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.Constructor;

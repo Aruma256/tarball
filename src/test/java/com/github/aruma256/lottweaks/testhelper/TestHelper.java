@@ -1,4 +1,4 @@
-package com.github.aruma256.lottweaks;
+package com.github.aruma256.lottweaks.testhelper;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
