@@ -25,20 +25,38 @@ public class V2ConfigLoader {
 	}
 
 	public static List<List<ItemState>> loadPrimaryGroup() {
-		return createGroupList(ITEMGROUP_CONFFILE_PRIMARY);
+		return createGroupList(loadFile(ITEMGROUP_CONFFILE_PRIMARY));
 	}
 
 	public static List<List<ItemState>> loadSecondaryGroup() {
-		return createGroupList(ITEMGROUP_CONFFILE_SECONDARY);
+		return createGroupList(loadFile(ITEMGROUP_CONFFILE_SECONDARY));
 	}
 
 	@Nonnull
-	private static List<List<ItemState>> createGroupList(File file) {
+	private static List<String> loadFile(File file) {
+		if (file.exists()) {
+			try {
+				return Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
+			} catch (IOException e) {
+			}
+			try {
+				return Files.readAllLines(file.toPath(), Charset.forName("Shift_JIS"));
+			} catch (IOException e) {
+			}
+			try {
+				return Files.readAllLines(file.toPath(), Charset.defaultCharset());
+			} catch (IOException e) {
+				ItemGroupManager.LOG_GROUP_CONFIG.add(String.format("Failed to convert config file '%s'", file.getName()));
+			}
+		}
+		return new ArrayList<>();
+	}
+
+	@Nonnull
+	private static List<List<ItemState>> createGroupList(List<String> lines) {
 		List<List<ItemState>> groupList = new ArrayList<>();
-		if (!file.exists()) return groupList;
-		List<String> lines = loadFile(file);
 		for (String line : lines) {
-			List<ItemState> group = createGroupFromLine(line);
+			List<ItemState> group = createGroup(line);
 			if (group != null) groupList.add(group);
 		}
 		
@@ -46,18 +64,18 @@ public class V2ConfigLoader {
 	}
 
 	@Nullable
-	private static List<ItemState> createGroupFromLine(String line) {
+	private static List<ItemState> createGroup(String line) {
 		if (line.startsWith("//")) return null;
 		List<ItemState> group = new ArrayList<>();
 		for (String itemStateStr : line.split(",")) {
-			ItemState itemState = createItemStateFromString(itemStateStr);
+			ItemState itemState = createItemState(itemStateStr);
 			if (itemState != null) group.add(itemState);
 		}
 		return group;
 	}
 
 	@Nullable
-	private static ItemState createItemStateFromString(String itemStateStr) {
+	private static ItemState createItemState(String itemStateStr) {
 		String itemName;
 		int meta;
 		if (itemStateStr.contains("/")) {
@@ -75,23 +93,6 @@ public class V2ConfigLoader {
 		Item item = Item.getByNameOrId(itemName);
 		if (item == null || item == Items.AIR) return null;
 		return new ItemState(new ItemStack(item, 1, meta));
-	}
-
-	private static List<String> loadFile(File file) {
-		try {
-			return Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
-		} catch (IOException e) {
-		}
-		try {
-			return Files.readAllLines(file.toPath(), Charset.forName("Shift_JIS"));
-		} catch (IOException e) {
-		}
-		try {
-			return Files.readAllLines(file.toPath(), Charset.defaultCharset());
-		} catch (IOException e) {
-			ItemGroupManager.LOG_GROUP_CONFIG.add(String.format("Failed to convert config file '%s'", file.getName()));
-			return new ArrayList<>();
-		}
 	}
 
 }
