@@ -25,13 +25,13 @@ class LotTweaksTest extends MinecraftTestBase {
 		// server must accept clients with the same version of the mod installed.
 		assertTrue(instance.networkCheckHandler(Collections.singletonMap(LotTweaks.MODID, LotTweaks.VERSION), Side.CLIENT));
 		// client must NOT accept servers with newer versions of the mod installed.
-		assertFalse(instance.networkCheckHandler(Collections.singletonMap(LotTweaks.MODID, LotTweaks.VERSION + "1"), Side.SERVER));
+		assertFalse(instance.networkCheckHandler(Collections.singletonMap(LotTweaks.MODID, "9.9.9"), Side.SERVER));
 		// server must accept clients with newer versions of the mod installed.
-		assertTrue(instance.networkCheckHandler(Collections.singletonMap(LotTweaks.MODID, LotTweaks.VERSION + "1"), Side.CLIENT));
+		assertTrue(instance.networkCheckHandler(Collections.singletonMap(LotTweaks.MODID, "9.9.9"), Side.CLIENT));
 		// client must accept servers with older versions of the mod installed.
-		assertTrue(instance.networkCheckHandler(Collections.singletonMap(LotTweaks.MODID, "0" + LotTweaks.VERSION), Side.SERVER));
+		assertTrue(instance.networkCheckHandler(Collections.singletonMap(LotTweaks.MODID, "0.0.0"), Side.SERVER));
 		// server must NOT accept clients with older versions of the mod installed.
-		assertFalse(instance.networkCheckHandler(Collections.singletonMap(LotTweaks.MODID, "0" + LotTweaks.VERSION), Side.CLIENT));
+		assertFalse(instance.networkCheckHandler(Collections.singletonMap(LotTweaks.MODID, "0.0.0"), Side.CLIENT));
 	}
 
 }
