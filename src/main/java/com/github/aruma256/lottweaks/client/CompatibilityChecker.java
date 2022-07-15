@@ -1,5 +1,7 @@
 package com.github.aruma256.lottweaks.client;
 
+import com.github.aruma256.lottweaks.VersionComparator;
+
 public class CompatibilityChecker {
 
 	public static final CompatibilityChecker instance = new CompatibilityChecker();
@@ -22,7 +24,7 @@ public class CompatibilityChecker {
 	}
 
 	public boolean isServerCompatibleWith(String requiredVersion) {
-		return (serverModVersion.compareTo(requiredVersion) >= 0);
+		return VersionComparator.isVersionNewerOrTheSame(serverModVersion, requiredVersion);
 	}
 
 }
