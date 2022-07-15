@@ -73,7 +73,7 @@ public class ReplaceKey extends LTKeyBase {
 		if (this.pressTime == 0) {
 			return;
 		}
-		if (!CompatibilityChecker.instance.requireServerLTVersion("2.2.1")) {
+		if (!CompatibilityChecker.instance.isServerCompatibleWith("2.2.1")) {
 			LTTextRenderer.showServerSideRequiredMessage("2.2.1");
 			return;
 		}

@@ -8,43 +8,52 @@ import org.junit.jupiter.api.Test;
 
 class CompatibilityCheckerTest {
 
-	private static CompatibilityChecker getInstance() {
-		try {
-			Constructor<CompatibilityChecker> constructor = CompatibilityChecker.class.getDeclaredConstructor();
-			constructor.setAccessible(true);
-			return constructor.newInstance();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+	private static CompatibilityChecker getInstance() throws Exception {
+		Constructor<CompatibilityChecker> constructor = CompatibilityChecker.class.getDeclaredConstructor();
+		constructor.setAccessible(true);
+		return constructor.newInstance();
 	}
 
 	@Test
-	void testInitialState() {
-		assertEquals("0", getInstance().getServerLTVersion());
+	void test_constructor() throws Exception {
+		// The server version is regarded as "0.0.0" by default
+		assertEquals("0.0.0", getInstance().getServerModVersion());
 	}
 
 	@Test
-	void testSetGetServerLTVersion() {
+	void test_setServerModVersion() throws Exception {
 		CompatibilityChecker instance = getInstance();
-		instance.setServerLTVersion("1.2.3");
-		assertEquals("1.2.3", instance.getServerLTVersion());
+		assertNotEquals("1.2.3", instance.getServerModVersion());
+		instance.setServerModVersion("1.2.3");
+		assertEquals("1.2.3", instance.getServerModVersion());
 	}
 
 	@Test
-	void testClearServerLTVersion() {
+	void test_getServerModVersion() throws Exception {
 		CompatibilityChecker instance = getInstance();
-		instance.setServerLTVersion("1.2.3");
-		instance.clearServerLTVersion();
-		assertEquals("0", instance.getServerLTVersion());
+		assertNotEquals("1.2.3", instance.getServerModVersion());
+		instance.setServerModVersion("1.2.3");
+		assertEquals("1.2.3", instance.getServerModVersion());
 	}
 
 	@Test
-	void testRequireServerLTVersion() {
+	void test_clearServerLTVersion() throws Exception {
 		CompatibilityChecker instance = getInstance();
-		instance.setServerLTVersion("1.2.3");
-		assertTrue(instance.requireServerLTVersion("1.2.2"));
-		assertTrue(instance.requireServerLTVersion("1.2.3"));
-		assertFalse(instance.requireServerLTVersion("1.2.4"));
+		instance.setServerModVersion("1.2.3");
+		instance.clearServerModVersion();
+		assertEquals("0.0.0", instance.getServerModVersion());
+	}
+
+	@Test
+	void test_isServerCompatibleWith() throws Exception {
+		CompatibilityChecker instance = getInstance();
+		instance.setServerModVersion("1.2.3");
+		// Compatible if server version and requested version are the same
+		assertTrue( instance.isServerCompatibleWith("1.2.2"));
+		// Compatible if server version is newer than requested version
+		assertTrue( instance.isServerCompatibleWith("1.2.3"));
+		// NOT Compatible if server version is newer than requested version
+		assertFalse(instance.isServerCompatibleWith("1.2.4"));
 	}
 
 }

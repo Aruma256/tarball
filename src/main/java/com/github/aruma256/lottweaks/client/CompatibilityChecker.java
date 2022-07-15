@@ -3,25 +3,26 @@ package com.github.aruma256.lottweaks.client;
 public class CompatibilityChecker {
 
 	public static final CompatibilityChecker instance = new CompatibilityChecker();
+	private static final String SERVER_VERSION_UNKNOWN = "0.0.0";
 
-	private String serverLTVersion = "0";
+	private String serverModVersion = SERVER_VERSION_UNKNOWN;
 
 	private CompatibilityChecker() {}
 
-	public void setServerLTVersion(String version) {
-		serverLTVersion = version;
+	public void setServerModVersion(String version) {
+		serverModVersion = version;
 	}
 
-	public String getServerLTVersion() {
-		return serverLTVersion;
+	public String getServerModVersion() {
+		return serverModVersion;
 	}
 
-	public void clearServerLTVersion() {
-		setServerLTVersion("0");
+	public void clearServerModVersion() {
+		setServerModVersion(SERVER_VERSION_UNKNOWN);
 	}
 
-	public boolean requireServerLTVersion(String requiredVersion) {
-		return (serverLTVersion.compareTo(requiredVersion) >= 0);
+	public boolean isServerCompatibleWith(String requiredVersion) {
+		return (serverModVersion.compareTo(requiredVersion) >= 0);
 	}
 
 }

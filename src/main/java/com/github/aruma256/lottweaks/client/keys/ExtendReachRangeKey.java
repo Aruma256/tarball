@@ -21,14 +21,14 @@ public class ExtendReachRangeKey extends LTKeyBase {
 
 	@Override
 	protected void onKeyPressStart() {
-		if (CompatibilityChecker.instance.requireServerLTVersion("2.2.1")) {
+		if (CompatibilityChecker.instance.isServerCompatibleWith("2.2.1")) {
 			LTPacketHandler.sendReachRangeMessage(LotTweaks.CONFIG.REACH_RANGE_AT_DEFAULT + LotTweaks.CONFIG.REACH_RANGE_AT_EXTENSION);
 		}
 	}
 
 	@Override
 	protected void onKeyReleased() {
-		if (CompatibilityChecker.instance.requireServerLTVersion("2.2.1")) {
+		if (CompatibilityChecker.instance.isServerCompatibleWith("2.2.1")) {
 			LTPacketHandler.sendReachRangeMessage(LotTweaks.CONFIG.REACH_RANGE_AT_DEFAULT);
 		}
 	}
@@ -44,7 +44,7 @@ public class ExtendReachRangeKey extends LTKeyBase {
 		if (!Minecraft.getMinecraft().player.isCreative()) {
 			return;
 		}
-		if (!CompatibilityChecker.instance.requireServerLTVersion("2.2.1")) {
+		if (!CompatibilityChecker.instance.isServerCompatibleWith("2.2.1")) {
 			LTTextRenderer.showServerSideRequiredMessage(event.getResolution(), "2.2.1");
 			return;
 		}

@@ -72,7 +72,7 @@ public class LotTweaksClient implements HelloCallback
 
 	@SubscribeEvent
 	public void onClientDisconnectionFromServer(final ClientDisconnectionFromServerEvent event) {
-		CompatibilityChecker.instance.clearServerLTVersion();
+		CompatibilityChecker.instance.clearServerModVersion();
 	}
 
 	@SubscribeEvent
@@ -84,7 +84,7 @@ public class LotTweaksClient implements HelloCallback
 
 	@Override
 	public void onHello(String version) {
-		CompatibilityChecker.instance.setServerLTVersion(version);
+		CompatibilityChecker.instance.setServerModVersion(version);
 		LTPacketHandler.sendReachRangeMessage(LotTweaks.CONFIG.REACH_RANGE_AT_DEFAULT);
 	}
 
