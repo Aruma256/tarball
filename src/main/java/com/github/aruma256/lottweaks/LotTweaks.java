@@ -91,7 +91,7 @@ public class LotTweaks {
 			clientVersion = mods.get(MODID);
 			serverVersion = VERSION;
 		}
-		return VersionComparator.isClientNewerOrTheSame(clientVersion, serverVersion);
+		return VersionComparator.isVersionNewerOrTheSame(clientVersion, serverVersion);
 	}
 
 }
