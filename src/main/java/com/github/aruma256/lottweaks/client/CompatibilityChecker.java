@@ -1,12 +1,12 @@
 package com.github.aruma256.lottweaks.client;
 
-public class ServerLTInfo {
+public class CompatibilityChecker {
 
-	public static final ServerLTInfo instance = new ServerLTInfo();
+	public static final CompatibilityChecker instance = new CompatibilityChecker();
 
 	private String serverLTVersion = "0";
 
-	private ServerLTInfo() {}
+	private CompatibilityChecker() {}
 
 	public void setServerLTVersion(String version) {
 		serverLTVersion = version;

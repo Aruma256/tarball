@@ -6,11 +6,11 @@ import java.lang.reflect.Constructor;
 
 import org.junit.jupiter.api.Test;
 
-class ServerLTInfoTest {
+class CompatibilityCheckerTest {
 
-	private static ServerLTInfo getInstance() {
+	private static CompatibilityChecker getInstance() {
 		try {
-			Constructor<ServerLTInfo> constructor = ServerLTInfo.class.getDeclaredConstructor();
+			Constructor<CompatibilityChecker> constructor = CompatibilityChecker.class.getDeclaredConstructor();
 			constructor.setAccessible(true);
 			return constructor.newInstance();
 		} catch (Exception e) {
@@ -25,14 +25,14 @@ class ServerLTInfoTest {
 
 	@Test
 	void testSetGetServerLTVersion() {
-		ServerLTInfo instance = getInstance();
+		CompatibilityChecker instance = getInstance();
 		instance.setServerLTVersion("1.2.3");
 		assertEquals("1.2.3", instance.getServerLTVersion());
 	}
 
 	@Test
 	void testClearServerLTVersion() {
-		ServerLTInfo instance = getInstance();
+		CompatibilityChecker instance = getInstance();
 		instance.setServerLTVersion("1.2.3");
 		instance.clearServerLTVersion();
 		assertEquals("0", instance.getServerLTVersion());
@@ -40,7 +40,7 @@ class ServerLTInfoTest {
 
 	@Test
 	void testRequireServerLTVersion() {
-		ServerLTInfo instance = getInstance();
+		CompatibilityChecker instance = getInstance();
 		instance.setServerLTVersion("1.2.3");
 		assertTrue(instance.requireServerLTVersion("1.2.2"));
 		assertTrue(instance.requireServerLTVersion("1.2.3"));

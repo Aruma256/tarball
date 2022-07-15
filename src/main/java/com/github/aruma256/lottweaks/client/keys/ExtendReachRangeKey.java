@@ -1,7 +1,7 @@
 package com.github.aruma256.lottweaks.client.keys;
 
 import com.github.aruma256.lottweaks.LotTweaks;
-import com.github.aruma256.lottweaks.client.ServerLTInfo;
+import com.github.aruma256.lottweaks.client.CompatibilityChecker;
 import com.github.aruma256.lottweaks.client.renderer.LTTextRenderer;
 import com.github.aruma256.lottweaks.network.LTPacketHandler;
 
@@ -21,14 +21,14 @@ public class ExtendReachRangeKey extends LTKeyBase {
 
 	@Override
 	protected void onKeyPressStart() {
-		if (ServerLTInfo.instance.requireServerLTVersion("2.2.1")) {
+		if (CompatibilityChecker.instance.requireServerLTVersion("2.2.1")) {
 			LTPacketHandler.sendReachRangeMessage(LotTweaks.CONFIG.REACH_RANGE_AT_DEFAULT + LotTweaks.CONFIG.REACH_RANGE_AT_EXTENSION);
 		}
 	}
 
 	@Override
 	protected void onKeyReleased() {
-		if (ServerLTInfo.instance.requireServerLTVersion("2.2.1")) {
+		if (CompatibilityChecker.instance.requireServerLTVersion("2.2.1")) {
 			LTPacketHandler.sendReachRangeMessage(LotTweaks.CONFIG.REACH_RANGE_AT_DEFAULT);
 		}
 	}
@@ -44,7 +44,7 @@ public class ExtendReachRangeKey extends LTKeyBase {
 		if (!Minecraft.getMinecraft().player.isCreative()) {
 			return;
 		}
-		if (!ServerLTInfo.instance.requireServerLTVersion("2.2.1")) {
+		if (!CompatibilityChecker.instance.requireServerLTVersion("2.2.1")) {
 			LTTextRenderer.showServerSideRequiredMessage(event.getResolution(), "2.2.1");
 			return;
 		}
