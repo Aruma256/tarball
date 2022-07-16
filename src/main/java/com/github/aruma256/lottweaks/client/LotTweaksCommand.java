@@ -13,9 +13,6 @@ import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.text.ChatType;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.IClientCommand;
 
 public class LotTweaksCommand extends CommandBase implements IClientCommand {
@@ -56,11 +53,10 @@ public class LotTweaksCommand extends CommandBase implements IClientCommand {
 	}
 
 	private void executeAdd(int listId) throws CommandException {
-		Minecraft mc = Minecraft.getMinecraft();
 		List<ItemState> group = new ArrayList<>();
 		int count = 0;
 		for (int i = 0; i < InventoryPlayer.getHotbarSize(); i++) {
-			ItemStack itemStack = mc.player.inventory.getStackInSlot(i);
+			ItemStack itemStack = Minecraft.getMinecraft().player.inventory.getStackInSlot(i);
 			if (itemStack.isEmpty()) {
 				break;
 			}
@@ -72,21 +68,20 @@ public class LotTweaksCommand extends CommandBase implements IClientCommand {
 		}
 		if (ItemGroupManager.getInstance(listId).addGroup(group)) {
 			ItemGroupManager.save();
-			mc.ingameGUI.addChatMessage(ChatType.SYSTEM, new TextComponentString(String.format("LotTweaks: added %d items", count)));
+			IngameLog.instance.addInfoLog(String.format("added %d items", count));
 		} else {
-			mc.ingameGUI.addChatMessage(ChatType.SYSTEM, new TextComponentString(TextFormatting.RED + "LotTweaks: failed to create a new group"));
-			LotTweaksClient.showErrorLogToChat();
+			IngameLog.instance.addErrorLog("failed to create a new group");
+			IngameLog.instance.show();
 		}
 	}
 
 	private void executeReload() {
-		Minecraft mc = Minecraft.getMinecraft();
 		if (ItemGroupManager.init()) {
-			mc.ingameGUI.addChatMessage(ChatType.SYSTEM, new TextComponentString("LotTweaks: reload succeeded!"));
+			IngameLog.instance.addInfoLog("reload succeeded!");
 		} else {
-			mc.ingameGUI.addChatMessage(ChatType.SYSTEM, new TextComponentString("LotTweaks: reload failed"));
+			IngameLog.instance.addErrorLog("reload failed");
 		}
-		LotTweaksClient.showErrorLogToChat();
+		IngameLog.instance.show();
 	}
 
 	@Override

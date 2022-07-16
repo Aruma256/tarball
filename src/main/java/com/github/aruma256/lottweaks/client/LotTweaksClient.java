@@ -11,11 +11,7 @@ import com.github.aruma256.lottweaks.client.keys.RotateRowKey;
 import com.github.aruma256.lottweaks.network.LTPacketHandler;
 import com.github.aruma256.lottweaks.network.LTPacketHandler.HelloMessageHandler.HelloCallback;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.util.text.ChatType;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
@@ -53,21 +49,12 @@ public class LotTweaksClient implements HelloCallback
 		LTPacketHandler.HelloMessageHandler.callback = instance;
 		//
 		ClientCommandHandler.instance.registerCommand(new LotTweaksCommand());
-	}
-
-	public static void showErrorLogToChat() {
-		if (LotTweaks.CONFIG.SHOW_BLOCKCONFIG_ERROR_LOG_TO_CHAT) {
-			Minecraft mc = Minecraft.getMinecraft();
-			String line;
-			while ((line = ItemGroupManager.LOG_GROUP_CONFIG.poll()) != null) {
-				mc.ingameGUI.addChatMessage(ChatType.SYSTEM, new TextComponentString(String.format("LotTweaks: %s%s", TextFormatting.RED, line)));
-			}
-		}
+		MinecraftForge.EVENT_BUS.register(IngameLog.instance);
 	}
 
 	@SubscribeEvent
 	public void onPlayerLoggedIn(final ClientConnectedToServerEvent event) {
-		showErrorLogToChat();
+		IngameLog.instance.show();
 	}
 
 	@SubscribeEvent

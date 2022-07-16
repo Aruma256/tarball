@@ -18,6 +18,7 @@ import com.google.gson.JsonParser;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextFormatting;
 
 class ItemGroupManagerTest extends MinecraftTestBase {
 
@@ -55,38 +56,38 @@ class ItemGroupManagerTest extends MinecraftTestBase {
 		method.setAccessible(true);
 		// accepts an empty array
 		assertEquals(Collections.EMPTY_LIST, method.invoke(null, toJsonArray("[]")));
-		assertTrue(ItemGroupManager.LOG_GROUP_CONFIG.isEmpty());
+		assertNull(IngameLog.instance.debug_pollLog());
 		// ignores dictionaries that do not have an id key
 		assertEquals(Arrays.asList(Collections.EMPTY_LIST), method.invoke(null, toJsonArray("[[{'meta':1}]]".replace('\'', '"'))));
-		assertEquals("'id' is missing", ItemGroupManager.LOG_GROUP_CONFIG.poll());
-		assertTrue(ItemGroupManager.LOG_GROUP_CONFIG.isEmpty());
+		assertEquals(TextFormatting.RED + "'id' is missing", IngameLog.instance.debug_pollLog());
+		assertNull(IngameLog.instance.debug_pollLog());
 		// ignores dictionaries with invalid item names
 		assertEquals(Arrays.asList(Collections.EMPTY_LIST), method.invoke(null, toJsonArray("[[{'id':'minecraft:item_that_doesnt_exist'}]]".replace('\'', '"'))));
-		assertEquals("'minecraft:item_that_doesnt_exist' was not found", ItemGroupManager.LOG_GROUP_CONFIG.poll());
-		assertTrue(ItemGroupManager.LOG_GROUP_CONFIG.isEmpty());
+		assertEquals(TextFormatting.RED + "'minecraft:item_that_doesnt_exist' was not found", IngameLog.instance.debug_pollLog());
+		assertNull(IngameLog.instance.debug_pollLog());
 		// ignores minecraft:air
 		assertEquals(Arrays.asList(Collections.EMPTY_LIST), method.invoke(null, toJsonArray("[[{'id':'minecraft:air'}]]".replace('\'', '"'))));
-		assertEquals("'minecraft:air' is not supported", ItemGroupManager.LOG_GROUP_CONFIG.poll());
-		assertTrue(ItemGroupManager.LOG_GROUP_CONFIG.isEmpty());
+		assertEquals(TextFormatting.RED + "'minecraft:air' is not supported", IngameLog.instance.debug_pollLog());
+		assertNull(IngameLog.instance.debug_pollLog());
 		// meta value can be specified
 		assertEquals(Arrays.asList(Arrays.asList(new ItemState(new ItemStack(Blocks.WOOL, 1, 1)))), method.invoke(null, toJsonArray("[[{'id':'minecraft:wool','meta':1}]]".replace('\'', '"'))));
-		assertTrue(ItemGroupManager.LOG_GROUP_CONFIG.isEmpty());
+		assertNull(IngameLog.instance.debug_pollLog());
 		// if meta is omitted, it is set to 0
 		assertEquals(Arrays.asList(Arrays.asList(new ItemState(new ItemStack(Blocks.WOOL, 1, 0)))), method.invoke(null, toJsonArray("[[{'id':'minecraft:wool'}]]".replace('\'', '"'))));
-		assertTrue(ItemGroupManager.LOG_GROUP_CONFIG.isEmpty());
+		assertNull(IngameLog.instance.debug_pollLog());
 		// nbt can be specified
 		assertEquals(
 			Arrays.asList(Arrays.asList(new ItemState(createNBTstack(new ItemStack(Items.GOLDEN_PICKAXE), "{ench:[{lvl:5s,id:32s}],display:{Name:\"Golden Pickaxe222\"}}")))),
 			method.invoke(null, toJsonArray("[[{'id':'minecraft:golden_pickaxe','nbt':'{ench:[{lvl:5s,id:32s}],display:{Name:\\'Golden Pickaxe222\\'}}'}]]".replace('\'', '"')))
 		);
-		assertTrue(ItemGroupManager.LOG_GROUP_CONFIG.isEmpty());
+		assertNull(IngameLog.instance.debug_pollLog());
 		// Ignore entries containing invalid NBT
 		assertEquals(
 			Arrays.asList(Collections.EMPTY_LIST),
 			method.invoke(null, toJsonArray("[[{'id':'minecraft:golden_pickaxe','nbt':'[[[['}]]".replace('\'', '"')))
 		);
-		assertTrue(ItemGroupManager.LOG_GROUP_CONFIG.poll().contains("NBTException"));
-		assertTrue(ItemGroupManager.LOG_GROUP_CONFIG.isEmpty());
+		assertTrue(IngameLog.instance.debug_pollLog().contains("NBTException"));
+		assertNull(IngameLog.instance.debug_pollLog());
 		// accepts nested arrays
 		assertEquals(
 			Arrays.asList(
@@ -101,7 +102,7 @@ class ItemGroupManagerTest extends MinecraftTestBase {
 			),
 			method.invoke(null, toJsonArray("[[{'id':'minecraft:stone'},{'id':'minecraft:iron_helmet'}],[{'id':'minecraft:wool','meta':2},{'id':'minecraft:wool','meta':3}]]".replace('\'', '"')))
 		);
-		assertTrue(ItemGroupManager.LOG_GROUP_CONFIG.isEmpty());
+		assertNull(IngameLog.instance.debug_pollLog());
 	}
 
 	@Test

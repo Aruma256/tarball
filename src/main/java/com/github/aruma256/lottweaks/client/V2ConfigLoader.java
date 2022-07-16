@@ -46,7 +46,7 @@ public class V2ConfigLoader {
 			try {
 				return Files.readAllLines(file.toPath(), Charset.defaultCharset());
 			} catch (IOException e) {
-				ItemGroupManager.LOG_GROUP_CONFIG.add(String.format("Failed to convert config file '%s'", file.getName()));
+				IngameLog.instance.addErrorLog(String.format("Failed to convert config file '%s'", file.getName()));
 			}
 		}
 		return new ArrayList<>();

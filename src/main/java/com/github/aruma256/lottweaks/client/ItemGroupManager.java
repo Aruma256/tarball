@@ -10,14 +10,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,7 +38,6 @@ public class ItemGroupManager {
 
 	private static final String JSON_INDENT = "  ";
 	public static final File CONFIG_FILE = new File(new File("config"), "LotTweaks-ItemGroup.json");
-	public static final Queue<String> LOG_GROUP_CONFIG = new ArrayDeque<>();
 
 	private static List<ItemGroupManager> managerList = new ArrayList<>();
 
@@ -79,13 +76,13 @@ public class ItemGroupManager {
 			groupList0 = readGroupFromJsonFile(json.get("grouplist-0").getAsJsonArray());
 			groupList1 = readGroupFromJsonFile(json.get("grouplist-1").getAsJsonArray());
 		} catch (JsonIOException e1) {
-			LOG_GROUP_CONFIG.add("JsonIOError");
+			IngameLog.instance.addErrorLog("JsonIOError");
 			return false;
 		} catch (JsonSyntaxException | IllegalStateException e1) {
-			LOG_GROUP_CONFIG.add("JsonSyntaxError");
+			IngameLog.instance.addErrorLog("JsonSyntaxError");
 			return false;
 		} catch (FileNotFoundException e1) {
-			LOG_GROUP_CONFIG.add("ERROR FileNotFound");
+			IngameLog.instance.addErrorLog("ERROR FileNotFound");
 			return false;
 		}
 		managerList = Arrays.asList(
@@ -102,17 +99,17 @@ public class ItemGroupManager {
 			for (JsonElement element : groupJson.getAsJsonArray()) {
 				JsonObject dict = element.getAsJsonObject();
 				if (!dict.has("id")) {
-					LOG_GROUP_CONFIG.add("'id' is missing");
+					IngameLog.instance.addErrorLog("'id' is missing");
 					continue;
 				}
 				String itemStr = dict.get("id").getAsString();
 				Item item = Item.getByNameOrId(itemStr);
 				if (item == null) {
-					LOG_GROUP_CONFIG.add(String.format("'%s' was not found", itemStr));
+					IngameLog.instance.addErrorLog(String.format("'%s' was not found", itemStr));
 					continue;
 				}
 				if (item == Items.AIR) {
-					LOG_GROUP_CONFIG.add(String.format("'%s' is not supported", itemStr));
+					IngameLog.instance.addErrorLog(String.format("'%s' is not supported", itemStr));
 					continue;
 				}
 				int meta = dict.has("meta") ? dict.get("meta").getAsInt() : 0;
@@ -122,7 +119,7 @@ public class ItemGroupManager {
 					try {
 						itemStack.setTagCompound(JsonToNBT.getTagFromJson(nbtString));
 					} catch (NBTException e) {
-						LOG_GROUP_CONFIG.add("NBTException -> " + nbtString);
+						IngameLog.instance.addErrorLog("NBTException -> " + nbtString);
 						continue;
 					}
 				}
@@ -192,7 +189,7 @@ public class ItemGroupManager {
 
 	private boolean canBeAdded(List<ItemState> group) {
 		if (group.size() <= 1) {
-			LOG_GROUP_CONFIG.add("A group must have 2 or more elements");
+			IngameLog.instance.addErrorLog("A group must have 2 or more elements");
 			return false;
 		}
 		Set<ItemState> dupCheck = new HashSet<>();
@@ -201,9 +198,9 @@ public class ItemGroupManager {
 				String itemName = Item.REGISTRY.getNameForObject(itemState.cachedStack.getItem()).toString();
 				int meta = itemState.cachedStack.getItemDamage();
 				if (itemState.cachedStack.hasTagCompound()) {
-					LOG_GROUP_CONFIG.add(String.format("Item config '%s/%d/%s' is duplicated.", itemName, meta, itemState.cachedStack.getTagCompound().toString()));
+					IngameLog.instance.addErrorLog(String.format("Item config '%s/%d/%s' is duplicated.", itemName, meta, itemState.cachedStack.getTagCompound().toString()));
 				} else {
-					LOG_GROUP_CONFIG.add(String.format("Item config '%s/%d' is duplicated.", itemName, meta));
+					IngameLog.instance.addErrorLog(String.format("Item config '%s/%d' is duplicated.", itemName, meta));
 				}
 				return false;
 			}
