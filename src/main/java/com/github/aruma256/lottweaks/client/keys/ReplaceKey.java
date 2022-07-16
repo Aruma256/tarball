@@ -86,10 +86,10 @@ public class ReplaceKey extends LTKeyBase {
 	}
 
 	private void execReplace() {
-		Minecraft mc = Minecraft.getMinecraft();
-		if (!mc.player.isCreative()) {
+		if (!isPlayerCreative()) {
 			return;
 		}
+		Minecraft mc = Minecraft.getMinecraft();
 		RayTraceResult target = mc.objectMouseOver;
 		if (target == null || target.typeOfHit != RayTraceResult.Type.BLOCK){
         	return;

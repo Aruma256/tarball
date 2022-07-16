@@ -26,11 +26,11 @@ public class RotateRowKey extends LTKeyBase {
 
 	@Override
 	protected void onKeyPressStart() {
-		Minecraft mc = Minecraft.getMinecraft();
-		if (!mc.player.isCreative()) {
+		if (!isPlayerCreative()) {
 			return;
 		}
 		//
+		Minecraft mc = Minecraft.getMinecraft();
 		rowSelectors = new ArrayList<>();
 		for (int slot=0; slot<InventoryPlayer.getHotbarSize(); slot++) {
 			List<ItemStack> stacksInColumn = new ArrayList<>();
@@ -52,8 +52,7 @@ public class RotateRowKey extends LTKeyBase {
 		if (this.pressTime == 0) {
 			return;
 		}
-		Minecraft mc = Minecraft.getMinecraft();
-		if (!mc.player.isCreative()) {
+		if (!isPlayerCreative()) {
 			return;
 		}
 		if (event.isCanceled()) {
@@ -80,7 +79,7 @@ public class RotateRowKey extends LTKeyBase {
 		if (this.pressTime == 0) {
 			return;
 		}
-		if (!Minecraft.getMinecraft().player.isCreative()) {
+		if (!isPlayerCreative()) {
 			return;
 		}
 		if (rowSelectors != null) {

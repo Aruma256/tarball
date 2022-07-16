@@ -5,7 +5,6 @@ import com.github.aruma256.lottweaks.client.CompatibilityChecker;
 import com.github.aruma256.lottweaks.client.renderer.LTTextRenderer;
 import com.github.aruma256.lottweaks.network.LTPacketHandler;
 
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -41,7 +40,7 @@ public class ExtendReachRangeKey extends LTKeyBase {
 		if (this.pressTime == 0) {
 			return;
 		}
-		if (!Minecraft.getMinecraft().player.isCreative()) {
+		if (!isPlayerCreative()) {
 			return;
 		}
 		if (!CompatibilityChecker.instance.isServerCompatibleWith("2.2.1")) {

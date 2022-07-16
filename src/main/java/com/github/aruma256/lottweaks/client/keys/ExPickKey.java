@@ -69,10 +69,10 @@ public class ExPickKey extends LTKeyBase {
 		super.onKeyPressStart();
 		nearbyBlockSelector = null;
 		historyBlockSelector = null;
-		Minecraft mc = Minecraft.getMinecraft();
 		RayTraceResult rayTraceResult;
 
-		if (!mc.player.isCreative()) {
+		if (!isPlayerCreative()) {
+			Minecraft mc = Minecraft.getMinecraft();
 			rayTraceResult = mc.objectMouseOver;
 			if (rayTraceResult != null) {
 				ForgeHooks.onPickBlock(rayTraceResult, mc.player, mc.world);
@@ -159,7 +159,7 @@ public class ExPickKey extends LTKeyBase {
 		if (this.pressTime == 0) {
 			return;
 		}
-		if (!Minecraft.getMinecraft().player.isCreative()) {
+		if (!isPlayerCreative()) {
 			return;
 		}
 		if (event.isCanceled()) {
@@ -184,7 +184,7 @@ public class ExPickKey extends LTKeyBase {
 		if (this.pressTime == 0) {
 			return;
 		}
-		if (!Minecraft.getMinecraft().player.isCreative()) {
+		if (!isPlayerCreative()) {
 			return;
 		}
 		ScaledResolution sr = event.getResolution();

@@ -42,11 +42,11 @@ public class OpenPaletteKey extends LTKeyBase {
 		super.onKeyPressStart();
 		selector = null;
 		//
-		Minecraft mc = Minecraft.getMinecraft();
-		if (!mc.player.isCreative()) {
+		if (!isPlayerCreative()) {
 			return;
 		}
 		//
+		Minecraft mc = Minecraft.getMinecraft();
 		ItemStack itemStack = mc.player.inventory.getCurrentItem();
 		if (!itemStack.isEmpty()) {
 			List<ItemStack> results = ItemGroupManager.getInstance(getMode()).getVariantsList(itemStack);
@@ -92,8 +92,7 @@ public class OpenPaletteKey extends LTKeyBase {
 		if (this.pressTime == 0) {
 			return;
 		}
-		Minecraft mc = Minecraft.getMinecraft();
-		if (!mc.player.isCreative()) {
+		if (!isPlayerCreative()) {
 			return;
 		}
 		if (event.isCanceled()) {
@@ -115,7 +114,7 @@ public class OpenPaletteKey extends LTKeyBase {
 		if (this.pressTime == 0) {
 			return;
 		}
-		if (!Minecraft.getMinecraft().player.isCreative()) {
+		if (!isPlayerCreative()) {
 			return;
 		}
 		if (selector != null) {
