@@ -52,9 +52,12 @@ public class ItemGroupManager {
 	public static boolean init() {
 		if (!CONFIG_FILE.exists()) {
 			if (V2ConfigLoader.V2configFileExists()) {
+				IngameLog.instance.addInfoLog("Converting old config files...");
 				convertOldFile();
+				IngameLog.instance.addInfoLog("Conversion complete!");
 			} else {
 				generateDefaultConfig();
+				IngameLog.instance.addInfoLog("Default config file has been created.");
 			}
 		}
 		return loadFromFile();

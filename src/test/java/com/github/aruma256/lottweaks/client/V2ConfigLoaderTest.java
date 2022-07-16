@@ -13,6 +13,7 @@ import com.github.aruma256.lottweaks.testhelper.MinecraftTestBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextFormatting;
 
 class V2ConfigLoaderTest extends MinecraftTestBase {
 
@@ -51,6 +52,8 @@ class V2ConfigLoaderTest extends MinecraftTestBase {
 			Arrays.asList(new ItemState(new ItemStack(Blocks.WOOL))),
 			method.invoke(null, "minecraft:stone/N,minecraft:wool")
 		);
+		assertEquals(TextFormatting.RED + "Could not parse 'minecraft:stone/N'", IngameLog.instance.debug_pollLog());
+		assertNull(IngameLog.instance.debug_pollLog());
 		// commented-out lines are ignored.
 		assertNull(method.invoke(null, "//テスト"));
 	}
@@ -71,9 +74,15 @@ class V2ConfigLoaderTest extends MinecraftTestBase {
 		);
 		// If the specified item is not found, null is returned.
 		assertNull(method.invoke(null, "minecraft:item_that_doesnt_exist"));
+		assertEquals(TextFormatting.RED + "'minecraft:item_that_doesnt_exist' was not found", IngameLog.instance.debug_pollLog());
+		assertNull(IngameLog.instance.debug_pollLog());
 		// If the input is invalid, null is returned.
 		assertNull(method.invoke(null, "minecraft:stone/"));
+		assertEquals(TextFormatting.RED + "Could not parse 'minecraft:stone/'", IngameLog.instance.debug_pollLog());
+		assertNull(IngameLog.instance.debug_pollLog());
 		assertNull(method.invoke(null, "minecraft:stone/N"));
+		assertEquals(TextFormatting.RED + "Could not parse 'minecraft:stone/N'", IngameLog.instance.debug_pollLog());
+		assertNull(IngameLog.instance.debug_pollLog());
 	}
 
 }

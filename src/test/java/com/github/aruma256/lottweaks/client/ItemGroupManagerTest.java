@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import com.github.aruma256.lottweaks.testhelper.MinecraftTestBase;
@@ -48,6 +49,11 @@ class ItemGroupManagerTest extends MinecraftTestBase {
 
 	private JsonArray toJsonArray(String str) {
 		return new JsonParser().parse(str).getAsJsonArray();
+	}
+
+	@AfterEach
+	void tearDown() {
+		while(IngameLog.instance.debug_pollLog() != null);
 	}
 
 	@Test
@@ -128,6 +134,7 @@ class ItemGroupManagerTest extends MinecraftTestBase {
 			new ItemState(new ItemStack(Blocks.IRON_BLOCK)),
 			new ItemState(new ItemStack(Blocks.GOLD_BLOCK))
 		)));
+		//TODO add log checks
 	}
 
 	@Test

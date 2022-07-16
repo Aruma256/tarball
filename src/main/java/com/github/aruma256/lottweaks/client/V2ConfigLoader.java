@@ -84,6 +84,7 @@ public class V2ConfigLoader {
 			try {
 				meta = Integer.parseInt(tmp[1]);
 			} catch (Exception e) {
+				IngameLog.instance.addErrorLog(String.format("Could not parse '%s'", itemStateStr));
 				return null;
 			}
 		} else {
@@ -91,7 +92,13 @@ public class V2ConfigLoader {
 			meta = 0;
 		}
 		Item item = Item.getByNameOrId(itemName);
-		if (item == null || item == Items.AIR) return null;
+		if (item == null) {
+			IngameLog.instance.addErrorLog(String.format("'%s' was not found", itemName));
+			return null;
+		} else if (item == Items.AIR ) {
+			IngameLog.instance.addErrorLog(String.format("'%s' is not supported", itemName));
+			return null;
+		}
 		return new ItemState(new ItemStack(item, 1, meta));
 	}
 
