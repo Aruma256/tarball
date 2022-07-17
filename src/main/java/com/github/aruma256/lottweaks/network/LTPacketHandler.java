@@ -36,7 +36,7 @@ public class LTPacketHandler {
 		INSTANCE.sendToServer(new ReplaceMessage(pos, block, meta, checkBlock));
 	}
 
-	public static void sendReachRangeMessage(int dist) {
+	public static void sendReachRangeMessage(double dist) {
 		INSTANCE.sendToServer(new AdjustRangeMessage(dist));
 	}
 
@@ -125,9 +125,9 @@ public class LTPacketHandler {
 
 	public static class AdjustRangeMessage implements IMessage {
 
-		private int dist;
+		private double dist;
 
-		public AdjustRangeMessage(int dist) {
+		public AdjustRangeMessage(double dist) {
 			this.dist = dist;
 		}
 
@@ -136,12 +136,12 @@ public class LTPacketHandler {
 
 		@Override
 		public void toBytes(ByteBuf buf) {
-			buf.writeInt(this.dist);
+			buf.writeDouble(this.dist);
 		}
 
 		@Override
 		public void fromBytes(ByteBuf buf) {
-			this.dist = buf.readInt();
+			this.dist = buf.readDouble();
 		}
 
 	}
@@ -155,7 +155,7 @@ public class LTPacketHandler {
 				return null;
 			}
 			player.getServerWorld().addScheduledTask(() -> {
-				int dist = message.dist;
+				double dist = message.dist;
 				dist = Math.min(LotTweaks.CONFIG.MAX_RANGE, dist);
 				ReachRangeManager.setV2Modifier(player, dist);
 			});

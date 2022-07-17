@@ -4,6 +4,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.common.config.Config.Comment;
+import net.minecraftforge.common.config.Config.RangeDouble;
 import net.minecraftforge.common.config.Config.RangeInt;
 import net.minecraftforge.common.config.Config.Type;
 import net.minecraftforge.fml.common.Mod;
@@ -46,10 +47,10 @@ public class LotTweaks {
 		public static boolean INVERT_REPLACE_LOCK = false;
 		@Comment(value = { "Default: true", "'true' is highly recommended" })
 		public static boolean SHOW_BLOCKCONFIG_ERROR_LOG_TO_CHAT = true;
-		@RangeInt(min = 0, max = 256)
-		public static int REACH_RANGE_AT_DEFAULT = 6;
-		@RangeInt(min = -256, max = 256)
-		public static int REACH_RANGE_AT_EXTENSION = 100;
+		@RangeDouble(min = 0, max = 256)
+		public static double REACH_RANGE_AT_DEFAULT = 6;
+		@RangeDouble(min = -256, max = 256)
+		public static double REACH_RANGE_AT_EXTENSION = 100;
 	}
 
 	public static void onConfigUpdate() {

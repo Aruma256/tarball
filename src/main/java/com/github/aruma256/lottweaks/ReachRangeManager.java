@@ -29,7 +29,7 @@ public class ReachRangeManager {
 		}
 	}
 
-	public static void setV2Modifier(EntityPlayer player, int dist) {
+	public static void setV2Modifier(EntityPlayer player, double dist) {
 		removeV2Modifier(player);
 		if (!player.isCreative()) return;
 		IAttributeInstance instance = player.getEntityAttribute(EntityPlayer.REACH_DISTANCE);
