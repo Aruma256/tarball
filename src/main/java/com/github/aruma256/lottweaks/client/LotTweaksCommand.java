@@ -71,8 +71,8 @@ public class LotTweaksCommand extends CommandBase implements IClientCommand {
 			IngameLog.instance.addInfoLog(String.format("added %d items", count));
 		} else {
 			IngameLog.instance.addErrorLog("failed to create a new group");
-			IngameLog.instance.show();
 		}
+		IngameLog.instance.show();
 	}
 
 	private void executeReload() {
