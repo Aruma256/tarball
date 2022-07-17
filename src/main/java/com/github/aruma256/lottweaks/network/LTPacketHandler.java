@@ -28,7 +28,7 @@ public class LTPacketHandler {
 	public static void init() {
 		int id = 0;
 		INSTANCE.registerMessage(ReplaceMessageHandler.class, ReplaceMessage.class, id++, Side.SERVER);
-		INSTANCE.registerMessage(AdjustRangeMessageHandler.class, AdjustRangeMessage.class, id++, Side.SERVER);
+		INSTANCE.registerMessage(ReachRangeMessageHandler.class, ReachRangeMessage.class, id++, Side.SERVER);
 		INSTANCE.registerMessage(HelloMessageHandler.class, HelloMessage.class, id++, Side.CLIENT);
 	}
 
@@ -37,7 +37,7 @@ public class LTPacketHandler {
 	}
 
 	public static void sendReachRangeMessage(double dist) {
-		INSTANCE.sendToServer(new AdjustRangeMessage(dist));
+		INSTANCE.sendToServer(new ReachRangeMessage(dist));
 	}
 
 	public static void sendHelloMessage(EntityPlayerMP player) {
@@ -121,17 +121,17 @@ public class LTPacketHandler {
 		}
 	}
 
-	// AdjustRange
+	// ReachRange
 
-	public static class AdjustRangeMessage implements IMessage {
+	public static class ReachRangeMessage implements IMessage {
 
 		private double dist;
 
-		public AdjustRangeMessage(double dist) {
+		public ReachRangeMessage(double dist) {
 			this.dist = dist;
 		}
 
-		public AdjustRangeMessage() {
+		public ReachRangeMessage() {
 		}
 
 		@Override
@@ -146,10 +146,10 @@ public class LTPacketHandler {
 
 	}
 
-	public static class AdjustRangeMessageHandler implements IMessageHandler<AdjustRangeMessage, IMessage> {
+	public static class ReachRangeMessageHandler implements IMessageHandler<ReachRangeMessage, IMessage> {
 
 		@Override
-		public IMessage onMessage(AdjustRangeMessage message, MessageContext ctx) {
+		public IMessage onMessage(ReachRangeMessage message, MessageContext ctx) {
 			final EntityPlayerMP player = ctx.getServerHandler().player;
 			if (!player.isCreative()) {
 				return null;
