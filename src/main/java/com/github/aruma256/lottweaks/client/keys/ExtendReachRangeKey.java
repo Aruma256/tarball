@@ -21,7 +21,7 @@ public class ExtendReachRangeKey extends LTKeyBase {
 	@Override
 	protected void onKeyPressStart() {
 		if (CompatibilityChecker.instance.isServerCompatibleWith("2.2.1")) {
-			LTPacketHandler.sendReachRangeMessage(LotTweaks.CONFIG.REACH_RANGE_AT_DEFAULT + LotTweaks.CONFIG.REACH_RANGE_AT_EXTENSION);
+			LTPacketHandler.sendReachRangeMessage(LotTweaks.CONFIG.REACH_RANGE_AT_EXTENSION);
 		}
 	}
 
