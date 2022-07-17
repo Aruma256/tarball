@@ -32,6 +32,7 @@ class V2ConfigLoaderTest extends MinecraftTestBase {
 				"//VANILLA BLOCKS",
 				"//STONE",
 				"minecraft:stone/0,minecraft:stone/1,minecraft:stone/2",
+				"",
 				"//DIRT",
 				"minecraft:dirt/0,minecraft:dirt/1,minecraft:dirt/2"
 			))
@@ -56,6 +57,8 @@ class V2ConfigLoaderTest extends MinecraftTestBase {
 		assertNull(IngameLog.instance.debug_pollLog());
 		// commented-out lines are ignored.
 		assertNull(method.invoke(null, "//テスト"));
+		// empty lines are ignored.
+		assertNull(method.invoke(null, ""));
 	}
 
 	@Test

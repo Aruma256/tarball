@@ -65,7 +65,7 @@ public class V2ConfigLoader {
 
 	@Nullable
 	private static List<ItemState> createGroup(String line) {
-		if (line.startsWith("//")) return null;
+		if (line.isEmpty() || line.startsWith("//")) return null;
 		List<ItemState> group = new ArrayList<>();
 		for (String itemStateStr : line.split(",")) {
 			ItemState itemState = createItemState(itemStateStr);
