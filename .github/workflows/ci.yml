@@ -19,5 +19,5 @@ jobs:
       uses: gradle/gradle-build-action@v2
       with:
         gradle-version: 4.9
-        arguments: test
+        arguments: test --info
         cache-read-only: ${{ github.ref != 'refs/heads/1.12.2' }}
