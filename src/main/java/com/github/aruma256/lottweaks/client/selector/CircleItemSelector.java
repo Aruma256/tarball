@@ -96,8 +96,9 @@ public class CircleItemSelector extends AbstractItemSelector {
 		float partialTick = Minecraft.getMinecraft().getRenderPartialTicks();
 
 		int cx = this.getCenterX(sr.getScaledWidth());
-		int cy = sr.getScaledHeight() - 16 - 3 - 50;
-		cy -= 50 + (20 + stacks.size());
+//		int cy = sr.getScaledHeight() - 16 - 3 - 50;
+//		cy -= 50 + (20 + stacks.size());
+		int cy = sr.getScaledHeight() / 2;
 
 		double maxRadius = 20 + stacks.size() * 1.2;
 		double radius = maxRadius * Math.tanh((time + partialTick) / 3);
