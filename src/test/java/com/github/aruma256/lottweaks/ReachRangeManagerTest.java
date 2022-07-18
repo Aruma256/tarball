@@ -1,6 +1,10 @@
 package com.github.aruma256.lottweaks;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Field;
 import java.util.UUID;
@@ -10,16 +14,20 @@ import org.junit.jupiter.api.Test;
 import com.github.aruma256.lottweaks.testhelper.MinecraftTestBase;
 import com.mojang.authlib.GameProfile;
 
+import net.minecraft.entity.EntityTracker;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.management.PlayerInteractionManager;
+import net.minecraft.server.management.PlayerList;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameType;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
-import net.minecraft.world.WorldProviderSurface;
-import net.minecraft.world.WorldSettings;
-import net.minecraft.world.WorldType;
-import net.minecraft.world.chunk.IChunkProvider;
-import net.minecraft.world.storage.WorldInfo;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -28,7 +36,7 @@ class ReachRangeManagerTest extends MinecraftTestBase {
 
 	@Test
 	final void test_onLogin() throws Exception {
-		DummyEntityPlayer player = new DummyEntityPlayer();
+		EntityPlayerMP player = getDummyPlayer();
 		IAttributeInstance attributeInstance = player.getEntityAttribute(EntityPlayer.REACH_DISTANCE);
 		ReachRangeManager.setV2Modifier(player, 40);
 		attributeInstance.applyModifier(new AttributeModifier(UUID.randomUUID(), "lottweaks", 20, 0));
@@ -41,7 +49,7 @@ class ReachRangeManagerTest extends MinecraftTestBase {
 
 	@Test
 	final void test_onLogout() throws Exception {
-		DummyEntityPlayer player = new DummyEntityPlayer();
+		EntityPlayerMP player = getDummyPlayer();
 		IAttributeInstance attributeInstance = player.getEntityAttribute(EntityPlayer.REACH_DISTANCE);
 		ReachRangeManager.setV2Modifier(player, 30);
 		// remove V2 modifier on logout
@@ -51,7 +59,7 @@ class ReachRangeManagerTest extends MinecraftTestBase {
 
 	@Test
 	final void test_onPlayerTick() throws Exception {
-		DummyEntityPlayer player = new DummyEntityPlayer();
+		EntityPlayerMP player = getDummyPlayer();
 		IAttributeInstance attributeInstance = player.getEntityAttribute(EntityPlayer.REACH_DISTANCE);
 		ReachRangeManager instance = new ReachRangeManager();
 		PlayerTickEvent event = new PlayerTickEvent(null, player);
@@ -63,19 +71,19 @@ class ReachRangeManagerTest extends MinecraftTestBase {
 		instance.onPlayerTick(event);
 		assertEquals(30, attributeInstance.getAttributeValue());
 		// remove modifier if player's gamemode is NOT creative
-		player.isCreative = false;
+		player.setGameType(GameType.SURVIVAL);
 		instance.onPlayerTick(event);
 		assertEquals(attributeInstance.getBaseValue(), attributeInstance.getAttributeValue());
 	}
 
 	@Test
 	final void test_setV2Modifier() throws Exception {
-		DummyEntityPlayer player;
+		EntityPlayerMP player;
 		IAttributeInstance attributeInstance;
 
 		// CREATIVE MODE
 
-		player = new DummyEntityPlayer();
+		player = getDummyPlayer();
 		attributeInstance = player.getEntityAttribute(EntityPlayer.REACH_DISTANCE);
 		assertNull(attributeInstance.getModifier(getV2UUID()));
 		// `setV2Modifier` applies range modifier
@@ -87,8 +95,8 @@ class ReachRangeManagerTest extends MinecraftTestBase {
 
 		// SURVIVAL MODE
 
-		player = new DummyEntityPlayer();
-		player.isCreative = false;
+		player = getDummyPlayer();
+		player.setGameType(GameType.SURVIVAL);
 		attributeInstance = player.getEntityAttribute(EntityPlayer.REACH_DISTANCE);
 		// The modifier must not be applied to player entities that are not creative mode.
 		ReachRangeManager.setV2Modifier(player, 33);
@@ -99,43 +107,23 @@ class ReachRangeManagerTest extends MinecraftTestBase {
 	//   SETUP METHODS
 	// ######################
 
-	private static World getDummyWorld() {
-		WorldSettings worldSettings = new WorldSettings(0, null, false, false, WorldType.FLAT);
-		WorldInfo worldInfo = new WorldInfo(worldSettings, null);
-		WorldProvider worldProvider = new WorldProviderSurface();
-		World world = new World(null, worldInfo, worldProvider, null, false) {
-			
-			@Override
-			protected boolean isChunkLoaded(int x, int z, boolean allowEmpty) {
-				return false;
-			}
-			
-			@Override
-			protected IChunkProvider createChunkProvider() {
-				return null;
-			}
-		};
-		worldProvider.setWorld(world);
-		return world;
-	}
+	private static EntityPlayerMP getDummyPlayer() throws Exception {
+		MinecraftServer minecraftServerMock = mock(MinecraftServer.class);
+		when(minecraftServerMock.getPlayerList()).thenReturn(mock(PlayerList.class));
 
-	private static class DummyEntityPlayer extends EntityPlayer {
+		WorldServer worldServerMock = mock(WorldServer.class);
+		Field providerField = World.class.getDeclaredField("provider");
+		providerField.setAccessible(true);
+		WorldProvider providerMock = mock(WorldProvider.class);
+		when(providerMock.getRandomizedSpawnPoint()).thenReturn(mock(BlockPos.class));
+		providerField.set(worldServerMock, providerMock);
+		when(worldServerMock.getSpawnPoint()).thenReturn(mock(BlockPos.class));
+		when(worldServerMock.getEntityTracker()).thenReturn(mock(EntityTracker.class));
 
-		public boolean isCreative = true;
-
-		public DummyEntityPlayer() {
-			super(getDummyWorld(), new GameProfile(UUID.randomUUID(), null));
-		}
-
-		@Override
-		public boolean isSpectator() {
-			return false;
-		}
-
-		@Override
-		public boolean isCreative() {
-			return isCreative;
-		}
+		EntityPlayerMP dummyPlayer = spy(new EntityPlayerMP(minecraftServerMock, worldServerMock, new GameProfile(UUID.randomUUID(), null), new PlayerInteractionManager(worldServerMock)));
+		dummyPlayer.connection = mock(NetHandlerPlayServer.class);
+		dummyPlayer.setGameType(GameType.CREATIVE);
+		return dummyPlayer;
 	}
 
 	private static UUID getV2UUID() throws Exception {
