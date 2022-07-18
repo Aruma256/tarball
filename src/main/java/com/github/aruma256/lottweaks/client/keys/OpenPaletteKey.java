@@ -102,8 +102,9 @@ public class OpenPaletteKey extends LTKeyBase {
 		if (wheel == 0) {
 			return;
 		}
-		selector.rotate(-wheel);
 		event.setCanceled(true);
+		if (selector == null) return; //TODO <- temporary NPE workaround
+		selector.rotate(-wheel);
 	}
 
 	@SubscribeEvent
