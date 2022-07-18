@@ -28,7 +28,7 @@ public class LotTweaks {
 
 	public static final String MODID = "lottweaks";
 	public static final String NAME = "LotTweaks";
-	public static final String VERSION = "3.0.2";
+	public static final String VERSION = "3.0.5";
 	public static Logger LOGGER;
 
 	@Config(modid = MODID, type = Type.INSTANCE, name = NAME)
