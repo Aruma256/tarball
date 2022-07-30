@@ -18,7 +18,7 @@ public class AdjustRangeHelper implements ServerTickEvents.StartTick {
 	/*
 	@SubscribeEvent
 	public void onLogin(PlayerLoggedInEvent event) {
-		removeOldRangeModifiers(event.getPlayer());
+		removeOldRangeModifiers(event.getEntity());
 	}
 	*/
 

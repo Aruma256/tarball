@@ -30,7 +30,7 @@ public class ReplaceKey extends LTKeyBase implements RenderHotbarListener, DrawB
 	private BlockState lockedBlockState = null;
 
 	public ReplaceKey(int keyCode, String category) {
-		super("Replace", keyCode, category);
+		super("lottweaks-replace", keyCode, category);
 	}
 
 	@Override

@@ -32,7 +32,7 @@ import net.minecraft.world.item.Items;
 public class LotTweaksCommand implements ClientCommandRegistrationCallback {
 
 	private static void displayMessage(Component textComponent) {
-		Minecraft.getInstance().gui.handleSystemChat(BuiltinRegistries.CHAT_TYPE.get(ChatType.SYSTEM), textComponent);
+		Minecraft.getInstance().getChatListener().handleSystemMessage(textComponent, false);
 	}
 
 	@Override

@@ -20,7 +20,7 @@ public class AdjustRangeKey extends LTKeyBase implements RenderHotbarListener {
 	private static float reachDistance = DEFAULT_REACH_DISTANCE;
 	
 	public AdjustRangeKey(int keyCode, String category) {
-		super("AdjustRange", keyCode, category);
+		super("lottweaks-adjustrange", keyCode, category);
 	}
 
 	@Override

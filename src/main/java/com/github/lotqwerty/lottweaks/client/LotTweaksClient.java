@@ -36,16 +36,24 @@ import net.minecraft.network.chat.Component;
 public class LotTweaksClient implements ClientModInitializer, ClientPlayConnectionEvents.Init, ClientPlayConnectionEvents.Join
 {
 	private static String serverVersion = "0";
+	private static KeyMapping[] keyMappings = {
+			new ExPickKey(GLFW.GLFW_KEY_V, LotTweaks.NAME),
+			new RotateKey(GLFW.GLFW_KEY_R, LotTweaks.NAME),
+			new ReplaceKey(GLFW.GLFW_KEY_G, LotTweaks.NAME),
+			new AdjustRangeKey(GLFW.GLFW_KEY_U, LotTweaks.NAME)
+	};
+
+	public LotTweaksClient() {
+	}
 
 	@Override
 	public void onInitializeClient() {
 		RotationHelper.loadAllFromFile();
 		RotationHelper.loadAllItemGroupFromStrArray();
 		//
-		registerKey(new ExPickKey(GLFW.GLFW_KEY_V, LotTweaks.NAME));
-		registerKey(new RotateKey(GLFW.GLFW_KEY_R, LotTweaks.NAME));
-		registerKey(new ReplaceKey(GLFW.GLFW_KEY_G, LotTweaks.NAME));
-		registerKey(new AdjustRangeKey(GLFW.GLFW_KEY_U, LotTweaks.NAME));
+		for (KeyMapping key : keyMappings) {
+			registerKey(key);
+		}
 		//
 		ClientPlayConnectionEvents.INIT.register(this);
 		ClientPlayConnectionEvents.JOIN.register(this);
@@ -98,7 +106,7 @@ public class LotTweaksClient implements ClientModInitializer, ClientPlayConnecti
 		if (LotTweaks.CONFIG.SHOW_BLOCKCONFIG_ERROR_LOG_TO_CHAT) {
 			Minecraft mc = Minecraft.getInstance();
 			for (String line : RotationHelper.LOG_GROUP_CONFIG) {
-				mc.gui.handleSystemChat(BuiltinRegistries.CHAT_TYPE.get(ChatType.SYSTEM), Component.literal(String.format("LotTweaks: %s%s", ChatFormatting.RED, line)));
+				mc.getChatListener().handleSystemMessage(Component.literal(String.format("LotTweaks: %s%s", ChatFormatting.RED, line)), false);
 			}
 		}
 	}

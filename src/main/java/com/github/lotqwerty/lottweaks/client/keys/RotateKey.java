@@ -22,7 +22,7 @@ public class RotateKey extends ItemSelectKeyBase implements ScrollListener, Rend
 	private int phase = 0;
 
 	public RotateKey(int keyCode, String category) {
-		super("Rotate", keyCode, category);
+		super("lottweaks-rotate", keyCode, category);
 	}
 
 	private void updatePhase() {

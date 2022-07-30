@@ -202,7 +202,7 @@ public class ExPickKey extends ItemSelectKeyBase implements ScrollListener, Rend
 			this.world = world;
 			this.pos = pos;
 		}
-		public Player getPlayer() {
+		public Player getEntity() {
 			return this.player;
 		}
 		public Level getWorld() {
@@ -217,7 +217,7 @@ public class ExPickKey extends ItemSelectKeyBase implements ScrollListener, Rend
 		if (!event.getWorld().isClientSide) {
 			return;
 		}
-		if (!event.getPlayer().isCreative()) {
+		if (!event.getEntity().isCreative()) {
 			return;
 		}
 		//
