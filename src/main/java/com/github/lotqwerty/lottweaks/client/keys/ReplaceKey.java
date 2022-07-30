@@ -20,7 +20,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.DrawSelectionEvent;
+import net.minecraftforge.client.event.RenderHighlightEvent;
 import net.minecraftforge.event.TickEvent.RenderTickEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -31,7 +31,7 @@ public class ReplaceKey extends LTKeyBase {
 	private BlockState lockedBlockState = null;
 
 	public ReplaceKey(int keyCode, String category) {
-		super("Replace", keyCode, category);
+		super("lottweaks-replace", keyCode, category);
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class ReplaceKey extends LTKeyBase {
 	}
 
 	@SubscribeEvent
-	public void onDrawBlockHighlightEvent(final DrawSelectionEvent.HighlightBlock event) {
+	public void onDrawBlockHighlightEvent(final RenderHighlightEvent.Block event) {
 		if (this.pressTime == 0) {
 			return;
 		}

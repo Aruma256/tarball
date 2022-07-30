@@ -3,7 +3,7 @@ package com.github.lotqwerty.lottweaks.client.keys;
 import net.minecraft.client.KeyMapping;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -20,7 +20,7 @@ public class LTKeyBase extends KeyMapping {
 	}
 
 	@SubscribeEvent
-	public void onKeyInput(final KeyInputEvent event) {
+	public void onKeyInput(final InputEvent.Key event) {
 		//Mark this key as handled.
 	}
 

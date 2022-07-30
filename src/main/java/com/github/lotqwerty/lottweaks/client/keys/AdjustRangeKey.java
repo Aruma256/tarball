@@ -10,18 +10,18 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.gui.ForgeIngameGui;
-import net.minecraftforge.client.gui.IIngameOverlay;
+import net.minecraftforge.client.gui.overlay.ForgeGui;
+import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
 @OnlyIn(Dist.CLIENT)
-public class AdjustRangeKey extends LTKeyBase implements IIngameOverlay {
+public class AdjustRangeKey extends LTKeyBase implements IGuiOverlay {
 
 	public AdjustRangeKey(int keyCode, String category) {
-		super("AdjustRange", keyCode, category);
+		super("lottweaks-adjustrange", keyCode, category);
 	}
 
 	@Override
-	public void render(ForgeIngameGui gui, PoseStack mStack, float partialTicks, int width, int height) {
+	public void render(ForgeGui gui, PoseStack mStack, float partialTicks, int width, int height) {
 		if (this.pressTime == 0) {
 			return;
 		}

@@ -1,5 +1,6 @@
 package com.github.lotqwerty.lottweaks;
 
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -9,6 +10,7 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -69,7 +71,10 @@ public class LotTweaks {
 		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		modEventBus.addListener(this::clientInit);
 		modEventBus.addListener(this::commonInit);
-		
+		if (FMLEnvironment.dist == Dist.CLIENT) {
+			modEventBus.addListener(LotTweaksClient::onRegisterKeyMappingsEvent);
+			modEventBus.addListener(LotTweaksClient::onRegisterGuiOverlaysEvent);
+		}
 	}
 
 	private void clientInit(FMLClientSetupEvent event) {

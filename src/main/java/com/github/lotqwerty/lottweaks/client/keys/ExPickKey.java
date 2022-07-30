@@ -15,14 +15,14 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.gui.ForgeIngameGui;
-import net.minecraftforge.client.gui.IIngameOverlay;
+import net.minecraftforge.client.gui.overlay.ForgeGui;
+import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 @OnlyIn(Dist.CLIENT)
-public class ExPickKey extends ItemSelectKeyBase implements IIngameOverlay {
+public class ExPickKey extends ItemSelectKeyBase implements IGuiOverlay {
 
 	private static final int HISTORY_SIZE = 10;
 
@@ -53,7 +53,7 @@ public class ExPickKey extends ItemSelectKeyBase implements IIngameOverlay {
 	private boolean isHistoryMode = false;
 
 	public ExPickKey(int keyCode, String category) {
-		super("Ex Pick", keyCode, category);
+		super("lottweaks-expick", keyCode, category);
 	}
 
 	@Override
@@ -120,7 +120,7 @@ public class ExPickKey extends ItemSelectKeyBase implements IIngameOverlay {
 	}
 
 	@SubscribeEvent
-	public void onMouseWheelEvent(final InputEvent.MouseScrollEvent event) {
+	public void onMouseWheelEvent(final InputEvent.MouseScrollingEvent event) {
 		if (this.pressTime == 0) {
 			return;
 		}
@@ -147,7 +147,7 @@ public class ExPickKey extends ItemSelectKeyBase implements IIngameOverlay {
 	}
 
 	@Override
-	public void render(ForgeIngameGui gui, PoseStack mStack, float partialTicks, int width, int height) {
+	public void render(ForgeGui gui, PoseStack mStack, float partialTicks, int width, int height) {
 		if (this.pressTime == 0) {
 			return;
 		}
@@ -170,16 +170,16 @@ public class ExPickKey extends ItemSelectKeyBase implements IIngameOverlay {
 
 	@SubscribeEvent
 	public void onBreakBlock(final PlayerInteractEvent.LeftClickBlock event) {
-		if (!event.getWorld().isClientSide) {
+		if (!event.getLevel().isClientSide) {
 			return;
 		}
-		if (!event.getPlayer().isCreative()) {
+		if (!event.getEntity().isCreative()) {
 			return;
 		}
 		//
 		Minecraft mc = Minecraft.getInstance();
-		BlockState blockState = event.getWorld().getBlockState(event.getPos());
-		ItemStack itemStack = blockState.getBlock().getCloneItemStack(blockState, mc.hitResult, event.getWorld(), event.getPos(), event.getPlayer());
+		BlockState blockState = event.getLevel().getBlockState(event.getPos());
+		ItemStack itemStack = blockState.getBlock().getCloneItemStack(blockState, mc.hitResult, event.getLevel(), event.getPos(), event.getEntity());
 		addToHistory(itemStack);
 	}
 

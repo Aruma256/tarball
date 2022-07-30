@@ -17,7 +17,7 @@ public class AdjustRangeHelper {
 
 	@SubscribeEvent
 	public void onLogin(PlayerLoggedInEvent event) {
-		removeOldRangeModifiers(event.getPlayer());
+		removeOldRangeModifiers(event.getEntity());
 	}
 
 	@SubscribeEvent

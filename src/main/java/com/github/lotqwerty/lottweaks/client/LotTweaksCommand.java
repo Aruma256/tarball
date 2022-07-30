@@ -33,7 +33,7 @@ public class LotTweaksCommand extends LiteralArgumentBuilder<CommandSourceStack>
 	}
 
 	private static void displayMessage(Component textComponent) {
-		Minecraft.getInstance().gui.handleSystemChat(BuiltinRegistries.CHAT_TYPE.get(ChatType.SYSTEM), textComponent);
+		Minecraft.getInstance().getChatListener().handleSystemMessage(textComponent, false);
 	}
 
 	@SubscribeEvent

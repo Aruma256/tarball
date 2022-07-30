@@ -13,17 +13,17 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.gui.ForgeIngameGui;
-import net.minecraftforge.client.gui.IIngameOverlay;
+import net.minecraftforge.client.gui.overlay.ForgeGui;
+import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 @OnlyIn(Dist.CLIENT)
-public class RotateKey extends ItemSelectKeyBase implements IIngameOverlay {
+public class RotateKey extends ItemSelectKeyBase implements IGuiOverlay {
 
 	private int phase = 0;
 
 	public RotateKey(int keyCode, String category) {
-		super("Rotate", keyCode, category);
+		super("lottweaks-rotate", keyCode, category);
 	}
 
 	private void updatePhase() {
@@ -68,7 +68,7 @@ public class RotateKey extends ItemSelectKeyBase implements IIngameOverlay {
 	}
 
 	@SubscribeEvent
-	public void onMouseEvent(final InputEvent.MouseScrollEvent event) {
+	public void onMouseEvent(final InputEvent.MouseScrollingEvent event) {
 		if (this.pressTime == 0) {
 			return;
 		}
@@ -96,7 +96,7 @@ public class RotateKey extends ItemSelectKeyBase implements IIngameOverlay {
 	}
 
 	@Override
-	public void render(ForgeIngameGui gui, PoseStack mStack, float partialTicks, int width, int height) {
+	public void render(ForgeGui gui, PoseStack mStack, float partialTicks, int width, int height) {
 		if (this.pressTime == 0) {
 			candidates.clear();
 			return;
