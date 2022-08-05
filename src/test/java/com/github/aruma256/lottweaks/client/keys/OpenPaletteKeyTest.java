@@ -1,5 +1,6 @@
 package com.github.aruma256.lottweaks.client.keys;
 
+import static com.github.aruma256.lottweaks.testhelper.TestHelper.createNBTstack;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -12,6 +13,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -19,6 +23,9 @@ import org.junit.jupiter.api.Test;
 import com.github.aruma256.lottweaks.client.selector.CircleItemSelector;
 import com.github.aruma256.lottweaks.testhelper.MinecraftTestBase;
 
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.MouseEvent;
 
 class OpenPaletteKeyTest extends MinecraftTestBase {
@@ -31,6 +38,30 @@ class OpenPaletteKeyTest extends MinecraftTestBase {
 	@Test @Disabled
 	final void test_onKeyPressStart() {
 		fail("Not yet implemented"); // TODO
+	}
+
+	@Test
+	final void test_searchIndexOfMatchedItem() throws Exception {
+		Method method = OpenPaletteKey.class.getDeclaredMethod("searchIndexOfMatchedItem", List.class, ItemStack.class);
+		method.setAccessible(true);
+		// The index of the same stack is returned.
+		assertEquals(
+			2,
+			method.invoke(
+				null,
+				Arrays.asList(new ItemStack(Blocks.IRON_BLOCK), new ItemStack(Blocks.GOLD_BLOCK), createNBTstack(new ItemStack(Items.GOLDEN_PICKAXE), "{ench:[{lvl:5s,id:32s}],display:{Name:\"Golden Pickaxe222\"}}")),
+				createNBTstack(new ItemStack(Items.GOLDEN_PICKAXE), "{ench:[{lvl:5s,id:32s}],display:{Name:\"Golden Pickaxe222\"}}")
+			)
+		);
+		// If the same stack is not found, ignore the NBT and search again.
+		assertEquals(
+			1,
+			method.invoke(
+				null,
+				Arrays.asList(new ItemStack(Blocks.IRON_BLOCK), new ItemStack(Items.GOLDEN_PICKAXE)),
+				createNBTstack(new ItemStack(Items.GOLDEN_PICKAXE), "{ench:[{lvl:5s,id:32s}],display:{Name:\"Golden Pickaxe222\"}}")
+			)
+		);
 	}
 
 	@Test @Disabled

@@ -52,20 +52,23 @@ public class OpenPaletteKey extends LTKeyBase {
 			List<ItemStack> results = ItemGroupManager.getInstance(getMode()).getVariantsList(itemStack);
 			if (results != null && results.size() > 1) {
 				selector = new CircleItemSelector(results, mc.player.inventory.currentItem);
-				for (int i=0; i<results.size(); i++) {
-					if (ItemStack.areItemStacksEqual(itemStack, results.get(i))) {
-						selector.overwriteSelectedIndex(i);
-						return;
-					}
-				}
-				for (int i=0; i<results.size(); i++) {
-					if (ItemStack.areItemsEqual(itemStack, results.get(i))) {
-						selector.overwriteSelectedIndex(i);
-						return;
-					}
-				}
+				selector.overwriteSelectedIndex(searchIndexOfMatchedItem(results, itemStack));
 			}
 		}
+	}
+
+	private static int searchIndexOfMatchedItem(List<ItemStack> listedItems, ItemStack itemStack) {
+		for (int i=0; i<listedItems.size(); i++) {
+			if (ItemStack.areItemStacksEqual(itemStack, listedItems.get(i))) {
+				return i;
+			}
+		}
+		for (int i=0; i<listedItems.size(); i++) {
+			if (ItemStack.areItemsEqual(itemStack, listedItems.get(i))) {
+				return i;
+			}
+		}
+		throw new RuntimeException();
 	}
 
 	@Override
