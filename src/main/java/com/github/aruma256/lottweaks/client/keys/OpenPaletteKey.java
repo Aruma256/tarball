@@ -1,5 +1,7 @@
 package com.github.aruma256.lottweaks.client.keys;
 
+import static com.github.aruma256.lottweaks.client.ClientUtil.getClient;
+
 import java.util.List;
 
 import org.lwjgl.input.Mouse;
@@ -9,7 +11,6 @@ import com.github.aruma256.lottweaks.LotTweaks;
 import com.github.aruma256.lottweaks.client.ItemGroupManager;
 import com.github.aruma256.lottweaks.client.selector.CircleItemSelector;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -31,7 +32,7 @@ public class OpenPaletteKey extends LTKeyBase {
 	@Override
 	protected int getMode() {
 		if (LotTweaks.CONFIG.SNEAK_TO_SWITCH_GROUP) {
-			return (!Minecraft.getMinecraft().player.isSneaking()) ? 0 : 1;
+			return (!getClient().player.isSneaking()) ? 0 : 1;
 		} else {
 			return super.getMode() % ItemGroupManager.getSize();
 		}
@@ -46,12 +47,11 @@ public class OpenPaletteKey extends LTKeyBase {
 			return;
 		}
 		//
-		Minecraft mc = Minecraft.getMinecraft();
-		ItemStack itemStack = mc.player.inventory.getCurrentItem();
+		ItemStack itemStack = getClient().player.inventory.getCurrentItem();
 		if (!itemStack.isEmpty()) {
 			List<ItemStack> results = ItemGroupManager.getInstance(getMode()).getVariantsList(itemStack);
 			if (results != null && results.size() > 1) {
-				selector = new CircleItemSelector(results, mc.player.inventory.currentItem);
+				selector = new CircleItemSelector(results, getClient().player.inventory.currentItem);
 				selector.overwriteSelectedIndex(searchIndexOfMatchedItem(results, itemStack));
 			}
 		}
@@ -85,7 +85,7 @@ public class OpenPaletteKey extends LTKeyBase {
 			return;
 		}
 		boolean flag = Display.isActive(); // EntityRenderer#updateCameraAndRender
-		if (flag && Minecraft.getMinecraft().inGameHasFocus) {
+		if (flag && getClient().inGameHasFocus) {
 			selector.notifyMouseMovement(Mouse.getDX(), Mouse.getDY());
 		}
 	}

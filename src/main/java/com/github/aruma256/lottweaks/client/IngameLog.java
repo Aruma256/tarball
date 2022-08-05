@@ -1,11 +1,12 @@
 package com.github.aruma256.lottweaks.client;
 
+import static com.github.aruma256.lottweaks.client.ClientUtil.getClient;
+
 import java.util.ArrayDeque;
 import java.util.Queue;
 
 import com.github.aruma256.lottweaks.LotTweaks;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
@@ -37,7 +38,7 @@ public class IngameLog {
 	public void show() {
 		if (LotTweaks.CONFIG.SHOW_BLOCKCONFIG_ERROR_LOG_TO_CHAT) {
 			while (!logQueue.isEmpty()) {
-				Minecraft.getMinecraft().ingameGUI.addChatMessage(ChatType.SYSTEM, new TextComponentString("LotTweaks: " + logQueue.poll()));
+				getClient().ingameGUI.addChatMessage(ChatType.SYSTEM, new TextComponentString("LotTweaks: " + logQueue.poll()));
 			}
 		}
 	}

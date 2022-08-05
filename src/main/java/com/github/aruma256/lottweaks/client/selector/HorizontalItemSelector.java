@@ -1,8 +1,9 @@
 package com.github.aruma256.lottweaks.client.selector;
 
+import static com.github.aruma256.lottweaks.client.ClientUtil.getClient;
+
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.item.ItemStack;
 
@@ -21,7 +22,7 @@ public class HorizontalItemSelector extends AbstractItemSelector {
 		int row = 0;
 		for (ItemStack itemStack : stacks) {
 			int y = cy - row * 20;
-			Minecraft.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI(itemStack, cx, y);
+			getClient().getRenderItem().renderItemAndEffectIntoGUI(itemStack, cx, y);
 			row++;
 		}
 		glItemRenderFinalize();
@@ -29,9 +30,8 @@ public class HorizontalItemSelector extends AbstractItemSelector {
 
 	@Override
 	protected void replaceInventory() {
-		Minecraft mc = Minecraft.getMinecraft();
-		mc.player.inventory.setInventorySlotContents(slot, stacks.get(0));
-        mc.playerController.sendSlotPacket(stacks.get(0), 36+slot);
+		getClient().player.inventory.setInventorySlotContents(slot, stacks.get(0));
+		getClient().playerController.sendSlotPacket(stacks.get(0), 36+slot);
 	}
 
 }

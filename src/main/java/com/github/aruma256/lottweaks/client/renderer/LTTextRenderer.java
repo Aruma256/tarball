@@ -1,12 +1,13 @@
 package com.github.aruma256.lottweaks.client.renderer;
 
-import net.minecraft.client.Minecraft;
+import static com.github.aruma256.lottweaks.client.ClientUtil.getClient;
+
 import net.minecraft.client.gui.ScaledResolution;
 
 public class LTTextRenderer {
 
 	public static void showServerSideRequiredMessage(String requiredVersion) {
-		showServerSideRequiredMessage(new ScaledResolution(Minecraft.getMinecraft()), requiredVersion);
+		showServerSideRequiredMessage(new ScaledResolution(getClient()), requiredVersion);
 	}
 
 	public static void showServerSideRequiredMessage(ScaledResolution scaledResolution, String requiredVersion) {
@@ -18,10 +19,9 @@ public class LTTextRenderer {
 	}
 
 	private static void showMessage(ScaledResolution scaledResolution, String msg, int color) {
-		Minecraft mc = Minecraft.getMinecraft();
-		int x = (scaledResolution.getScaledWidth() - mc.fontRenderer.getStringWidth(msg)) / 2;
+		int x = (scaledResolution.getScaledWidth() - getClient().fontRenderer.getStringWidth(msg)) / 2;
 		int y = scaledResolution.getScaledHeight() - 70;
-		mc.fontRenderer.drawStringWithShadow(msg, x, y, color);
+		getClient().fontRenderer.drawStringWithShadow(msg, x, y, color);
 	}
 
 }

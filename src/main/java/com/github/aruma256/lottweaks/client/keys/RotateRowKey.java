@@ -1,11 +1,12 @@
 package com.github.aruma256.lottweaks.client.keys;
 
+import static com.github.aruma256.lottweaks.client.ClientUtil.getClient;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import com.github.aruma256.lottweaks.client.selector.ColumnItemSelector;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.MouseEvent;
@@ -30,13 +31,12 @@ public class RotateRowKey extends LTKeyBase {
 			return;
 		}
 		//
-		Minecraft mc = Minecraft.getMinecraft();
 		rowSelectors = new ArrayList<>();
 		for (int slot=0; slot<InventoryPlayer.getHotbarSize(); slot++) {
 			List<ItemStack> stacksInColumn = new ArrayList<>();
-			stacksInColumn.add(mc.player.inventory.getStackInSlot(slot));
+			stacksInColumn.add(getClient().player.inventory.getStackInSlot(slot));
 			for (int row=3; row>=1; row--) {
-				stacksInColumn.add(mc.player.inventory.getStackInSlot(slot + row * InventoryPlayer.getHotbarSize()));
+				stacksInColumn.add(getClient().player.inventory.getStackInSlot(slot + row * InventoryPlayer.getHotbarSize()));
 			}
 			rowSelectors.add(new ColumnItemSelector(stacksInColumn, slot));
 		}

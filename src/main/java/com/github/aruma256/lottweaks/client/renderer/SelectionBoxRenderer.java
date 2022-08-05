@@ -1,7 +1,8 @@
 package com.github.aruma256.lottweaks.client.renderer;
 
+import static com.github.aruma256.lottweaks.client.ClientUtil.getClient;
+
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.entity.player.EntityPlayer;
@@ -10,7 +11,7 @@ import net.minecraft.util.math.BlockPos;
 public class SelectionBoxRenderer {
 
 	public static boolean render(BlockPos blockPos, float partialTicks, float r, float g, float b) {
-		if (!Minecraft.getMinecraft().world.getWorldBorder().contains(blockPos)) {
+		if (!getClient().world.getWorldBorder().contains(blockPos)) {
 			return false;
 		}
 
@@ -20,7 +21,7 @@ public class SelectionBoxRenderer {
 		GlStateManager.disableTexture2D();
 		GlStateManager.depthMask(false);
 
-		EntityPlayer player = Minecraft.getMinecraft().player;
+		EntityPlayer player = getClient().player;
 		double d3 = player.lastTickPosX + (player.posX - player.lastTickPosX) * (double)partialTicks;
 		double d4 = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double)partialTicks;
 		double d5 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double)partialTicks;

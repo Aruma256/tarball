@@ -1,5 +1,7 @@
 package com.github.aruma256.lottweaks.client.keys;
 
+import static com.github.aruma256.lottweaks.client.ClientUtil.getClient;
+
 import com.github.aruma256.lottweaks.LotTweaks;
 import com.github.aruma256.lottweaks.client.CompatibilityChecker;
 import com.github.aruma256.lottweaks.client.renderer.LTTextRenderer;
@@ -8,7 +10,6 @@ import com.github.aruma256.lottweaks.network.LTPacketHandler;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
@@ -31,11 +32,10 @@ public class ReplaceKey extends LTKeyBase {
 
 	@Override
 	protected void onKeyPressStart() {
-		Minecraft mc = Minecraft.getMinecraft();
-		if (mc.player.isSneaking() ^ LotTweaks.CONFIG.INVERT_REPLACE_LOCK) {
-			RayTraceResult target = mc.objectMouseOver;
+		if (getClient().player.isSneaking() ^ LotTweaks.CONFIG.INVERT_REPLACE_LOCK) {
+			RayTraceResult target = getClient().objectMouseOver;
 			if (target != null && target.typeOfHit == RayTraceResult.Type.BLOCK){
-				lockedBlockState = mc.world.getBlockState(target.getBlockPos());
+				lockedBlockState = getClient().world.getBlockState(target.getBlockPos());
 			} else {
 				lockedBlockState = Blocks.AIR.getDefaultState();
 			}
@@ -57,7 +57,7 @@ public class ReplaceKey extends LTKeyBase {
 		if (lockedBlockState == null) {
 			return;
 		}
-		RayTraceResult target = Minecraft.getMinecraft().objectMouseOver;
+		RayTraceResult target = getClient().objectMouseOver;
 		if (target != null && target.typeOfHit == RayTraceResult.Type.BLOCK){
 			if (SelectionBoxRenderer.render(target.getBlockPos(), event.getPartialTicks(), 1f, 0f, 0f)) {
 				event.setCanceled(true);
@@ -89,20 +89,19 @@ public class ReplaceKey extends LTKeyBase {
 		if (!isPlayerCreative()) {
 			return;
 		}
-		Minecraft mc = Minecraft.getMinecraft();
-		RayTraceResult target = mc.objectMouseOver;
+		RayTraceResult target = getClient().objectMouseOver;
 		if (target == null || target.typeOfHit != RayTraceResult.Type.BLOCK){
         	return;
         }
-        IBlockState state = mc.world.getBlockState(target.getBlockPos());
-        if (state.getBlock().isAir(state, mc.world, target.getBlockPos()))
+        IBlockState state = getClient().world.getBlockState(target.getBlockPos());
+        if (state.getBlock().isAir(state, getClient().world, target.getBlockPos()))
         {
             return;
         }
         if (lockedBlockState != null && lockedBlockState != state) {
             return;
         }
-		ItemStack itemStack = mc.player.inventory.getCurrentItem();
+		ItemStack itemStack = getClient().player.inventory.getCurrentItem();
 		Block block = Block.getBlockFromItem(itemStack.getItem());
 		if (itemStack.isEmpty() || block == Blocks.AIR) {
 			return;
@@ -110,10 +109,10 @@ public class ReplaceKey extends LTKeyBase {
 		float hitX = (float) (target.hitVec.x - target.getBlockPos().getX());
 		float hitY = (float) (target.hitVec.y - target.getBlockPos().getY());
 		float hitZ = (float) (target.hitVec.z - target.getBlockPos().getZ());
-		IBlockState newBlockState = block.getStateForPlacement(mc.world, target.getBlockPos(), target.sideHit, hitX, hitY, hitZ, itemStack.getItemDamage(), mc.player, EnumHand.MAIN_HAND);
-		LTPacketHandler.sendReplaceMessage(target.getBlockPos(), block, block.getMetaFromState(newBlockState), mc.world.getBlockState(target.getBlockPos()).getBlock());
+		IBlockState newBlockState = block.getStateForPlacement(getClient().world, target.getBlockPos(), target.sideHit, hitX, hitY, hitZ, itemStack.getItemDamage(), getClient().player, EnumHand.MAIN_HAND);
+		LTPacketHandler.sendReplaceMessage(target.getBlockPos(), block, block.getMetaFromState(newBlockState), getClient().world.getBlockState(target.getBlockPos()).getBlock());
 		// add to history
-		ExPickKey.addToHistory(state.getBlock().getPickBlock(state, target, mc.world, target.getBlockPos(), mc.player));
+		ExPickKey.addToHistory(state.getBlock().getPickBlock(state, target, getClient().world, target.getBlockPos(), getClient().player));
 	}
 
 }

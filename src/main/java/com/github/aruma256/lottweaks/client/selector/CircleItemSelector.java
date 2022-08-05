@@ -1,10 +1,11 @@
 package com.github.aruma256.lottweaks.client.selector;
 
+import static com.github.aruma256.lottweaks.client.ClientUtil.getClient;
+
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -53,10 +54,9 @@ public class CircleItemSelector extends AbstractItemSelector {
 
 	@Override
 	protected void replaceInventory() {
-		Minecraft mc = Minecraft.getMinecraft();
 		ItemStack itemStack = this.getSelectedItemStack();
-		mc.player.inventory.setInventorySlotContents(this.slot, itemStack);
-        mc.playerController.sendSlotPacket(itemStack, 36 + this.slot);
+		getClient().player.inventory.setInventorySlotContents(this.slot, itemStack);
+		getClient().playerController.sendSlotPacket(itemStack, 36 + this.slot);
 	}
 
 	private void normalizeMouseDxDy() {
@@ -93,7 +93,7 @@ public class CircleItemSelector extends AbstractItemSelector {
 	@Override
 	public void render(ScaledResolution sr) {
 		int time = 500000;
-		float partialTick = Minecraft.getMinecraft().getRenderPartialTicks();
+		float partialTick = getClient().getRenderPartialTicks();
 
 		int cx = this.getCenterX(sr.getScaledWidth());
 //		int cy = sr.getScaledHeight() - 16 - 3 - 50;
@@ -141,7 +141,7 @@ public class CircleItemSelector extends AbstractItemSelector {
 			double theta = convertIndexToAngle(i);
 			double dx = (i==selectedId ? radius*1.3 : radius) * Math.cos(theta);
 			double dy = (i==selectedId ? radius*1.3 : radius) * Math.sin(theta);
-			Minecraft.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI(c, (int)Math.round(cx + dx), (int)Math.round(cy - dy));
+			getClient().getRenderItem().renderItemAndEffectIntoGUI(c, (int)Math.round(cx + dx), (int)Math.round(cy - dy));
 			i++;
 		}
 		glItemRenderFinalize();
