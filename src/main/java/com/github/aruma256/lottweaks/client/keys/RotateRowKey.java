@@ -1,5 +1,6 @@
 package com.github.aruma256.lottweaks.client.keys;
 
+import static com.github.aruma256.lottweaks.CommonUtil.*;
 import static com.github.aruma256.lottweaks.client.ClientUtil.*;
 
 import java.util.ArrayList;
@@ -7,7 +8,6 @@ import java.util.List;
 
 import com.github.aruma256.lottweaks.client.selector.ColumnItemSelector;
 
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -32,11 +32,11 @@ public class RotateRowKey extends LTKeyBase {
 		}
 		//
 		rowSelectors = new ArrayList<>();
-		for (int slot=0; slot<InventoryPlayer.getHotbarSize(); slot++) {
+		for (int slot=0; slot<HOTBAR_SIZE; slot++) {
 			List<ItemStack> stacksInColumn = new ArrayList<>();
 			stacksInColumn.add(getClientPlayer().inventory.getStackInSlot(slot));
 			for (int row=3; row>=1; row--) {
-				stacksInColumn.add(getClientPlayer().inventory.getStackInSlot(slot + row * InventoryPlayer.getHotbarSize()));
+				stacksInColumn.add(getClientPlayer().inventory.getStackInSlot(slot + row * HOTBAR_SIZE));
 			}
 			rowSelectors.add(new ColumnItemSelector(stacksInColumn, slot));
 		}
@@ -66,7 +66,7 @@ public class RotateRowKey extends LTKeyBase {
 			return;
 		}
 		event.setCanceled(true);
-		for (int slot=0; slot<InventoryPlayer.getHotbarSize(); slot++) {
+		for (int slot=0; slot<HOTBAR_SIZE; slot++) {
 			rowSelectors.get(slot).rotate(wheel);
 		}
 	}

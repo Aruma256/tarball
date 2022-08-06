@@ -1,10 +1,10 @@
 package com.github.aruma256.lottweaks.client.selector;
 
+import static com.github.aruma256.lottweaks.CommonUtil.*;
 import static com.github.aruma256.lottweaks.client.ClientUtil.*;
 
 import java.util.List;
 
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 
 public class ColumnItemSelector extends HorizontalItemSelector {
@@ -21,7 +21,7 @@ public class ColumnItemSelector extends HorizontalItemSelector {
 				getClientPlayer().inventory.setInventorySlotContents(slot, itemStack);
 				getClient().playerController.sendSlotPacket(itemStack, 36+slot);
 			} else {
-				int slotId = slot + (4 - row) * InventoryPlayer.getHotbarSize();
+				int slotId = slot + (4 - row) * HOTBAR_SIZE;
 				getClientPlayer().inventory.setInventorySlotContents(slotId, itemStack);
 				getClient().playerController.sendSlotPacket(itemStack, slotId);
 			}

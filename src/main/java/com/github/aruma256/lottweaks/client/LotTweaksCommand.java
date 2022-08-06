@@ -1,5 +1,6 @@
 package com.github.aruma256.lottweaks.client;
 
+import static com.github.aruma256.lottweaks.CommonUtil.*;
 import static com.github.aruma256.lottweaks.client.ClientUtil.*;
 
 import java.util.ArrayList;
@@ -11,7 +12,6 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.client.IClientCommand;
@@ -56,7 +56,7 @@ public class LotTweaksCommand extends CommandBase implements IClientCommand {
 	private void executeAdd(int listId) throws CommandException {
 		List<ItemState> group = new ArrayList<>();
 		int count = 0;
-		for (int i = 0; i < InventoryPlayer.getHotbarSize(); i++) {
+		for (int i = 0; i < HOTBAR_SIZE; i++) {
 			ItemStack itemStack = getClientPlayer().inventory.getStackInSlot(i);
 			if (itemStack.isEmpty()) {
 				break;
