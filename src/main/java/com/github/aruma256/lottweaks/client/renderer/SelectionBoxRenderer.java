@@ -11,7 +11,7 @@ import net.minecraft.util.math.BlockPos;
 public class SelectionBoxRenderer {
 
 	public static boolean render(BlockPos blockPos, float partialTicks, float r, float g, float b) {
-		if (!getClient().world.getWorldBorder().contains(blockPos)) {
+		if (!getClientWorld().getWorldBorder().contains(blockPos)) {
 			return false;
 		}
 

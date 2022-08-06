@@ -75,7 +75,7 @@ public class ExPickKey extends LTKeyBase {
 		if (!isPlayerCreative()) {
 			rayTraceResult = getClient().objectMouseOver;
 			if (rayTraceResult != null) {
-				ForgeHooks.onPickBlock(rayTraceResult, getClientPlayer(), getClient().world);
+				ForgeHooks.onPickBlock(rayTraceResult, getClientPlayer(), getClientWorld());
 			}
 			return;
 		}
@@ -88,7 +88,7 @@ public class ExPickKey extends LTKeyBase {
 		if (rayTraceResult == null) {
 			return;
 		}
-		boolean succeeded = ForgeHooks.onPickBlock(rayTraceResult, getClientPlayer(), getClient().world);
+		boolean succeeded = ForgeHooks.onPickBlock(rayTraceResult, getClientPlayer(), getClientWorld());
 		if (!succeeded) {
 			return;
 		}
@@ -98,8 +98,8 @@ public class ExPickKey extends LTKeyBase {
 		for (BlockPos posDiff : SEARCH_POS) {
 			try {
 				BlockPos targetPos = pos.add(posDiff);
-				IBlockState state = getClient().world.getBlockState(targetPos);
-				ItemStack pickedItemStack = state.getBlock().getPickBlock(state, new RayTraceResult(new Vec3d(targetPos), rayTraceResult.sideHit, targetPos), getClient().world, targetPos, getClientPlayer());
+				IBlockState state = getClientWorld().getBlockState(targetPos);
+				ItemStack pickedItemStack = state.getBlock().getPickBlock(state, new RayTraceResult(new Vec3d(targetPos), rayTraceResult.sideHit, targetPos), getClientWorld(), targetPos, getClientPlayer());
 				if (!pickedItemStack.isEmpty()) {
 					boolean isUnique = true;
 					for (ItemStack result : results) {
