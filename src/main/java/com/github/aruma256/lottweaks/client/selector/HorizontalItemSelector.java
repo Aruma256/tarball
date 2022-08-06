@@ -1,6 +1,6 @@
 package com.github.aruma256.lottweaks.client.selector;
 
-import static com.github.aruma256.lottweaks.client.ClientUtil.getClient;
+import static com.github.aruma256.lottweaks.client.ClientUtil.*;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ public class HorizontalItemSelector extends AbstractItemSelector {
 
 	@Override
 	protected void replaceInventory() {
-		getClient().player.inventory.setInventorySlotContents(slot, stacks.get(0));
+		getClientPlayer().inventory.setInventorySlotContents(slot, stacks.get(0));
 		getClient().playerController.sendSlotPacket(stacks.get(0), 36+slot);
 	}
 

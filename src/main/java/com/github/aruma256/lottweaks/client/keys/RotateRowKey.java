@@ -1,6 +1,6 @@
 package com.github.aruma256.lottweaks.client.keys;
 
-import static com.github.aruma256.lottweaks.client.ClientUtil.getClient;
+import static com.github.aruma256.lottweaks.client.ClientUtil.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +34,9 @@ public class RotateRowKey extends LTKeyBase {
 		rowSelectors = new ArrayList<>();
 		for (int slot=0; slot<InventoryPlayer.getHotbarSize(); slot++) {
 			List<ItemStack> stacksInColumn = new ArrayList<>();
-			stacksInColumn.add(getClient().player.inventory.getStackInSlot(slot));
+			stacksInColumn.add(getClientPlayer().inventory.getStackInSlot(slot));
 			for (int row=3; row>=1; row--) {
-				stacksInColumn.add(getClient().player.inventory.getStackInSlot(slot + row * InventoryPlayer.getHotbarSize()));
+				stacksInColumn.add(getClientPlayer().inventory.getStackInSlot(slot + row * InventoryPlayer.getHotbarSize()));
 			}
 			rowSelectors.add(new ColumnItemSelector(stacksInColumn, slot));
 		}

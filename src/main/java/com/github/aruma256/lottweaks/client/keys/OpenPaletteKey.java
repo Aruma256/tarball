@@ -1,6 +1,6 @@
 package com.github.aruma256.lottweaks.client.keys;
 
-import static com.github.aruma256.lottweaks.client.ClientUtil.getClient;
+import static com.github.aruma256.lottweaks.client.ClientUtil.*;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ public class OpenPaletteKey extends LTKeyBase {
 	@Override
 	protected int getMode() {
 		if (LotTweaks.CONFIG.SNEAK_TO_SWITCH_GROUP) {
-			return (!getClient().player.isSneaking()) ? 0 : 1;
+			return (!getClientPlayer().isSneaking()) ? 0 : 1;
 		} else {
 			return super.getMode() % ItemGroupManager.getSize();
 		}
@@ -47,11 +47,11 @@ public class OpenPaletteKey extends LTKeyBase {
 			return;
 		}
 		//
-		ItemStack itemStack = getClient().player.inventory.getCurrentItem();
+		ItemStack itemStack = getClientPlayer().inventory.getCurrentItem();
 		if (!itemStack.isEmpty()) {
 			List<ItemStack> results = ItemGroupManager.getInstance(getMode()).getVariantsList(itemStack);
 			if (results != null && results.size() > 1) {
-				selector = new CircleItemSelector(results, getClient().player.inventory.currentItem);
+				selector = new CircleItemSelector(results, getClientPlayer().inventory.currentItem);
 				selector.overwriteSelectedIndex(searchIndexOfMatchedItem(results, itemStack));
 			}
 		}

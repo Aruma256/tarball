@@ -1,6 +1,6 @@
 package com.github.aruma256.lottweaks.client.selector;
 
-import static com.github.aruma256.lottweaks.client.ClientUtil.getClient;
+import static com.github.aruma256.lottweaks.client.ClientUtil.*;
 
 import java.util.List;
 
@@ -55,7 +55,7 @@ public class CircleItemSelector extends AbstractItemSelector {
 	@Override
 	protected void replaceInventory() {
 		ItemStack itemStack = this.getSelectedItemStack();
-		getClient().player.inventory.setInventorySlotContents(this.slot, itemStack);
+		getClientPlayer().inventory.setInventorySlotContents(this.slot, itemStack);
 		getClient().playerController.sendSlotPacket(itemStack, 36 + this.slot);
 	}
 

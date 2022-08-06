@@ -1,6 +1,6 @@
 package com.github.aruma256.lottweaks.client.keys;
 
-import static com.github.aruma256.lottweaks.client.ClientUtil.getClient;
+import static com.github.aruma256.lottweaks.client.ClientUtil.*;
 
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -67,7 +67,7 @@ public class LTKeyBase extends KeyBinding {
 	}
 
 	protected boolean isPlayerCreative() {
-		return getClient().player.isCreative();
+		return getClientPlayer().isCreative();
 	}
 
 }

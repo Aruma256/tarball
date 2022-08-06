@@ -1,6 +1,6 @@
 package com.github.aruma256.lottweaks.client;
 
-import static com.github.aruma256.lottweaks.client.ClientUtil.getClient;
+import static com.github.aruma256.lottweaks.client.ClientUtil.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +57,7 @@ public class LotTweaksCommand extends CommandBase implements IClientCommand {
 		List<ItemState> group = new ArrayList<>();
 		int count = 0;
 		for (int i = 0; i < InventoryPlayer.getHotbarSize(); i++) {
-			ItemStack itemStack = getClient().player.inventory.getStackInSlot(i);
+			ItemStack itemStack = getClientPlayer().inventory.getStackInSlot(i);
 			if (itemStack.isEmpty()) {
 				break;
 			}

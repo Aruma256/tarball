@@ -1,6 +1,6 @@
 package com.github.aruma256.lottweaks.client.renderer;
 
-import static com.github.aruma256.lottweaks.client.ClientUtil.getClient;
+import static com.github.aruma256.lottweaks.client.ClientUtil.*;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.GlStateManager;
@@ -21,7 +21,7 @@ public class SelectionBoxRenderer {
 		GlStateManager.disableTexture2D();
 		GlStateManager.depthMask(false);
 
-		EntityPlayer player = getClient().player;
+		EntityPlayer player = getClientPlayer();
 		double d3 = player.lastTickPosX + (player.posX - player.lastTickPosX) * (double)partialTicks;
 		double d4 = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double)partialTicks;
 		double d5 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double)partialTicks;

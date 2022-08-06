@@ -1,6 +1,6 @@
 package com.github.aruma256.lottweaks.client.keys;
 
-import static com.github.aruma256.lottweaks.client.ClientUtil.getClient;
+import static com.github.aruma256.lottweaks.client.ClientUtil.*;
 
 import java.util.ArrayList;
 import java.util.Deque;
@@ -75,7 +75,7 @@ public class ExPickKey extends LTKeyBase {
 		if (!isPlayerCreative()) {
 			rayTraceResult = getClient().objectMouseOver;
 			if (rayTraceResult != null) {
-				ForgeHooks.onPickBlock(rayTraceResult, getClient().player, getClient().world);
+				ForgeHooks.onPickBlock(rayTraceResult, getClientPlayer(), getClient().world);
 			}
 			return;
 		}
@@ -88,18 +88,18 @@ public class ExPickKey extends LTKeyBase {
 		if (rayTraceResult == null) {
 			return;
 		}
-		boolean succeeded = ForgeHooks.onPickBlock(rayTraceResult, getClient().player, getClient().world);
+		boolean succeeded = ForgeHooks.onPickBlock(rayTraceResult, getClientPlayer(), getClient().world);
 		if (!succeeded) {
 			return;
 		}
 		List<ItemStack> results = new ArrayList<>();
-		results.add(getClient().player.inventory.getCurrentItem());
+		results.add(getClientPlayer().inventory.getCurrentItem());
 		BlockPos pos = rayTraceResult.getBlockPos();
 		for (BlockPos posDiff : SEARCH_POS) {
 			try {
 				BlockPos targetPos = pos.add(posDiff);
 				IBlockState state = getClient().world.getBlockState(targetPos);
-				ItemStack pickedItemStack = state.getBlock().getPickBlock(state, new RayTraceResult(new Vec3d(targetPos), rayTraceResult.sideHit, targetPos), getClient().world, targetPos, getClient().player);
+				ItemStack pickedItemStack = state.getBlock().getPickBlock(state, new RayTraceResult(new Vec3d(targetPos), rayTraceResult.sideHit, targetPos), getClient().world, targetPos, getClientPlayer());
 				if (!pickedItemStack.isEmpty()) {
 					boolean isUnique = true;
 					for (ItemStack result : results) {
@@ -116,16 +116,16 @@ public class ExPickKey extends LTKeyBase {
 			}
 		}
 		if (results.size() > 1) {
-			nearbyBlockSelector = new CircleItemSelector(results, getClient().player.inventory.currentItem);
+			nearbyBlockSelector = new CircleItemSelector(results, getClientPlayer().inventory.currentItem);
 		}
 	}
 
 	private void historyModePick() {
 		if (!breakHistory.isEmpty()) {
 			List<ItemStack> results = new LinkedList<>();
-			results.add(getClient().player.inventory.getCurrentItem());
+			results.add(getClientPlayer().inventory.getCurrentItem());
 			results.addAll(breakHistory);
-			historyBlockSelector = new HorizontalItemSelector(results, getClient().player.inventory.currentItem);
+			historyBlockSelector = new HorizontalItemSelector(results, getClientPlayer().inventory.currentItem);
 		}
 	}
 

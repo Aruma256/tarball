@@ -1,6 +1,6 @@
 package com.github.aruma256.lottweaks.client.keys;
 
-import static com.github.aruma256.lottweaks.client.ClientUtil.getClient;
+import static com.github.aruma256.lottweaks.client.ClientUtil.*;
 
 import com.github.aruma256.lottweaks.LotTweaks;
 import com.github.aruma256.lottweaks.client.CompatibilityChecker;
@@ -32,7 +32,7 @@ public class ReplaceKey extends LTKeyBase {
 
 	@Override
 	protected void onKeyPressStart() {
-		if (getClient().player.isSneaking() ^ LotTweaks.CONFIG.INVERT_REPLACE_LOCK) {
+		if (getClientPlayer().isSneaking() ^ LotTweaks.CONFIG.INVERT_REPLACE_LOCK) {
 			RayTraceResult target = getClient().objectMouseOver;
 			if (target != null && target.typeOfHit == RayTraceResult.Type.BLOCK){
 				lockedBlockState = getClient().world.getBlockState(target.getBlockPos());
@@ -101,7 +101,7 @@ public class ReplaceKey extends LTKeyBase {
         if (lockedBlockState != null && lockedBlockState != state) {
             return;
         }
-		ItemStack itemStack = getClient().player.inventory.getCurrentItem();
+		ItemStack itemStack = getClientPlayer().inventory.getCurrentItem();
 		Block block = Block.getBlockFromItem(itemStack.getItem());
 		if (itemStack.isEmpty() || block == Blocks.AIR) {
 			return;
@@ -109,10 +109,10 @@ public class ReplaceKey extends LTKeyBase {
 		float hitX = (float) (target.hitVec.x - target.getBlockPos().getX());
 		float hitY = (float) (target.hitVec.y - target.getBlockPos().getY());
 		float hitZ = (float) (target.hitVec.z - target.getBlockPos().getZ());
-		IBlockState newBlockState = block.getStateForPlacement(getClient().world, target.getBlockPos(), target.sideHit, hitX, hitY, hitZ, itemStack.getItemDamage(), getClient().player, EnumHand.MAIN_HAND);
+		IBlockState newBlockState = block.getStateForPlacement(getClient().world, target.getBlockPos(), target.sideHit, hitX, hitY, hitZ, itemStack.getItemDamage(), getClientPlayer(), EnumHand.MAIN_HAND);
 		LTPacketHandler.sendReplaceMessage(target.getBlockPos(), block, block.getMetaFromState(newBlockState), getClient().world.getBlockState(target.getBlockPos()).getBlock());
 		// add to history
-		ExPickKey.addToHistory(state.getBlock().getPickBlock(state, target, getClient().world, target.getBlockPos(), getClient().player));
+		ExPickKey.addToHistory(state.getBlock().getPickBlock(state, target, getClient().world, target.getBlockPos(), getClientPlayer()));
 	}
 
 }
