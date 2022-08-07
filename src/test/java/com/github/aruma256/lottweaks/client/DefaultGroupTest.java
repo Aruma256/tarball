@@ -44,7 +44,7 @@ class DefaultGroupTest extends MinecraftTestBase {
 	final void test_getEnchantedStack() throws Exception {
 		Method method = DefaultGroup.class.getDeclaredMethod("getEnchantedStack", Item.class, String.class);
 		method.setAccessible(true);
-		assertEquals(1, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.INFINITY_ARROWS, (ItemStack)method.invoke(null, Items.BOW, "{ench:[{lvl:1s,id:51s}]}")));
+		assertEquals(1, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.INFINITY_ARROWS, (ItemStack)method.invoke(null, Items.BOW, "{Enchantments:[{lvl:1s,id:\"minecraft:infinity\"}]}")));
 	}
 
 	@Test

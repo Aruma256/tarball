@@ -61,30 +61,30 @@ class OpenPaletteKeyTest extends MinecraftTestBase {
 		// While this key is not pressed, the event is ignored.
 		instance.pressTime = 0;
 		doReturn(true).when(instance).isPlayerCreative();
-		doReturn(120).when(eventMock).getScrollDelta();
+		doReturn(120d).when(eventMock).getScrollDelta();
 		instance.onMouseEvent(eventMock);
 		verify(selectorMock, never()).rotate(anyInt());
 		verify(eventMock, never()).setCanceled(anyBoolean());
 		// If the player is not in creative mode, events are ignored
 		instance.pressTime = 1;
 		doReturn(false).when(instance).isPlayerCreative();
-		doReturn(120).when(eventMock).getScrollDelta();
+		doReturn(120d).when(eventMock).getScrollDelta();
 		instance.onMouseEvent(eventMock);
 		verify(selectorMock, never()).rotate(anyInt());
 		verify(eventMock, never()).setCanceled(anyBoolean());
 		// If Dwheel == 0, events are ignored
 		instance.pressTime = 1;
 		doReturn(true).when(instance).isPlayerCreative();
-		doReturn(0).when(eventMock).getScrollDelta();
+		doReturn(0d).when(eventMock).getScrollDelta();
 		instance.onMouseEvent(eventMock);
 		verify(selectorMock, never()).rotate(anyInt());
 		verify(eventMock, never()).setCanceled(anyBoolean());
 		// If Dwheel != 0, rotate() is called with inverted value
 		instance.pressTime = 1;
 		doReturn(true).when(instance).isPlayerCreative();
-		doReturn(120).when(eventMock).getScrollDelta();
+		doReturn(120d).when(eventMock).getScrollDelta();
 		instance.onMouseEvent(eventMock);
-		verify(selectorMock, times(1)).rotate(-120);
+		verify(selectorMock, times(1)).rotate(1);
 		verify(eventMock, times(1)).setCanceled(true);
 	}
 

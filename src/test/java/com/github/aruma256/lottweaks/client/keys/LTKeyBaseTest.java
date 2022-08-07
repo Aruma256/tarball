@@ -8,13 +8,14 @@ import com.github.aruma256.lottweaks.testhelper.MinecraftTestBase;
 
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
+import net.minecraftforge.eventbus.api.EventPriority;
 
 class LTKeyBaseTest extends MinecraftTestBase {
 
 	@Test
 	final void test_onClientTick() {
 		TickEvent.ClientTickEvent event = new TickEvent.ClientTickEvent(Phase.END);
-//		event.setPhase(EventPriority.NORMAL);
+		event.setPhase(EventPriority.NORMAL);
 		DummyLTKeyBase key;
 		key = new DummyLTKeyBase("", 0, "");
 		// if the key is not pressed, pressTime should be 0
