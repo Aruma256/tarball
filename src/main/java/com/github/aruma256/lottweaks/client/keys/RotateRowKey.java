@@ -1,12 +1,13 @@
 package com.github.aruma256.lottweaks.client.keys;
 
+import static com.github.aruma256.lottweaks.CommonUtil.*;
+import static com.github.aruma256.lottweaks.client.ClientUtil.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import com.github.aruma256.lottweaks.client.selector.ColumnItemSelector;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -30,13 +31,12 @@ public class RotateRowKey extends LTKeyBase {
 			return;
 		}
 		//
-		Minecraft mc = Minecraft.getInstance();
 		rowSelectors = new ArrayList<>();
-		for (int slot=0; slot<PlayerInventory.getSelectionSize(); slot++) {
+		for (int slot=0; slot<HOTBAR_SIZE; slot++) {
 			List<ItemStack> stacksInColumn = new ArrayList<>();
-			stacksInColumn.add(mc.player.inventory.getItem(slot));
+			stacksInColumn.add(getClientPlayer().inventory.getItem(slot));
 			for (int row=3; row>=1; row--) {
-				stacksInColumn.add(mc.player.inventory.getItem(slot + row * PlayerInventory.getSelectionSize()));
+				stacksInColumn.add(getClientPlayer().inventory.getItem(slot + row * HOTBAR_SIZE));
 			}
 			rowSelectors.add(new ColumnItemSelector(stacksInColumn, slot));
 		}
@@ -63,7 +63,7 @@ public class RotateRowKey extends LTKeyBase {
 		}
 		double wheel = event.getScrollDelta();
 		event.setCanceled(true);
-		for (int slot=0; slot<PlayerInventory.getSelectionSize(); slot++) {
+		for (int slot=0; slot<HOTBAR_SIZE; slot++) {
 			rowSelectors.get(slot).rotate(wheel > 0 ? 1 : -1);
 		}
 	}

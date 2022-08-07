@@ -1,5 +1,7 @@
 package com.github.aruma256.lottweaks.client.keys;
 
+import static com.github.aruma256.lottweaks.client.ClientUtil.*;
+
 import com.github.aruma256.lottweaks.LotTweaks;
 import com.github.aruma256.lottweaks.client.CompatibilityChecker;
 import com.github.aruma256.lottweaks.client.renderer.LTTextRenderer;
@@ -10,7 +12,6 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
@@ -36,11 +37,10 @@ public class ReplaceKey extends LTKeyBase {
 
 	@Override
 	protected void onKeyPressStart() {
-		Minecraft mc = Minecraft.getInstance();
-		if (mc.player.isShiftKeyDown() ^ LotTweaks.CONFIG.INVERT_REPLACE_LOCK.get()) {
-			RayTraceResult target = mc.hitResult;
+		if (getClientPlayer().isShiftKeyDown() ^ LotTweaks.CONFIG.INVERT_REPLACE_LOCK.get()) {
+			RayTraceResult target = getClient().hitResult;
 			if (target != null && target.getType() == RayTraceResult.Type.BLOCK){
-				lockedBlockState = mc.level.getBlockState(((BlockRayTraceResult)target).getBlockPos());
+				lockedBlockState = getClientWorld().getBlockState(((BlockRayTraceResult)target).getBlockPos());
 			} else {
 				lockedBlockState = Blocks.AIR.defaultBlockState();
 			}
@@ -91,29 +91,28 @@ public class ReplaceKey extends LTKeyBase {
 		if (!isPlayerCreative()) {
 			return;
 		}
-		Minecraft mc = Minecraft.getInstance();
-		RayTraceResult target = mc.hitResult;
+		RayTraceResult target = getClient().hitResult;
 		if (target == null || target.getType() != RayTraceResult.Type.BLOCK){
         	return;
         }
 		BlockPos pos = ((BlockRayTraceResult)target).getBlockPos();
-        BlockState state = mc.level.getBlockState(pos);
-        if (state.getBlock().isAir(state, mc.level, pos))
+        BlockState state = getClientWorld().getBlockState(pos);
+        if (state.getBlock().isAir(state, getClientWorld(), pos))
         {
             return;
         }
         if (lockedBlockState != null && lockedBlockState != state) {
             return;
         }
-		ItemStack itemStack = mc.player.inventory.getSelected();
+		ItemStack itemStack = getClientPlayer().inventory.getSelected();
 		Block block = Block.byItem(itemStack.getItem());
 		if (itemStack.isEmpty() || block == Blocks.AIR) {
 			return;
 		}
-		BlockState newBlockState = block.getStateForPlacement(new BlockItemUseContext(mc.player, Hand.MAIN_HAND, itemStack, (BlockRayTraceResult)target));
+		BlockState newBlockState = block.getStateForPlacement(new BlockItemUseContext(getClientPlayer(), Hand.MAIN_HAND, itemStack, (BlockRayTraceResult)target));
 		LTPacketHandler.sendReplaceMessage(pos, newBlockState, state);
 		// add to history
-		ExPickKey.addToHistory(state.getBlock().getPickBlock(state, target, mc.level, pos, mc.player));
+		ExPickKey.addToHistory(state.getBlock().getPickBlock(state, target, getClientWorld(), pos, getClientPlayer()));
 	}
 
 }

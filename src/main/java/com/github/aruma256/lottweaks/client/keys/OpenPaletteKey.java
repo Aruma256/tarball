@@ -1,5 +1,7 @@
 package com.github.aruma256.lottweaks.client.keys;
 
+import static com.github.aruma256.lottweaks.client.ClientUtil.*;
+
 import java.util.List;
 
 import org.lwjgl.glfw.GLFW;
@@ -9,24 +11,15 @@ import com.github.aruma256.lottweaks.LotTweaks;
 import com.github.aruma256.lottweaks.client.ItemGroupManager;
 import com.github.aruma256.lottweaks.client.selector.CircleItemSelector;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.MouseHelper;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.inventory.CraftingScreen;
-import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.GuiScreenEvent.MouseDragEvent;
 import net.minecraftforge.client.event.InputEvent.MouseScrollEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 @OnlyIn(Dist.CLIENT)
 public class OpenPaletteKey extends LTKeyBase {
@@ -40,7 +33,7 @@ public class OpenPaletteKey extends LTKeyBase {
 	@Override
 	protected int getMode() {
 		if (LotTweaks.CONFIG.SNEAK_TO_SWITCH_GROUP.get()) {
-			return (!Minecraft.getInstance().player.isShiftKeyDown()) ? 0 : 1;
+			return (!getClientPlayer().isShiftKeyDown()) ? 0 : 1;
 		} else {
 			return super.getMode() % ItemGroupManager.getSize();
 		}
@@ -48,12 +41,12 @@ public class OpenPaletteKey extends LTKeyBase {
 
 	@Override
 	public boolean isDown() {
-		return InputMappings.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), getKey().getValue());
+		return InputMappings.isKeyDown(getClient().getWindow().getWindow(), getKey().getValue());
 	}
 
 	@Override
 	protected void onKeyPressStart() {
-		GLFW.glfwSetCursorPosCallback(Minecraft.getInstance().getWindow().getWindow(), new GLFWCursorPosCallbackI() {
+		GLFW.glfwSetCursorPosCallback(getClient().getWindow().getWindow(), new GLFWCursorPosCallbackI() {
 			boolean isFirstCall = true;
 			double prevX;
 			double prevY;
@@ -79,32 +72,34 @@ public class OpenPaletteKey extends LTKeyBase {
 			return;
 		}
 		//
-		Minecraft mc = Minecraft.getInstance();
-		ItemStack itemStack = mc.player.getMainHandItem();
+		ItemStack itemStack = getClientPlayer().getMainHandItem();
 		if (!itemStack.isEmpty()) {
 			List<ItemStack> results = ItemGroupManager.getInstance(getMode()).getVariantsList(itemStack);
 			if (results != null && results.size() > 1) {
-				selector = new CircleItemSelector(results, mc.player.inventory.selected);
-				for (int i=0; i<results.size(); i++) {
-					if (ItemStack.matches(itemStack, results.get(i))) {
-						selector.overwriteSelectedIndex(i);
-						return;
-					}
-				}
-				for (int i=0; i<results.size(); i++) {
-					if (ItemStack.isSame(itemStack, results.get(i))) {
-						selector.overwriteSelectedIndex(i);
-						return;
-					}
-				}
+				selector = new CircleItemSelector(results, getClientPlayer().inventory.selected);
+				selector.overwriteSelectedIndex(searchIndexOfMatchedItem(results, itemStack));
 			}
 		}
+	}
+
+	private static int searchIndexOfMatchedItem(List<ItemStack> listedItems, ItemStack itemStack) {
+		for (int i=0; i<listedItems.size(); i++) {
+			if (ItemStack.matches(itemStack, listedItems.get(i))) {
+				return i;
+			}
+		}
+		for (int i=0; i<listedItems.size(); i++) {
+			if (ItemStack.isSame(itemStack, listedItems.get(i))) {
+				return i;
+			}
+		}
+		throw new RuntimeException();
 	}
 
 	@Override
 	protected void onKeyReleased() {
 		selector = null;
-		Minecraft.getInstance().mouseHandler.setup(Minecraft.getInstance().getWindow().getWindow());
+		getClient().mouseHandler.setup(getClient().getWindow().getWindow());
 	}
 
 	@SubscribeEvent
@@ -115,9 +110,9 @@ public class OpenPaletteKey extends LTKeyBase {
 		if (this.pressTime == 0 || selector == null) {
 			return;
 		}
-		if (!Minecraft.getInstance().isPaused()) {
-			double nx = Minecraft.getInstance().mouseHandler.xpos();
-			double ny = Minecraft.getInstance().mouseHandler.ypos();
+		if (!getClient().isPaused()) {
+			double nx = getClient().mouseHandler.xpos();
+			double ny = getClient().mouseHandler.ypos();
 		}
 	}
 

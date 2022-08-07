@@ -1,5 +1,7 @@
 package com.github.aruma256.lottweaks.client.selector;
 
+import static com.github.aruma256.lottweaks.client.ClientUtil.*;
+
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
@@ -56,10 +58,9 @@ public class CircleItemSelector extends AbstractItemSelector {
 
 	@Override
 	protected void replaceInventory() {
-		Minecraft mc = Minecraft.getInstance();
 		ItemStack itemStack = this.getSelectedItemStack();
-		mc.player.inventory.setItem(this.slot, itemStack);
-        mc.gameMode.handleCreativeModeItemAdd(itemStack, 36 + this.slot);
+		getClientPlayer().inventory.setItem(this.slot, itemStack);
+		getClient().gameMode.handleCreativeModeItemAdd(itemStack, 36 + this.slot);
 	}
 
 	private void normalizeMouseDxDy() {
@@ -97,7 +98,7 @@ public class CircleItemSelector extends AbstractItemSelector {
 	public void render(MainWindow sr) {
 		PlayerInventory.getSelectionSize();
 		int time = 500000;
-		float partialTick = Minecraft.getInstance().getDeltaFrameTime();
+		float partialTick = getClient().getDeltaFrameTime();
 
 		int cx = this.getCenterX(sr.getGuiScaledWidth());
 //		int cy = sr.getScaledHeight() - 16 - 3 - 50;
@@ -149,7 +150,7 @@ public class CircleItemSelector extends AbstractItemSelector {
 			double theta = convertIndexToAngle(i);
 			double dx = (i==selectedId ? radius*1.3 : radius) * Math.cos(theta);
 			double dy = (i==selectedId ? radius*1.3 : radius) * Math.sin(theta);
-			Minecraft.getInstance().getItemRenderer().renderAndDecorateItem(c, (int)Math.round(cx + dx), (int)Math.round(cy - dy));
+			getClient().getItemRenderer().renderAndDecorateItem(c, (int)Math.round(cx + dx), (int)Math.round(cy - dy));
 			i++;
 		}
 		glItemRenderFinalize();

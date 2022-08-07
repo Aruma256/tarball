@@ -1,9 +1,10 @@
 package com.github.aruma256.lottweaks.client.renderer;
 
+import static com.github.aruma256.lottweaks.client.ClientUtil.*;
+
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
@@ -18,7 +19,7 @@ public class SelectionBoxRenderer {
 	private static final VoxelShape CUBE = VoxelShapes.box(-growFactor, -growFactor, -growFactor, 1+growFactor, 1+growFactor, 1+growFactor);
 	
 	public static boolean render(ActiveRenderInfo activeRenderInfo, MatrixStack matrixStack, IVertexBuilder buffer, BlockPos blockPos, float partialTicks, float r, float g, float b) {
-		if (!Minecraft.getInstance().level.getWorldBorder().isWithinBounds(blockPos)) {
+		if (!getClientWorld().getWorldBorder().isWithinBounds(blockPos)) {
 			return false;
 		}
 

@@ -1,5 +1,7 @@
 package com.github.aruma256.lottweaks.client.keys;
 
+import static com.github.aruma256.lottweaks.client.ClientUtil.*;
+
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -11,7 +13,6 @@ import com.github.aruma256.lottweaks.client.selector.HorizontalItemSelector;
 import net.java.games.input.Mouse;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MainWindow;
-import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -73,10 +74,9 @@ public class ExPickKey extends LTKeyBase {
 		RayTraceResult rayTraceResult;
 
 		if (!isPlayerCreative()) {
-			Minecraft mc = Minecraft.getInstance();
-			rayTraceResult = mc.hitResult;
+			rayTraceResult = getClient().hitResult;
 			if (rayTraceResult != null) {
-				ForgeHooks.onPickBlock(rayTraceResult, mc.player, mc.level);
+				ForgeHooks.onPickBlock(rayTraceResult, getClientPlayer(), getClientWorld());
 			}
 			return;
 		}
@@ -85,23 +85,22 @@ public class ExPickKey extends LTKeyBase {
 	}
 
 	private void normalModePick() {
-		Minecraft mc = Minecraft.getInstance();
-		RayTraceResult rayTraceResult = mc.getCameraEntity().pick(255.0, mc.getDeltaFrameTime(), false);
+		RayTraceResult rayTraceResult = getClient().getCameraEntity().pick(255.0, getClient().getDeltaFrameTime(), false);
 		if (rayTraceResult == null) {
 			return;
 		}
-		boolean succeeded = ForgeHooks.onPickBlock(rayTraceResult, mc.player, mc.level);
+		boolean succeeded = ForgeHooks.onPickBlock(rayTraceResult, getClientPlayer(), getClientWorld());
 		if (!succeeded) {
 			return;
 		}
 		List<ItemStack> results = new ArrayList<>();
-		results.add(mc.player.inventory.getSelected());
+		results.add(getClientPlayer().inventory.getSelected());
 		BlockPos pos = ((BlockRayTraceResult)rayTraceResult).getBlockPos();
 		for (BlockPos posDiff : SEARCH_POS) {
 			try {
 				BlockPos targetPos = pos.offset(posDiff);
-				BlockState state = mc.level.getBlockState(targetPos);
-				ItemStack pickedItemStack = state.getBlock().getPickBlock(state, new BlockRayTraceResult(new Vector3d(targetPos.getX(), targetPos.getY(), targetPos.getZ()), ((BlockRayTraceResult)rayTraceResult).getDirection(), targetPos, false), mc.level, targetPos, mc.player);
+				BlockState state = getClientWorld().getBlockState(targetPos);
+				ItemStack pickedItemStack = state.getBlock().getPickBlock(state, new BlockRayTraceResult(new Vector3d(targetPos.getX(), targetPos.getY(), targetPos.getZ()), ((BlockRayTraceResult)rayTraceResult).getDirection(), targetPos, false), getClientWorld(), targetPos, getClientPlayer());
 				if (!pickedItemStack.isEmpty()) {
 					boolean isUnique = true;
 					for (ItemStack result : results) {
@@ -118,16 +117,16 @@ public class ExPickKey extends LTKeyBase {
 			}
 		}
 		if (results.size() > 1) {
-			nearbyBlockSelector = new CircleItemSelector(results, mc.player.inventory.selected);
+			nearbyBlockSelector = new CircleItemSelector(results, getClientPlayer().inventory.selected);
 		}
 	}
 
 	private void historyModePick() {
 		if (!breakHistory.isEmpty()) {
 			List<ItemStack> results = new LinkedList<>();
-			results.add(Minecraft.getInstance().player.inventory.getSelected());
+			results.add(getClientPlayer().inventory.getSelected());
 			results.addAll(breakHistory);
-			historyBlockSelector = new HorizontalItemSelector(results, Minecraft.getInstance().player.inventory.selected);
+			historyBlockSelector = new HorizontalItemSelector(results, getClientPlayer().inventory.selected);
 		}
 	}
 
@@ -151,8 +150,12 @@ public class ExPickKey extends LTKeyBase {
 			return;
 		}
 		boolean flag = Display.isActive(); // EntityRenderer#updateCameraAndRender
+<<<<<<< HEAD
 		if (flag && Minecraft.getMinecraft().inGameHasFocus) {
 			MouseDragEvent e;
+=======
+		if (flag && getClient().inGameHasFocus) {
+>>>>>>> origin/1.12.2
 			nearbyBlockSelector.notifyMouseMovement(Mouse.getDX(), Mouse.getDY());
 		}
 	}
@@ -209,9 +212,8 @@ public class ExPickKey extends LTKeyBase {
 			return;
 		}
 		//
-		Minecraft mc = Minecraft.getInstance();
 		BlockState blockState = event.getWorld().getBlockState(event.getPos());
-		ItemStack itemStack = blockState.getBlock().getPickBlock(blockState, mc.hitResult, event.getWorld(), event.getPos(), event.getPlayer());
+		ItemStack itemStack = blockState.getBlock().getPickBlock(blockState, getClient().hitResult, event.getWorld(), event.getPos(), event.getPlayer());
 		addToHistory(itemStack);
 	}
 

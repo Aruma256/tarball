@@ -1,14 +1,15 @@
 package com.github.aruma256.lottweaks.client.renderer;
 
+import static com.github.aruma256.lottweaks.client.ClientUtil.getClient;
+
 import com.mojang.blaze3d.matrix.MatrixStack;
 
 import net.minecraft.client.MainWindow;
-import net.minecraft.client.Minecraft;
 
 public class LTTextRenderer {
 
 	public static void showServerSideRequiredMessage(MatrixStack matrixStack, String requiredVersion) {
-		showServerSideRequiredMessage(matrixStack, Minecraft.getInstance().getWindow(), requiredVersion);
+		showServerSideRequiredMessage(matrixStack, getClient().getWindow(), requiredVersion);
 	}
 
 	public static void showServerSideRequiredMessage(MatrixStack matrixStack, MainWindow scaledResolution, String requiredVersion) {
@@ -20,10 +21,9 @@ public class LTTextRenderer {
 	}
 
 	private static void showMessage(MatrixStack matrixStack, MainWindow scaledResolution, String msg, int color) {
-		Minecraft mc = Minecraft.getInstance();
-		int x = (scaledResolution.getGuiScaledWidth() - mc.font.width(msg)) / 2;
+		int x = (scaledResolution.getGuiScaledWidth() - getClient().font.width(msg)) / 2;
 		int y = scaledResolution.getGuiScaledHeight() - 70;
-		mc.font.draw(matrixStack, msg, x, y, color);
+		getClient().font.draw(matrixStack, msg, x, y, color);
 	}
 
 }

@@ -1,13 +1,14 @@
 package com.github.aruma256.lottweaks.client;
 
+import static com.github.aruma256.lottweaks.CommonUtil.*;
+import static com.github.aruma256.lottweaks.client.ClientUtil.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import com.github.aruma256.lottweaks.LotTweaks;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.ClientChatEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -78,8 +79,8 @@ public class LotTweaksCommand {
 		System.out.println("ADD!!!!!!!!!");
 		List<ItemState> group = new ArrayList<>();
 		int count = 0;
-		for (int i = 0; i < PlayerInventory.getSelectionSize(); i++) {
-			ItemStack itemStack = Minecraft.getInstance().player.inventory.getItem(i);
+		for (int i = 0; i < HOTBAR_SIZE; i++) {
+			ItemStack itemStack = getClientPlayer().inventory.getItem(i);
 			if (itemStack.isEmpty()) {
 				break;
 			}
