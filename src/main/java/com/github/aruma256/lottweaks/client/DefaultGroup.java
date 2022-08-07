@@ -21,23 +21,55 @@ public class DefaultGroup {
 		l.add(toList(
 			Blocks.GRASS,
 			toMetaVariants(Blocks.DIRT, 3),
-			Blocks.GRAVEL, Blocks.CLAY,
-			Blocks.STONE, new ItemStack(Blocks.STONE, 1, 1), new ItemStack(Blocks.STONE, 1, 3), new ItemStack(Blocks.STONE, 1, 5)
+			Blocks.GRAVEL,
+			Blocks.CLAY,
+			Blocks.STONE,
+			new ItemStack(Blocks.STONE, 1, 1),
+			new ItemStack(Blocks.STONE, 1, 3),
+			new ItemStack(Blocks.STONE, 1, 5)
 		));
 		l.add(toList(Blocks.COAL_ORE, Blocks.LAPIS_ORE, Blocks.IRON_ORE, Blocks.GOLD_ORE, Blocks.REDSTONE_ORE, Blocks.DIAMOND_ORE, Blocks.EMERALD_ORE));
 		// building blocks
 		l.add(toList(
-			new ItemStack(Blocks.STONE, 1, 2), new ItemStack(Blocks.STONE, 1, 4), new ItemStack(Blocks.STONE, 1, 6),
-			Blocks.BRICK_BLOCK, Blocks.BRICK_STAIRS, new ItemStack(Blocks.STONE_SLAB, 1, 4),
-			toMetaVariants(Blocks.STONEBRICK, 4), Blocks.STONE_BRICK_STAIRS, new ItemStack(Blocks.STONE_SLAB, 1, 5),
-			Blocks.NETHER_BRICK, Blocks.NETHER_BRICK_STAIRS, new ItemStack(Blocks.STONE_SLAB, 1, 6), Blocks.NETHER_BRICK_FENCE,
+			new ItemStack(Blocks.STONE, 1, 2),
+			new ItemStack(Blocks.STONE, 1, 4),
+			new ItemStack(Blocks.STONE, 1, 6),
+			// brick blocks
+			Blocks.BRICK_BLOCK,
+			Blocks.BRICK_STAIRS,
+			new ItemStack(Blocks.STONE_SLAB, 1, 4),
+			// stonebrick blocks
+			toMetaVariants(Blocks.STONEBRICK, 4),
+			Blocks.STONE_BRICK_STAIRS,
+			new ItemStack(Blocks.STONE_SLAB, 1, 5),
+			// nether brick blocks
+			Blocks.NETHER_BRICK,
+			Blocks.NETHER_BRICK_STAIRS,
+			new ItemStack(Blocks.STONE_SLAB, 1, 6),
+			Blocks.NETHER_BRICK_FENCE,
+			// red nether brick blocks
 			Blocks.RED_NETHER_BRICK,
-			toMetaVariants(Blocks.QUARTZ_BLOCK, 3), Blocks.QUARTZ_STAIRS, new ItemStack(Blocks.STONE_SLAB, 1, 7),
-			Blocks.PURPUR_BLOCK, Blocks.PURPUR_PILLAR, Blocks.PURPUR_STAIRS, Blocks.PURPUR_SLAB
+			// quartz blocks
+			toMetaVariants(Blocks.QUARTZ_BLOCK, 3),
+			Blocks.QUARTZ_STAIRS,
+			new ItemStack(Blocks.STONE_SLAB, 1, 7),
+			// purpur blocks
+			Blocks.PURPUR_BLOCK,
+			Blocks.PURPUR_PILLAR,
+			Blocks.PURPUR_STAIRS,
+			Blocks.PURPUR_SLAB
 		));
 		l.add(toList(
-			Blocks.SAND, toMetaVariants(Blocks.SANDSTONE, 3), new ItemStack(Blocks.STONE_SLAB, 1, 1), Blocks.SANDSTONE_STAIRS,
-			new ItemStack(Blocks.SAND, 1, 1), toMetaVariants(Blocks.RED_SANDSTONE, 3), new ItemStack(Blocks.STONE_SLAB2, 1, 0), Blocks.RED_SANDSTONE_STAIRS
+			// sand and sandstone blocks
+			Blocks.SAND,
+			toMetaVariants(Blocks.SANDSTONE, 3),
+			new ItemStack(Blocks.STONE_SLAB, 1, 1),
+			Blocks.SANDSTONE_STAIRS,
+			// red sand and sandstone blocks
+			new ItemStack(Blocks.SAND, 1, 1),
+			toMetaVariants(Blocks.RED_SANDSTONE, 3),
+			new ItemStack(Blocks.STONE_SLAB2, 1, 0),
+			Blocks.RED_SANDSTONE_STAIRS
 		));
 		l.add(toList(Blocks.COAL_BLOCK, Blocks.LAPIS_BLOCK, Blocks.IRON_BLOCK, Blocks.GOLD_BLOCK, Blocks.REDSTONE_BLOCK, Blocks.DIAMOND_BLOCK, Blocks.EMERALD_BLOCK));
 		l.add(toList(
@@ -88,17 +120,70 @@ public class DefaultGroup {
 
 	public static List<List<ItemState>> getDefaultGroupList1() {
 		List<List<ItemState>> l = new ArrayList<>();
-		l.add(toColorVariants(Blocks.WOOL));
-		l.add(toList(Blocks.GLASS, toColorVariants(Blocks.STAINED_GLASS)));
-		l.add(toList(Blocks.HARDENED_CLAY, toColorVariants(Blocks.STAINED_HARDENED_CLAY)));
-		l.add(toColorVariants(Blocks.CONCRETE));
-		l.add(toColorVariants(Blocks.CONCRETE_POWDER));
-		l.add(toList(Blocks.GLASS_PANE, toColorVariants(Blocks.STAINED_GLASS_PANE)));
-		l.add(toColorVariants(Blocks.CARPET));
-		l.add(toList(Blocks.RED_SHULKER_BOX, Blocks.ORANGE_SHULKER_BOX, Blocks.YELLOW_SHULKER_BOX, Blocks.LIME_SHULKER_BOX, Blocks.GREEN_SHULKER_BOX, Blocks.CYAN_SHULKER_BOX, Blocks.LIGHT_BLUE_SHULKER_BOX, Blocks.BLUE_SHULKER_BOX, Blocks.PURPLE_SHULKER_BOX, Blocks.MAGENTA_SHULKER_BOX, Blocks.PINK_SHULKER_BOX, Blocks.BROWN_SHULKER_BOX, Blocks.BLACK_SHULKER_BOX, Blocks.SILVER_SHULKER_BOX, Blocks.WHITE_SHULKER_BOX));
-		l.add(toList(Blocks.RED_GLAZED_TERRACOTTA, Blocks.ORANGE_GLAZED_TERRACOTTA, Blocks.YELLOW_GLAZED_TERRACOTTA, Blocks.LIME_GLAZED_TERRACOTTA, Blocks.GREEN_GLAZED_TERRACOTTA, Blocks.CYAN_GLAZED_TERRACOTTA, Blocks.LIGHT_BLUE_GLAZED_TERRACOTTA, Blocks.BLUE_GLAZED_TERRACOTTA, Blocks.PURPLE_GLAZED_TERRACOTTA, Blocks.MAGENTA_GLAZED_TERRACOTTA, Blocks.PINK_GLAZED_TERRACOTTA, Blocks.BROWN_GLAZED_TERRACOTTA, Blocks.BLACK_GLAZED_TERRACOTTA, Blocks.SILVER_GLAZED_TERRACOTTA, Blocks.WHITE_GLAZED_TERRACOTTA));
-		l.add(toColorVariants(Items.BED));
-		l.add(toColorVariants(Items.BANNER));
+		l.add(
+			toColorVariants(Blocks.WOOL)
+		);
+		l.add(toList(
+			Blocks.GLASS,
+			toColorVariants(Blocks.STAINED_GLASS)
+		));
+		l.add(toList(
+			Blocks.HARDENED_CLAY,
+			toColorVariants(Blocks.STAINED_HARDENED_CLAY)
+		));
+		l.add(
+			toColorVariants(Blocks.CONCRETE)
+		);
+		l.add(
+			toColorVariants(Blocks.CONCRETE_POWDER)
+		);
+		l.add(toList(
+			Blocks.GLASS_PANE,
+			toColorVariants(Blocks.STAINED_GLASS_PANE)
+		));
+		l.add(
+			toColorVariants(Blocks.CARPET)
+		);
+		l.add(toList(
+			Blocks.RED_SHULKER_BOX,
+			Blocks.ORANGE_SHULKER_BOX,
+			Blocks.YELLOW_SHULKER_BOX,
+			Blocks.LIME_SHULKER_BOX,
+			Blocks.GREEN_SHULKER_BOX,
+			Blocks.CYAN_SHULKER_BOX,
+			Blocks.LIGHT_BLUE_SHULKER_BOX,
+			Blocks.BLUE_SHULKER_BOX,
+			Blocks.PURPLE_SHULKER_BOX,
+			Blocks.MAGENTA_SHULKER_BOX,
+			Blocks.PINK_SHULKER_BOX,
+			Blocks.BROWN_SHULKER_BOX,
+			Blocks.BLACK_SHULKER_BOX,
+			Blocks.SILVER_SHULKER_BOX,
+			Blocks.WHITE_SHULKER_BOX
+		));
+		l.add(toList(
+			Blocks.RED_GLAZED_TERRACOTTA,
+			Blocks.ORANGE_GLAZED_TERRACOTTA,
+			Blocks.YELLOW_GLAZED_TERRACOTTA,
+			Blocks.LIME_GLAZED_TERRACOTTA,
+			Blocks.GREEN_GLAZED_TERRACOTTA,
+			Blocks.CYAN_GLAZED_TERRACOTTA,
+			Blocks.LIGHT_BLUE_GLAZED_TERRACOTTA,
+			Blocks.BLUE_GLAZED_TERRACOTTA,
+			Blocks.PURPLE_GLAZED_TERRACOTTA,
+			Blocks.MAGENTA_GLAZED_TERRACOTTA,
+			Blocks.PINK_GLAZED_TERRACOTTA,
+			Blocks.BROWN_GLAZED_TERRACOTTA,
+			Blocks.BLACK_GLAZED_TERRACOTTA,
+			Blocks.SILVER_GLAZED_TERRACOTTA,
+			Blocks.WHITE_GLAZED_TERRACOTTA
+		));
+		l.add(
+			toColorVariants(Items.BED)
+		);
+		l.add(
+			toColorVariants(Items.BANNER)
+		);
 		return l;
 	}
 
