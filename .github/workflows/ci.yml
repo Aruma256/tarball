@@ -18,6 +18,6 @@ jobs:
     - name: Test with Gradle
       uses: gradle/gradle-build-action@v2
       with:
-        gradle-version: 5.1
+        gradle-version: 7.3
         arguments: test --info
         cache-read-only: ${{ github.ref != 'refs/heads/1.16.x' }}
