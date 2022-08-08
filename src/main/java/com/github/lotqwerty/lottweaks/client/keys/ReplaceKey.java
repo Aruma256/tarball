@@ -7,12 +7,11 @@ import com.github.lotqwerty.lottweaks.client.renderer.LTTextRenderer;
 import com.github.lotqwerty.lottweaks.client.renderer.SelectionBoxRenderer;
 import com.github.lotqwerty.lottweaks.fabric.DrawBlockOutlineEvent;
 import com.github.lotqwerty.lottweaks.fabric.DrawBlockOutlineEvent.DrawBlockOutlineListener;
-import com.github.lotqwerty.lottweaks.fabric.RenderHotbarEvent;
-import com.github.lotqwerty.lottweaks.fabric.RenderHotbarEvent.RenderHotbarListener;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
@@ -25,12 +24,13 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 
 @Environment(EnvType.CLIENT)
-public class ReplaceKey extends LTKeyBase implements RenderHotbarListener, DrawBlockOutlineListener {
+public class ReplaceKey extends LTKeyBase implements HudRenderCallback, DrawBlockOutlineListener {
 
 	private BlockState lockedBlockState = null;
 
 	public ReplaceKey(int keyCode, String category) {
 		super("Replace", keyCode, category);
+		HudRenderCallback.EVENT.register(this);
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public class ReplaceKey extends LTKeyBase implements RenderHotbarListener, DrawB
 	}
 
 	@Override
-	public void onRenderHotbar(RenderHotbarEvent event) {
+	public void onHudRender(PoseStack matrixStack, float tickDelta) {
 		/*
 		if (event.getPhase() != EventPriority.NORMAL) {
 			return;

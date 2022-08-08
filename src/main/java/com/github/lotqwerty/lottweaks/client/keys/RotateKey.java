@@ -6,23 +6,24 @@ import com.github.lotqwerty.lottweaks.LotTweaks;
 import com.github.lotqwerty.lottweaks.client.RotationHelper;
 import com.github.lotqwerty.lottweaks.client.RotationHelper.Group;
 import com.github.lotqwerty.lottweaks.client.renderer.LTRenderer;
-import com.github.lotqwerty.lottweaks.fabric.RenderHotbarEvent;
-import com.github.lotqwerty.lottweaks.fabric.RenderHotbarEvent.RenderHotbarListener;
 import com.github.lotqwerty.lottweaks.fabric.ScrollEvent;
 import com.github.lotqwerty.lottweaks.fabric.ScrollEvent.ScrollListener;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
 
 @Environment(EnvType.CLIENT)
-public class RotateKey extends ItemSelectKeyBase implements ScrollListener, RenderHotbarListener {
+public class RotateKey extends ItemSelectKeyBase implements ScrollListener, HudRenderCallback {
 
 	private int phase = 0;
 
 	public RotateKey(int keyCode, String category) {
 		super("Rotate", keyCode, category);
+		HudRenderCallback.EVENT.register(this);
 	}
 
 	private void updatePhase() {
@@ -94,8 +95,8 @@ public class RotateKey extends ItemSelectKeyBase implements ScrollListener, Rend
 	}
 
 	@Override
-	public void onRenderHotbar(RenderHotbarEvent event) {
-		float partialTicks = event.getPartialTicks();
+	public void onHudRender(PoseStack matrixStack, float tickDelta) {
+		float partialTicks = tickDelta;
 		if (this.pressTime == 0) {
 			candidates.clear();
 			return;

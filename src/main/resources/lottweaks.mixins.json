@@ -7,7 +7,6 @@
   ],
   "client": [
     "MouseScrollRedirector",
-    "HotbarRendererHook",
     "VanillaPickInvoker",
     "DrawShapeOutlineInjector"
   ],

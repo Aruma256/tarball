@@ -4,14 +4,14 @@ import java.util.Deque;
 import java.util.LinkedList;
 
 import com.github.lotqwerty.lottweaks.client.renderer.LTRenderer;
-import com.github.lotqwerty.lottweaks.fabric.RenderHotbarEvent;
 import com.github.lotqwerty.lottweaks.fabric.ScrollEvent;
-import com.github.lotqwerty.lottweaks.fabric.RenderHotbarEvent.RenderHotbarListener;
 import com.github.lotqwerty.lottweaks.fabric.ScrollEvent.ScrollListener;
 import com.github.lotqwerty.lottweaks.fabric.mixin.VanillaPickInvoker;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -26,7 +26,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 
 @Environment(EnvType.CLIENT)
-public class ExPickKey extends ItemSelectKeyBase implements ScrollListener, RenderHotbarListener, AttackBlockCallback {
+public class ExPickKey extends ItemSelectKeyBase implements ScrollListener, HudRenderCallback, AttackBlockCallback {
 
 	private static final int HISTORY_SIZE = 10;
 
@@ -59,6 +59,7 @@ public class ExPickKey extends ItemSelectKeyBase implements ScrollListener, Rend
 	public ExPickKey(int keyCode, String category) {
 		super("Ex Pick", keyCode, category);
 		AttackBlockCallback.EVENT.register(this);
+		HudRenderCallback.EVENT.register(this);
 	}
 
 	@Override
@@ -165,8 +166,8 @@ public class ExPickKey extends ItemSelectKeyBase implements ScrollListener, Rend
 	}
 
 	@Override
-	public void onRenderHotbar(RenderHotbarEvent event) {
-		float partialTicks = event.getPartialTicks();
+	public void onHudRender(PoseStack matrixStack, float tickDelta) {
+		float partialTicks = tickDelta;
 		if (this.pressTime == 0) {
 			return;
 		}

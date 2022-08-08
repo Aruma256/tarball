@@ -11,9 +11,7 @@ import com.github.lotqwerty.lottweaks.fabric.ClientChatEvent;
 import com.github.lotqwerty.lottweaks.fabric.ClientChatEvent.ClientChatEventListener;
 import com.github.lotqwerty.lottweaks.fabric.DrawBlockOutlineEvent;
 import com.github.lotqwerty.lottweaks.fabric.DrawBlockOutlineEvent.DrawBlockOutlineListener;
-import com.github.lotqwerty.lottweaks.fabric.RenderHotbarEvent;
 import com.github.lotqwerty.lottweaks.fabric.ScrollEvent;
-import com.github.lotqwerty.lottweaks.fabric.RenderHotbarEvent.RenderHotbarListener;
 import com.github.lotqwerty.lottweaks.fabric.ScrollEvent.ScrollListener;
 
 import net.fabricmc.api.ClientModInitializer;
@@ -58,9 +56,6 @@ public class LotTweaksClient implements ClientModInitializer, ClientPlayConnecti
 	private static void registerToMyEventBus(Object obj) {
 		if (obj instanceof ClientTickEvents.EndTick) {
 			ClientTickEvents.END_CLIENT_TICK.register((ClientTickEvents.EndTick)obj);			
-		}
-		if (obj instanceof RenderHotbarListener) {
-			RenderHotbarEvent.registerListener((RenderHotbarListener)obj);
 		}
 		if (obj instanceof ScrollListener) {
 			ScrollEvent.registerListener((ScrollListener)obj);
