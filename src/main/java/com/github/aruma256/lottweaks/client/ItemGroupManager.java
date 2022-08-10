@@ -108,11 +108,12 @@ public class ItemGroupManager {
 					continue;
 				}
 				String itemStr = dict.get("id").getAsString();
-				Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemStr));
-				if (item == null) {
+				ResourceLocation itemResource = new ResourceLocation(itemStr);
+				if (!ForgeRegistries.ITEMS.containsKey(itemResource)) {
 					IngameLog.instance.addErrorLog(String.format("'%s' was not found", itemStr));
 					continue;
 				}
+				Item item = ForgeRegistries.ITEMS.getValue(itemResource);
 				if (item == Items.AIR) {
 					IngameLog.instance.addErrorLog(String.format("'%s' is not supported", itemStr));
 					continue;

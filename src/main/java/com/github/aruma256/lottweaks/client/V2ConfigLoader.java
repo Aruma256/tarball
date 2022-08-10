@@ -93,11 +93,13 @@ public class V2ConfigLoader {
 			itemName = itemStateStr;
 			meta = 0;
 		}
-		Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemName));
-		if (item == null) {
+		ResourceLocation itemResource = new ResourceLocation(itemName);
+		if (!ForgeRegistries.ITEMS.containsKey(itemResource)) {
 			IngameLog.instance.addErrorLog(String.format("'%s' was not found", itemName));
 			return null;
-		} else if (item == Items.AIR ) {
+		}
+		Item item = ForgeRegistries.ITEMS.getValue(itemResource);
+		if (item == Items.AIR) {
 			IngameLog.instance.addErrorLog(String.format("'%s' is not supported", itemName));
 			return null;
 		}
