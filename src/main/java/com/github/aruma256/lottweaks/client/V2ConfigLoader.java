@@ -78,21 +78,7 @@ public class V2ConfigLoader {
 
 	@Nullable
 	private static ItemState createItemState(String itemStateStr) {
-		String itemName;
-		int meta;
-		if (itemStateStr.contains("/")) {
-			String[] tmp = itemStateStr.split("/");
-			itemName = tmp[0];
-			try {
-				meta = Integer.parseInt(tmp[1]);
-			} catch (Exception e) {
-				IngameLog.instance.addErrorLog(String.format("Could not parse '%s'", itemStateStr));
-				return null;
-			}
-		} else {
-			itemName = itemStateStr;
-			meta = 0;
-		}
+		String itemName = itemStateStr;
 		ResourceLocation itemResource = new ResourceLocation(itemName);
 		if (!ForgeRegistries.ITEMS.containsKey(itemResource)) {
 			IngameLog.instance.addErrorLog(String.format("'%s' was not found", itemName));
@@ -104,7 +90,6 @@ public class V2ConfigLoader {
 			return null;
 		}
 		ItemStack itemStack = new ItemStack(item);
-		itemStack.setDamageValue(meta);
 		return new ItemState(itemStack);
 	}
 

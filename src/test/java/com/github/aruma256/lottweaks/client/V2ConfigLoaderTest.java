@@ -51,13 +51,6 @@ class V2ConfigLoaderTest extends MinecraftTestBase {
 			Arrays.asList(new ItemState(new ItemStack(Blocks.STONE)), new ItemState(new ItemStack(Blocks.GLASS)), new ItemState(new ItemStack(Items.APPLE))),
 			method.invoke(null, "minecraft:stone,minecraft:glass,minecraft:apple")
 		);
-		// invalid entries are ignored.
-		assertEquals(
-			Arrays.asList(new ItemState(new ItemStack(Blocks.WHITE_WOOL))),
-			method.invoke(null, "minecraft:stone/N,minecraft:wool")
-		);
-		assertEquals(TextFormatting.RED + "Could not parse 'minecraft:stone/N'", IngameLog.instance.debug_pollLog());
-		assertNull(IngameLog.instance.debug_pollLog());
 		// commented-out lines are ignored.
 		assertNull(method.invoke(null, "//繝�繧ｹ繝�"));
 		// empty lines are ignored.
@@ -68,28 +61,9 @@ class V2ConfigLoaderTest extends MinecraftTestBase {
 	final void test_createItemState() throws Exception {
 		Method method = V2ConfigLoader.class.getDeclaredMethod("createItemState", String.class);
 		method.setAccessible(true);
-		/*
-		// meta value can be specified.
-		assertEquals(
-			new ItemState(new ItemStack(Blocks.STONE, 1, 1)),
-			method.invoke(null, "minecraft:stone/1")
-		);
-		// If meta is omitted, it is regarded as 0.
-		assertEquals(
-			new ItemState(new ItemStack(Blocks.STONE, 1, 0)),
-			method.invoke(null, "minecraft:stone")
-		);
-		*/
 		// If the specified item is not found, null is returned.
 		assertNull(method.invoke(null, "minecraft:item_that_doesnt_exist"));
 		assertEquals(TextFormatting.RED + "'minecraft:item_that_doesnt_exist' was not found", IngameLog.instance.debug_pollLog());
-		assertNull(IngameLog.instance.debug_pollLog());
-		// If the input is invalid, null is returned.
-		assertNull(method.invoke(null, "minecraft:stone/"));
-		assertEquals(TextFormatting.RED + "Could not parse 'minecraft:stone/'", IngameLog.instance.debug_pollLog());
-		assertNull(IngameLog.instance.debug_pollLog());
-		assertNull(method.invoke(null, "minecraft:stone/N"));
-		assertEquals(TextFormatting.RED + "Could not parse 'minecraft:stone/N'", IngameLog.instance.debug_pollLog());
 		assertNull(IngameLog.instance.debug_pollLog());
 	}
 
