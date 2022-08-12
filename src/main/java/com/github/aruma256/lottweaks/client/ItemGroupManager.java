@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.github.aruma256.lottweaks.LotTweaks;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
@@ -37,7 +38,7 @@ import net.minecraft.nbt.NBTException;
 public class ItemGroupManager {
 
 	private static final String JSON_INDENT = "  ";
-	public static final File CONFIG_FILE = new File(new File("config"), "LotTweaks-ItemGroup.json");
+	public static final File CONFIG_FILE = new File(new File("config"), String.format("LotTweaks-ItemGroup-%s.json", LotTweaks.MC_VERSION));
 
 	private static List<ItemGroupManager> managerList = new ArrayList<>();
 
@@ -51,6 +52,7 @@ public class ItemGroupManager {
 
 	public static boolean init() {
 		if (!CONFIG_FILE.exists()) {
+			IngameLog.instance.addInfoLog(CONFIG_FILE.getName() + " is not found");
 			if (V2ConfigLoader.V2configFileExists()) {
 				IngameLog.instance.addInfoLog("Converting old config files...");
 				convertOldFile();

@@ -26,6 +26,7 @@ import com.github.aruma256.lottweaks.network.ServerConnectionListener;
 @Mod(modid = LotTweaks.MODID, name = LotTweaks.NAME, version = LotTweaks.VERSION)
 public class LotTweaks {
 
+	public static final String MC_VERSION = "1.12.2";
 	public static final String MODID = "lottweaks";
 	public static final String NAME = "LotTweaks";
 	public static final String VERSION = "3.0.5";
