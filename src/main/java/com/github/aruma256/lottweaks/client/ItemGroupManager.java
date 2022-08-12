@@ -148,7 +148,7 @@ public class ItemGroupManager {
 			JsonWriter jsonWriter = new JsonWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(CONFIG_FILE), StandardCharsets.UTF_8)));
 			jsonWriter.setIndent(JSON_INDENT);
 			jsonWriter.beginObject();
-			jsonWriter.name("mc_version").value("1.12.x");
+			jsonWriter.name("mc_version").value(LotTweaks.MC_VERSION);
 			jsonWriter.name("config_version").value(3);
 			for(int i=0; i<managers.size(); i++) {
 				jsonWriter.name(String.format("grouplist-%d", i));

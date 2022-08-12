@@ -79,8 +79,11 @@ public class ExPickKey extends LTKeyBase {
 			}
 			return;
 		}
-		normalModePick();
-		historyModePick();
+		if (getClientPlayer().isSneaking()) {
+			historyModePick();
+		} else {
+			normalModePick();
+		}
 	}
 
 	private void normalModePick() {
