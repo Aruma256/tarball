@@ -76,7 +76,6 @@ public class LotTweaksCommand {
 	}
 
 	private void executeAdd(int listId) throws CommandException {
-		System.out.println("ADD!!!!!!!!!");
 		List<ItemState> group = new ArrayList<>();
 		int count = 0;
 		for (int i = 0; i < HOTBAR_SIZE; i++) {

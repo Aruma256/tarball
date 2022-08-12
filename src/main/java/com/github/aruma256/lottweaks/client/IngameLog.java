@@ -37,7 +37,6 @@ public class IngameLog {
 	}
 
 	public void show() {
-		System.out.println("SHOW!!!!!!!");
 		if (LotTweaks.CONFIG.SHOW_BLOCKCONFIG_ERROR_LOG_TO_CHAT.get()) {
 			while (!logQueue.isEmpty()) {
 				getClient().gui.handleChat(ChatType.SYSTEM, new StringTextComponent("LotTweaks: " + logQueue.poll()), Util.NIL_UUID);
