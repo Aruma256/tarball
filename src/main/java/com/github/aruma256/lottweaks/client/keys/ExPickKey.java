@@ -80,8 +80,11 @@ public class ExPickKey extends LTKeyBase {
 			}
 			return;
 		}
-		normalModePick();
-		historyModePick();
+		if (getClientPlayer().isShiftKeyDown()) {
+			historyModePick();
+		} else {
+			normalModePick();
+		}
 	}
 
 	private void normalModePick() {

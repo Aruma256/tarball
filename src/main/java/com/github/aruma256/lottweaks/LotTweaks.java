@@ -21,9 +21,10 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 @Mod(LotTweaks.MODID)
 public class LotTweaks {
 
+	public static final String MC_VERSION = "1.16.x";
 	public static final String MODID = "lottweaks";
 	public static final String NAME = "LotTweaks";
-	public static final String VERSION = "3.0.5";
+	public static final String VERSION = "3.0.6";
 	public static Logger LOGGER = LogManager.getLogger();
 
 	public static class CONFIG {

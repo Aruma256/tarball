@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.github.aruma256.lottweaks.LotTweaks;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
@@ -39,7 +40,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 public class ItemGroupManager {
 
 	private static final String JSON_INDENT = "  ";
-	public static final File CONFIG_FILE = new File(new File("config"), "LotTweaks-ItemGroup.json");
+	public static final File CONFIG_FILE = new File(new File("config"), String.format("LotTweaks-ItemGroup-%s.json", LotTweaks.MC_VERSION));
 
 	private static List<ItemGroupManager> managerList = new ArrayList<>();
 
@@ -53,6 +54,7 @@ public class ItemGroupManager {
 
 	public static boolean init() {
 		if (!CONFIG_FILE.exists()) {
+			IngameLog.instance.addInfoLog(CONFIG_FILE.getName() + " is not found");
 			if (V2ConfigLoader.V2configFileExists()) {
 				IngameLog.instance.addInfoLog("Converting old config files...");
 				convertOldFile();
@@ -148,7 +150,7 @@ public class ItemGroupManager {
 			JsonWriter jsonWriter = new JsonWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(CONFIG_FILE), StandardCharsets.UTF_8)));
 			jsonWriter.setIndent(JSON_INDENT);
 			jsonWriter.beginObject();
-			jsonWriter.name("mc_version").value("1.12.x");
+			jsonWriter.name("mc_version").value(LotTweaks.MC_VERSION);
 			jsonWriter.name("config_version").value(3);
 			for(int i=0; i<managers.size(); i++) {
 				jsonWriter.name(String.format("grouplist-%d", i));
