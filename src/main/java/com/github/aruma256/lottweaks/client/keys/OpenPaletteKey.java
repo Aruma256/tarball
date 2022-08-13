@@ -133,7 +133,7 @@ public class OpenPaletteKey extends LTKeyBase {
 		}
 		event.setCanceled(true);
 		if (selector == null) return; //TODO <- temporary NPE workaround
-		selector.rotate(wheel > 0 ? 1 : -1);
+		selector.rotate(wheel > 0 ? -1 : 1);
 	}
 
 	@SubscribeEvent

@@ -113,7 +113,7 @@ class OpenPaletteKeyTest extends MinecraftTestBase {
 		// If Dwheel != 0, rotate() is called with inverted value
 		instance.pressTime = 1;
 		doReturn(true).when(instance).isPlayerCreative();
-		doReturn(120d).when(eventMock).getScrollDelta();
+		doReturn(-120d).when(eventMock).getScrollDelta();
 		instance.onMouseEvent(eventMock);
 		verify(selectorMock, times(1)).rotate(1);
 		verify(eventMock, times(1)).setCanceled(true);
