@@ -1,4 +1,4 @@
-package com.github.lotqwerty.lottweaks;
+package com.github.aruma256.lottweaks;
 
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -15,10 +15,10 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
-import com.github.lotqwerty.lottweaks.client.RotationHelper;
-import com.github.lotqwerty.lottweaks.network.LTPacketHandler;
-import com.github.lotqwerty.lottweaks.network.ServerConnectionListener;
+import com.github.aruma256.lottweaks.client.LotTweaksClient;
+import com.github.aruma256.lottweaks.client.RotationHelper;
+import com.github.aruma256.lottweaks.network.LTPacketHandler;
+import com.github.aruma256.lottweaks.network.ServerConnectionListener;
 
 @Mod(LotTweaks.MODID)
 public class LotTweaks {

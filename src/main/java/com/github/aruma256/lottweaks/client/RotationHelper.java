@@ -1,4 +1,4 @@
-package com.github.lotqwerty.lottweaks.client;
+package com.github.aruma256.lottweaks.client;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.StringJoiner;
 
-import com.github.lotqwerty.lottweaks.LotTweaks;
+import com.github.aruma256.lottweaks.LotTweaks;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;

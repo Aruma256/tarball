@@ -1,11 +1,11 @@
-package com.github.lotqwerty.lottweaks.network;
+package com.github.aruma256.lottweaks.network;
 
 import java.util.function.Supplier;
 import java.nio.charset.StandardCharsets;
 
-import com.github.lotqwerty.lottweaks.AdjustRangeHelper;
-import com.github.lotqwerty.lottweaks.LotTweaks;
-import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
+import com.github.aruma256.lottweaks.AdjustRangeHelper;
+import com.github.aruma256.lottweaks.LotTweaks;
+import com.github.aruma256.lottweaks.client.LotTweaksClient;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;

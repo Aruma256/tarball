@@ -1,4 +1,4 @@
-package com.github.lotqwerty.lottweaks;
+package com.github.aruma256.lottweaks;
 
 import java.util.UUID;
 

@@ -1,9 +1,9 @@
-package com.github.lotqwerty.lottweaks.client.keys;
+package com.github.aruma256.lottweaks.client.keys;
 
 import java.util.Deque;
 import java.util.LinkedList;
 
-import com.github.lotqwerty.lottweaks.client.renderer.LTRenderer;
+import com.github.aruma256.lottweaks.client.renderer.LTRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.world.level.block.state.BlockState;

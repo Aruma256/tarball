@@ -1,8 +1,8 @@
-package com.github.lotqwerty.lottweaks.client.renderer;
+package com.github.aruma256.lottweaks.client.renderer;
 
 import java.util.Collection;
 
-import com.github.lotqwerty.lottweaks.LotTweaks;
+import com.github.aruma256.lottweaks.LotTweaks;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.Minecraft;

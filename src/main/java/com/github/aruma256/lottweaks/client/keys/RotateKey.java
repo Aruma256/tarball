@@ -1,11 +1,11 @@
-package com.github.lotqwerty.lottweaks.client.keys;
+package com.github.aruma256.lottweaks.client.keys;
 
 import java.util.List;
 
-import com.github.lotqwerty.lottweaks.LotTweaks;
-import com.github.lotqwerty.lottweaks.client.RotationHelper;
-import com.github.lotqwerty.lottweaks.client.RotationHelper.Group;
-import com.github.lotqwerty.lottweaks.client.renderer.LTRenderer;
+import com.github.aruma256.lottweaks.LotTweaks;
+import com.github.aruma256.lottweaks.client.RotationHelper;
+import com.github.aruma256.lottweaks.client.RotationHelper.Group;
+import com.github.aruma256.lottweaks.client.renderer.LTRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;

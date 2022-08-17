@@ -1,4 +1,4 @@
-package com.github.lotqwerty.lottweaks.network;
+package com.github.aruma256.lottweaks.network;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;

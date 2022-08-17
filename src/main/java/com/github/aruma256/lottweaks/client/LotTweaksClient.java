@@ -1,12 +1,12 @@
-package com.github.lotqwerty.lottweaks.client;
+package com.github.aruma256.lottweaks.client;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.github.lotqwerty.lottweaks.LotTweaks;
-import com.github.lotqwerty.lottweaks.client.keys.ExPickKey;
-import com.github.lotqwerty.lottweaks.client.keys.AdjustRangeKey;
-import com.github.lotqwerty.lottweaks.client.keys.ReplaceKey;
-import com.github.lotqwerty.lottweaks.client.keys.RotateKey;
+import com.github.aruma256.lottweaks.LotTweaks;
+import com.github.aruma256.lottweaks.client.keys.AdjustRangeKey;
+import com.github.aruma256.lottweaks.client.keys.ExPickKey;
+import com.github.aruma256.lottweaks.client.keys.ReplaceKey;
+import com.github.aruma256.lottweaks.client.keys.RotateKey;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.data.BuiltinRegistries;
