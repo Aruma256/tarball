@@ -117,7 +117,6 @@ public class CircleItemSelector extends AbstractItemSelector {
 		RenderSystem.disableTexture();
 		RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-		RenderSystem.disableAlphaTest();
         RenderSystem.translatef(8F, 8F, 8F);
 
         RenderSystem.color4f(1, 1, 1, 1);
@@ -137,7 +136,6 @@ public class CircleItemSelector extends AbstractItemSelector {
         bufferbuilder.vertex(cx + radius*Math.cos(pointedAngle), cy - radius*Math.sin(pointedAngle), 0).endVertex();
         tessellator.end();
 
-        RenderSystem.enableAlphaTest();
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
 		RenderSystem.popMatrix();
