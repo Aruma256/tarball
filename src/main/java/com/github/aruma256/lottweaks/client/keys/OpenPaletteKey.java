@@ -40,11 +40,6 @@ public class OpenPaletteKey extends LTKeyBase {
 	}
 
 	@Override
-	public boolean isDown() {
-		return InputMappings.isKeyDown(getClient().getWindow().getWindow(), getKey().getValue());
-	}
-
-	@Override
 	protected void onKeyPressStart() {
 		GLFW.glfwSetCursorPosCallback(getClient().getWindow().getWindow(), new GLFWCursorPosCallbackI() {
 			boolean isFirstCall = true;
