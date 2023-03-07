@@ -20,6 +20,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 
 public class RotationHelper {
@@ -308,7 +309,7 @@ public class RotationHelper {
 				List<Item> items = new ArrayList<>();
 				for (String itemStr: line.split(",")) {
 					ResourceLocation resourceLocation = new ResourceLocation(itemStr);
-					Item item = Registry.ITEM.get(resourceLocation);
+					Item item = BuiltInRegistries.ITEM.get(resourceLocation);
 					if (item == null || item == Items.AIR) {
 						warnGroupConfigErrors(String.format("'%s' is not supported.", itemStr), lineCount, group);
 						continue;

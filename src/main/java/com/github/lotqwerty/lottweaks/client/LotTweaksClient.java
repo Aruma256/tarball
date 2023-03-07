@@ -28,8 +28,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.data.BuiltinRegistries;
-import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
 
 @Environment(EnvType.CLIENT)

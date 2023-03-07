@@ -20,7 +20,7 @@ import net.minecraft.commands.CommandRuntimeException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.Registry;
-import net.minecraft.data.BuiltinRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -68,7 +68,7 @@ public class LotTweaksCommand implements ClientCommandRegistrationCallback {
 			if (item == Items.AIR) {
 				throw new CommandRuntimeException(Component.literal(String.format("Failed to get item instance. (%d)", i + 1)));
 			}
-			String name = Registry.ITEM.getKey(item).toString();
+			String name = BuiltInRegistries.ITEM.getKey(item).toString();
 			if (RotationHelper.canRotate(itemStack, group)) {
 				throw new CommandRuntimeException(Component.literal(String.format("'%s' already exists (slot %d)", name, i + 1)));
 			}
