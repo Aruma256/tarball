@@ -109,7 +109,7 @@ public class RotateKey extends ItemSelectKeyBase implements ScrollListener, Rend
 		int x = Minecraft.getInstance().getWindow().getGuiScaledWidth() / 2 - 90 + Minecraft.getInstance().player.getInventory().selected * 20 + 2;
 		int y = Minecraft.getInstance().getWindow().getGuiScaledHeight() - 16 - 3;
 		y -= 50 + (20 + candidates.size());
-		LTRenderer.renderItemStacks(candidates, x, y, pressTime, partialTicks, lastRotateTime, rotateDirection);
+		LTRenderer.renderItemStacks(event.getMatrixStack(), candidates, x, y, pressTime, partialTicks, lastRotateTime, rotateDirection);
 	}
 
 }
