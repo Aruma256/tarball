@@ -9,7 +9,6 @@ import com.github.lotqwerty.lottweaks.fabric.DrawBlockOutlineEvent;
 import com.github.lotqwerty.lottweaks.fabric.DrawBlockOutlineEvent.DrawBlockOutlineListener;
 import com.github.lotqwerty.lottweaks.fabric.RenderHotbarEvent;
 import com.github.lotqwerty.lottweaks.fabric.RenderHotbarEvent.RenderHotbarListener;
-import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -77,7 +76,7 @@ public class ReplaceKey extends LTKeyBase implements RenderHotbarListener, DrawB
 			return;
 		}
 		if (!LotTweaksClient.requireServerVersion("2.2.1")) {
-			LTTextRenderer.showServerSideRequiredMessage(new PoseStack(), "2.2.1");
+			LTTextRenderer.showServerSideRequiredMessage(event.getGuiGraphics(), "2.2.1");
 			return;
 		}
 		if (this.pressTime==1 || this.pressTime > LotTweaks.CONFIG.REPLACE_INTERVAL) {

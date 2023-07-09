@@ -179,11 +179,11 @@ public class ExPickKey extends ItemSelectKeyBase implements ScrollListener, Rend
 		if (!isHistoryMode) {
 			int x = Minecraft.getInstance().getWindow().getGuiScaledWidth() / 2 - 8;
 			int y = Minecraft.getInstance().getWindow().getGuiScaledHeight() / 2 - 8;
-			LTRenderer.renderItemStacks(event.getMatrixStack(), candidates, x, y, pressTime, partialTicks, lastRotateTime, rotateDirection);
+			LTRenderer.renderItemStacks(event.getGuiGraphics(), candidates, x, y, pressTime, partialTicks, lastRotateTime, rotateDirection);
 		} else {
 			int x = Minecraft.getInstance().getWindow().getGuiScaledWidth() / 2 - 90 + Minecraft.getInstance().player.getInventory().selected * 20 + 2;
 			int y = Minecraft.getInstance().getWindow().getGuiScaledHeight() - 16 - 3;
-			LTRenderer.renderItemStacks(event.getMatrixStack(), candidates, x, y, pressTime, partialTicks, lastRotateTime, rotateDirection, LTRenderer.RenderMode.LINE);
+			LTRenderer.renderItemStacks(event.getGuiGraphics(), candidates, x, y, pressTime, partialTicks, lastRotateTime, rotateDirection, LTRenderer.RenderMode.LINE);
 		}
 	}
 

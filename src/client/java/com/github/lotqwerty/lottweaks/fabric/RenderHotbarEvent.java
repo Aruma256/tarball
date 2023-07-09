@@ -3,9 +3,9 @@ package com.github.lotqwerty.lottweaks.fabric;
 import java.util.ArrayList;
 
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 
 public class RenderHotbarEvent {
 	private static final ArrayList<RenderHotbarListener> listeners = new ArrayList<>();
@@ -14,23 +14,23 @@ public class RenderHotbarEvent {
 		listeners.add(listener);
 	}
 
-	public static void post(PoseStack matrixStack, float tickDelta) {
-		RenderHotbarEvent event = new RenderHotbarEvent(matrixStack, tickDelta);
+	public static void post(GuiGraphics guiGraphics, float tickDelta) {
+		RenderHotbarEvent event = new RenderHotbarEvent(guiGraphics, tickDelta);
 		for (RenderHotbarListener iListener : listeners) {
 			iListener.onRenderHotbar(event);
 		}
 	}
 
-	private final PoseStack matrixStack;
+	private final GuiGraphics guiGraphics;
 	private final float tickDelta;
 
-	private RenderHotbarEvent(PoseStack matrixStack, float tickDelta) {
-		this.matrixStack = matrixStack;
+	private RenderHotbarEvent(GuiGraphics guiGraphics, float tickDelta) {
+		this.guiGraphics = guiGraphics;
 		this.tickDelta = tickDelta;
 	}
 	
-	public PoseStack getMatrixStack() {
-		return this.matrixStack;
+	public GuiGraphics getGuiGraphics() {
+		return this.guiGraphics;
 	}
 
 	public float getPartialTicks() {

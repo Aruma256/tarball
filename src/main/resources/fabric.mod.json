@@ -26,7 +26,7 @@
     ]
   },
   "mixins": [
-    "lottweaks.mixins.json"
+    "lottweaks.client.mixins.json"
   ],
 
 	"depends": {

@@ -6,11 +6,11 @@ import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
 import com.github.lotqwerty.lottweaks.client.renderer.LTTextRenderer;
 import com.github.lotqwerty.lottweaks.fabric.RenderHotbarEvent;
 import com.github.lotqwerty.lottweaks.fabric.RenderHotbarEvent.RenderHotbarListener;
-import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.phys.HitResult;
 
 @Environment(EnvType.CLIENT)
@@ -25,7 +25,7 @@ public class AdjustRangeKey extends LTKeyBase implements RenderHotbarListener {
 
 	@Override
 	public void onRenderHotbar(RenderHotbarEvent event) {
-		PoseStack mStack = event.getMatrixStack();
+		GuiGraphics guiGraphics = event.getGuiGraphics();
 		if (this.pressTime == 0) {
 			return;
 		}
@@ -33,7 +33,7 @@ public class AdjustRangeKey extends LTKeyBase implements RenderHotbarListener {
 			return;
 		}
 		if (!LotTweaksClient.requireServerVersion("2.3.0")) {
-			LTTextRenderer.showServerSideRequiredMessage(mStack, Minecraft.getInstance().getWindow(), "2.3.0");
+			LTTextRenderer.showServerSideRequiredMessage(guiGraphics, Minecraft.getInstance().getWindow(), "2.3.0");
 			return;
 		}
 		// Update dist
@@ -50,7 +50,7 @@ public class AdjustRangeKey extends LTKeyBase implements RenderHotbarListener {
 		// Render
 		int distInt = (int)dist;
 		String distStr = String.valueOf(distInt);
-		LTTextRenderer.showMessage(mStack, Minecraft.getInstance().getWindow(), distStr);
+		LTTextRenderer.showMessage(guiGraphics, Minecraft.getInstance().getWindow(), distStr);
 	}
 
 	public static float getRange() {

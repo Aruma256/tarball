@@ -4,7 +4,6 @@ import java.nio.charset.StandardCharsets;
 
 import com.github.lotqwerty.lottweaks.AdjustRangeHelper;
 import com.github.lotqwerty.lottweaks.LotTweaks;
-import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
 
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -61,6 +60,7 @@ public class LTPacketHandler {
 			buf.writeInt(Block.getId(checkState));
 		}
 
+		@SuppressWarnings("resource")
 		public void handle(MinecraftServer server, ServerPlayer player) {
 			/*
 			ctx.get().setPacketHandled(true);
@@ -69,7 +69,7 @@ public class LTPacketHandler {
 			if (!player.isCreative()) {
 				return;
 			}
-			if (player.getLevel().isClientSide) {
+			if (player.serverLevel().isClientSide) {
 				// kore iru ??
 				return;
 			}
@@ -84,12 +84,12 @@ public class LTPacketHandler {
 			if (dist > LotTweaks.CONFIG.MAX_RANGE) {
 				return;
 			}
-			if (player.getLevel().getBlockState(pos) != checkState) {
+			if (player.serverLevel().getBlockState(pos) != checkState) {
 				return;
 			}
 			//
 			server.execute(() -> {
-				player.getLevel().setBlock(pos, state, 2);
+				player.serverLevel().setBlock(pos, state, 2);
 			});
 			return;
 		}
@@ -137,7 +137,7 @@ public class LTPacketHandler {
 
 	public static class HelloMessage {
 
-		private String version;
+		protected String version;
 
 		public HelloMessage(String version) {
 			this.version = version;
@@ -156,7 +156,9 @@ public class LTPacketHandler {
 			/*
 			ctx.get().setPacketHandled(true);
 			*/
+			/*
 			LotTweaksClient.setServerVersion(this.version);
+			*/
 		}
 
 	}

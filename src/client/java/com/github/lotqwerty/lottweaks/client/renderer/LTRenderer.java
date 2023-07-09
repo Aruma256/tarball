@@ -4,26 +4,26 @@ import java.util.Collection;
 
 import com.github.lotqwerty.lottweaks.LotTweaks;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
 
 public final class LTRenderer {
 
-	public static void renderItemStacks(PoseStack poseStack, Collection<ItemStack> stacks, int x, int y, int t, float pt, int lt, byte direction) {
-		renderItemStacks(poseStack, stacks, x, y, t, pt, lt, direction, RenderMode.CIRCLE);
+	public static void renderItemStacks(GuiGraphics guiGraphics, Collection<ItemStack> stacks, int x, int y, int t, float pt, int lt, byte direction) {
+		renderItemStacks(guiGraphics, stacks, x, y, t, pt, lt, direction, RenderMode.CIRCLE);
 	}
 
-	public static void renderItemStacks(PoseStack poseStack, Collection<ItemStack> stacks, int x, int y, int t, float pt, int lt, byte direction, RenderMode renderMode) {
+	public static void renderItemStacks(GuiGraphics guiGraphics, Collection<ItemStack> stacks, int x, int y, int t, float pt, int lt, byte direction, RenderMode renderMode) {
 		if (stacks.isEmpty()) {
 			return;
 		}
 		glInitialize();
 		if (renderMode == RenderMode.CIRCLE) {
-			circular(poseStack, stacks, x, y, t, pt, lt, direction);
+			circular(guiGraphics, stacks, x, y, t, pt, lt, direction);
 		} else {
-			linear(poseStack, stacks, x, y, t, pt, lt, direction);
+			linear(guiGraphics, stacks, x, y, t, pt, lt, direction);
 		}
 		glFinalize();
 	}
@@ -33,7 +33,7 @@ public final class LTRenderer {
 		LINE,
 	}
 
-	private static void circular(PoseStack poseStack, Collection<ItemStack> stacks, int x, int y, int t, float pt, int lt, byte direction) {
+	private static void circular(GuiGraphics guiGraphics, Collection<ItemStack> stacks, int x, int y, int t, float pt, int lt, byte direction) {
 		if (LotTweaks.CONFIG.DISABLE_ANIMATIONS) {
 			t = Integer.MAX_VALUE;
 			pt = 0;
@@ -47,19 +47,23 @@ public final class LTRenderer {
 			double theta = -((double)i - afterimage*direction) / stacks.size() * 2 * Math.PI + Math.PI / 2;
 			double dx = r * Math.cos(theta);
 			double dy = r * Math.sin(theta);
-			Minecraft.getInstance().getItemRenderer().renderAndDecorateItem(poseStack, c, (int)Math.round(x + dx), (int)Math.round(y + dy));
+			renderAndDecorateItem(guiGraphics, c, (int)Math.round(x + dx), (int)Math.round(y + dy));
 			i++;
 		}
 	}
 
-	private static void linear(PoseStack poseStack, Collection<ItemStack> stacks, int x, int y, int t, float pt, int lt, byte direction) {
+	private static void linear(GuiGraphics guiGraphics, Collection<ItemStack> stacks, int x, int y, int t, float pt, int lt, byte direction) {
 		int i = 0;
 		int R = 16;
 		double afterimage = 1 - Math.tanh((t + pt - lt)/1.5);
 		for (ItemStack c: stacks) {
-			Minecraft.getInstance().getItemRenderer().renderAndDecorateItem(poseStack, c, x, (int)Math.round(y - i*R + afterimage*direction*R));
+			renderAndDecorateItem(guiGraphics, c, x, (int)Math.round(y - i*R + afterimage*direction*R));
 			i++;
 		}
+	}
+
+	private static void renderAndDecorateItem(GuiGraphics guiGraphics, ItemStack itemStack, int x, int y) {
+		guiGraphics.renderItem(itemStack, x, y);
 	}
 
 	private static void glInitialize() {
