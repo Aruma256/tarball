@@ -6,9 +6,9 @@ import com.github.lotqwerty.lottweaks.LotTweaks;
 import com.github.lotqwerty.lottweaks.client.RotationHelper;
 import com.github.lotqwerty.lottweaks.client.RotationHelper.Group;
 import com.github.lotqwerty.lottweaks.client.renderer.LTRenderer;
-import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -96,7 +96,7 @@ public class RotateKey extends ItemSelectKeyBase implements IGuiOverlay {
 	}
 
 	@Override
-	public void render(ForgeGui gui, PoseStack mStack, float partialTicks, int width, int height) {
+	public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTicks, int screenWidth, int screenHeight) {
 		if (this.pressTime == 0) {
 			candidates.clear();
 			return;
