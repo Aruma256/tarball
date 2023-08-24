@@ -4,9 +4,9 @@ import com.github.lotqwerty.lottweaks.LotTweaks;
 import com.github.lotqwerty.lottweaks.client.LotTweaksClient;
 import com.github.lotqwerty.lottweaks.client.renderer.LTTextRenderer;
 import com.github.lotqwerty.lottweaks.network.LTPacketHandler;
-import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -21,7 +21,7 @@ public class AdjustRangeKey extends LTKeyBase implements IGuiOverlay {
 	}
 
 	@Override
-	public void render(ForgeGui gui, PoseStack mStack, float partialTicks, int width, int height) {
+	public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTicks, int screenWidth, int screenHeight) {
 		if (this.pressTime == 0) {
 			return;
 		}
@@ -29,7 +29,7 @@ public class AdjustRangeKey extends LTKeyBase implements IGuiOverlay {
 			return;
 		}
 		if (!LotTweaksClient.requireServerVersion("2.2.1")) {
-			LTTextRenderer.showServerSideRequiredMessage(mStack, Minecraft.getInstance().getWindow(), "2.2.1");
+			LTTextRenderer.showServerSideRequiredMessage(guiGraphics, Minecraft.getInstance().getWindow(), "2.2.1");
 			return;
 		}
 		// Update dist
@@ -45,7 +45,7 @@ public class AdjustRangeKey extends LTKeyBase implements IGuiOverlay {
 		// Render
 		int distInt = (int)dist;
 		String distStr = String.valueOf(distInt);
-		LTTextRenderer.showMessage(mStack, Minecraft.getInstance().getWindow(), distStr);
+		LTTextRenderer.showMessage(guiGraphics, Minecraft.getInstance().getWindow(), distStr);
 	}
 
 }
