@@ -4,16 +4,18 @@ import java.util.Deque;
 import java.util.LinkedList;
 
 import com.github.lotqwerty.lottweaks.client.renderer.LTRenderer;
-import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
@@ -66,7 +68,7 @@ public class ExPickKey extends ItemSelectKeyBase implements IGuiOverlay {
 		if (!mc.player.isCreative()) {
 			rayTraceResult = mc.hitResult;
 			if (rayTraceResult != null) {
-				ForgeHooks.onPickBlock(rayTraceResult, mc.player, mc.level);
+				ForgeHooksClient.onClickInput(2, mc.options.keyPickItem, InteractionHand.MAIN_HAND);
 			}
 			return;
 		}
@@ -83,7 +85,7 @@ public class ExPickKey extends ItemSelectKeyBase implements IGuiOverlay {
 		if (rayTraceResult == null) {
 			return;
 		}
-		boolean succeeded = ForgeHooks.onPickBlock(rayTraceResult, mc.player, mc.level);
+		boolean succeeded = !ForgeHooksClient.onClickInput(2, mc.options.keyPickItem, InteractionHand.MAIN_HAND).isCanceled();
 		if (!succeeded) {
 			return;
 		}
@@ -147,7 +149,7 @@ public class ExPickKey extends ItemSelectKeyBase implements IGuiOverlay {
 	}
 
 	@Override
-	public void render(ForgeGui gui, PoseStack mStack, float partialTicks, int width, int height) {
+	public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTicks, int screenWidth, int screenHeight) {
 		if (this.pressTime == 0) {
 			return;
 		}
@@ -160,11 +162,11 @@ public class ExPickKey extends ItemSelectKeyBase implements IGuiOverlay {
 		if (!isHistoryMode) {
 			int x = Minecraft.getInstance().getWindow().getGuiScaledWidth() / 2 - 8;
 			int y = Minecraft.getInstance().getWindow().getGuiScaledHeight() / 2 - 8;
-			LTRenderer.renderItemStacks(candidates, x, y, pressTime, partialTicks, lastRotateTime, rotateDirection);
+			LTRenderer.renderItemStacks(guiGraphics, candidates, x, y, pressTime, partialTicks, lastRotateTime, rotateDirection);
 		} else {
 			int x = Minecraft.getInstance().getWindow().getGuiScaledWidth() / 2 - 90 + Minecraft.getInstance().player.getInventory().selected * 20 + 2;
 			int y = Minecraft.getInstance().getWindow().getGuiScaledHeight() - 16 - 3;
-			LTRenderer.renderItemStacks(candidates, x, y, pressTime, partialTicks, lastRotateTime, rotateDirection, LTRenderer.RenderMode.LINE);
+			LTRenderer.renderItemStacks(guiGraphics, candidates, x, y, pressTime, partialTicks, lastRotateTime, rotateDirection, LTRenderer.RenderMode.LINE);
 		}
 	}
 
