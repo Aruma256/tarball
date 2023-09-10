@@ -37,17 +37,17 @@ public class LTPacketHandler {
 		INSTANCE.messageBuilder(ReplaceMessage.class, id++)
 			.encoder(ReplaceMessage::toBytes)
 			.decoder(ReplaceMessage::new)
-			.consumer(ReplaceMessage::handle)
+			.consumerMainThread(ReplaceMessage::handle)
 			.add();
 		INSTANCE.messageBuilder(AdjustRangeMessage.class, id++)
 			.encoder(AdjustRangeMessage::toBytes)
 			.decoder(AdjustRangeMessage::new)
-			.consumer(AdjustRangeMessage::handle)
+			.consumerMainThread(AdjustRangeMessage::handle)
 			.add();
 		INSTANCE.messageBuilder(HelloMessage.class, id++)
 			.encoder(HelloMessage::toBytes)
 			.decoder(HelloMessage::new)
-			.consumer(HelloMessage::handle)
+			.consumerMainThread(HelloMessage::handle)
 			.add();
 	}
 
@@ -93,7 +93,7 @@ public class LTPacketHandler {
 			if (!player.isCreative()) {
 				return;
 			}
-			if (player.getLevel().isClientSide) {
+			if (player.level().isClientSide) {
 				// kore iru ??
 				return;
 			}
@@ -108,12 +108,12 @@ public class LTPacketHandler {
 			if (dist > LotTweaks.CONFIG.MAX_RANGE.get()) {
 				return;
 			}
-			if (player.getLevel().getBlockState(pos) != checkState) {
+			if (player.level().getBlockState(pos) != checkState) {
 				return;
 			}
 			//
 			ctx.get().enqueueWork(() -> {
-				player.getLevel().setBlock(pos, state, 2);
+				player.level().setBlock(pos, state, 2);
 			});
 			return;
 		}
