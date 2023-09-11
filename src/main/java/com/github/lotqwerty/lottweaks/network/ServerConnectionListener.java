@@ -8,7 +8,7 @@ public class ServerConnectionListener {
 
 	@SubscribeEvent
 	public void onPlayerLoggedIn(final PlayerLoggedInEvent event) {
-		if (!event.getEntity().level.isClientSide) {
+		if (!event.getEntity().level().isClientSide) {
 			LTPacketHandler.sendHelloMessage((ServerPlayer) event.getEntity());
 		}
 	}
