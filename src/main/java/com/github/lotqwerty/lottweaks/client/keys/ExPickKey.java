@@ -8,18 +8,15 @@ import com.github.lotqwerty.lottweaks.client.renderer.LTRenderer;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
-import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -68,7 +65,7 @@ public class ExPickKey extends ItemSelectKeyBase implements IGuiOverlay {
 		if (!mc.player.isCreative()) {
 			rayTraceResult = mc.hitResult;
 			if (rayTraceResult != null) {
-				ForgeHooksClient.onClickInput(2, mc.options.keyPickItem, InteractionHand.MAIN_HAND);
+				Forge_onPickBlock(rayTraceResult);
 			}
 			return;
 		}
@@ -85,7 +82,7 @@ public class ExPickKey extends ItemSelectKeyBase implements IGuiOverlay {
 		if (rayTraceResult == null) {
 			return;
 		}
-		boolean succeeded = !ForgeHooksClient.onClickInput(2, mc.options.keyPickItem, InteractionHand.MAIN_HAND).isCanceled();
+		boolean succeeded = Forge_onPickBlock(rayTraceResult);
 		if (!succeeded) {
 			return;
 		}
@@ -113,6 +110,19 @@ public class ExPickKey extends ItemSelectKeyBase implements IGuiOverlay {
 			candidates.addFirst(Minecraft.getInstance().player.getInventory().getSelected());
 			isHistoryMode = true;
 		}
+	}
+
+	private static boolean Forge_onPickBlock(HitResult rayTraceResult) {
+		Minecraft mc = Minecraft.getInstance();
+		final HitResult tmpHitResult = mc.hitResult;
+		mc.hitResult = rayTraceResult;
+		final int tmpSlot = mc.player.getInventory().selected;
+		final ItemStack tmpStack = mc.player.getInventory().getSelected();
+		//
+		mc.pickBlock();
+		//
+		mc.hitResult = tmpHitResult;
+		return (tmpSlot != mc.player.getInventory().selected) || (tmpStack != mc.player.getInventory().getSelected());
 	}
 
 	@Override
