@@ -122,7 +122,15 @@ public class ExPickKey extends ItemSelectKeyBase implements IGuiOverlay {
 		mc.pickBlock();
 		//
 		mc.hitResult = tmpHitResult;
-		return (tmpSlot != mc.player.getInventory().selected) || (tmpStack != mc.player.getInventory().getSelected());
+		//
+		if (tmpSlot != mc.player.getInventory().selected) return true;
+		if (tmpStack != mc.player.getInventory().getSelected()) return true;
+		if (rayTraceResult.getType() != HitResult.Type.BLOCK) return false;
+		BlockPos blockpos = ((BlockHitResult)rayTraceResult).getBlockPos();
+		BlockState blockstate = mc.level.getBlockState(blockpos);
+		if (blockstate.isAir()) return false;
+		ItemStack itemstack = blockstate.getCloneItemStack(rayTraceResult, mc.level, blockpos, mc.player);
+		return (itemstack != null) && !itemstack.isEmpty();
 	}
 
 	@Override
