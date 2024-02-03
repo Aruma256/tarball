@@ -150,7 +150,7 @@ public class ExPickKey extends ItemSelectKeyBase implements IGuiOverlay {
 		if (event.isCanceled()) {
 			return;
 		}
-		double wheel = event.getScrollDelta();
+		double wheel = event.getDeltaY();
 		if (wheel == 0) {
 			return;
 		}
