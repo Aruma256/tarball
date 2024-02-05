@@ -1,6 +1,5 @@
 package com.github.lotqwerty.lottweaks.network;
 
-import java.util.function.Supplier;
 import java.nio.charset.StandardCharsets;
 
 import com.github.lotqwerty.lottweaks.AdjustRangeHelper;
@@ -15,22 +14,23 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.minecraftforge.network.Channel.VersionTest;
+import net.minecraftforge.network.ChannelBuilder;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraftforge.network.SimpleChannel;
 
 //https://mcforge.readthedocs.io/en/1.16.x/networking/simpleimpl/
 
 public class LTPacketHandler {
 
-	private static final String PROTOCOL_VERSION = 'v' + LotTweaks.VERSION;
-	private static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
-		new ResourceLocation(LotTweaks.MODID),
-		() -> PROTOCOL_VERSION,
-		(serverVersion) -> serverVersion.equals(NetworkRegistry.ACCEPTVANILLA) || serverVersion.equals(NetworkRegistry.ABSENT) || serverVersion.compareTo(PROTOCOL_VERSION) <= 0,
-		(clientVersion) -> true
-	);
+	private static final int PROTOCOL_VERSION = 1;
+	private static final SimpleChannel INSTANCE = ChannelBuilder.named(
+		new ResourceLocation(LotTweaks.MODID))
+		.networkProtocolVersion(PROTOCOL_VERSION)
+		.clientAcceptedVersions((serverStatus, serverVersion) -> serverStatus == VersionTest.Status.VANILLA || serverStatus == VersionTest.Status.MISSING || serverVersion <= PROTOCOL_VERSION)
+		.serverAcceptedVersions((clientStatus, clientVersion) -> true)
+		.simpleChannel();
 
 	public static void init() {
 		int id = 0;
@@ -52,15 +52,15 @@ public class LTPacketHandler {
 	}
 
 	public static void sendReplaceMessage(BlockPos pos, BlockState state, BlockState checkState) {
-		INSTANCE.sendToServer(new ReplaceMessage(pos, state, checkState));
+		INSTANCE.send(new ReplaceMessage(pos, state, checkState), PacketDistributor.SERVER.noArg());
 	}
 
 	public static void sendReachRangeMessage(double dist) {
-		INSTANCE.sendToServer(new AdjustRangeMessage(dist));
+		INSTANCE.send(new AdjustRangeMessage(dist), PacketDistributor.SERVER.noArg());
 	}
 
 	public static void sendHelloMessage(ServerPlayer player) {
-		INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new HelloMessage(LotTweaks.VERSION));
+		INSTANCE.send(new HelloMessage(LotTweaks.VERSION), PacketDistributor.PLAYER.with(player));
 	}
 
 	//Replace
@@ -87,9 +87,9 @@ public class LTPacketHandler {
 			buf.writeInt(Block.getId(checkState));
 		}
 
-		public void handle(Supplier<NetworkEvent.Context> ctx) {
-			ctx.get().setPacketHandled(true);
-			final ServerPlayer player = ctx.get().getSender();
+		public void handle(CustomPayloadEvent.Context ctx) {
+			ctx.setPacketHandled(true);
+			final ServerPlayer player = ctx.getSender();
 			if (!player.isCreative()) {
 				return;
 			}
@@ -112,7 +112,7 @@ public class LTPacketHandler {
 				return;
 			}
 			//
-			ctx.get().enqueueWork(() -> {
+			ctx.enqueueWork(() -> {
 				player.level().setBlock(pos, state, 2);
 			});
 			return;
@@ -137,13 +137,13 @@ public class LTPacketHandler {
 			buf.writeDouble(this.dist);
 		}
 
-		public void handle(Supplier<NetworkEvent.Context> ctx) {
-			ctx.get().setPacketHandled(true);
-			final ServerPlayer player = ctx.get().getSender();
+		public void handle(CustomPayloadEvent.Context ctx) {
+			ctx.setPacketHandled(true);
+			final ServerPlayer player = ctx.getSender();
 			if (!player.isCreative()) {
 				return;
 			}
-			ctx.get().enqueueWork(() -> {
+			ctx.enqueueWork(() -> {
 				if (dist < 0) {
 					return;
 				}
@@ -173,8 +173,8 @@ public class LTPacketHandler {
 			buf.writeCharSequence(version, StandardCharsets.UTF_8);
 		}
 
-		public void handle(Supplier<NetworkEvent.Context> ctx) {
-			ctx.get().setPacketHandled(true);
+		public void handle(CustomPayloadEvent.Context ctx) {
+			ctx.setPacketHandled(true);
 			LotTweaksClient.setServerVersion(this.version);
 		}
 
