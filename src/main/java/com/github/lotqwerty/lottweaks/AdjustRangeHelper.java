@@ -31,7 +31,8 @@ public class AdjustRangeHelper {
 	public static void removeOldRangeModifiers(Player player) {
 		AttributeInstance instance = player.getAttribute(ForgeMod.BLOCK_REACH.get());
 		for (AttributeModifier modifier: instance.getModifiers()) {
-			if (modifier.getName().equals(LotTweaks.MODID)) {
+//			if (modifier.getName().equals(LotTweaks.MODID)) {
+			if (modifier.save().getString("Name").equals(LotTweaks.MODID)) {
 				instance.removeModifier(modifier.getId());
 			}
 		}
