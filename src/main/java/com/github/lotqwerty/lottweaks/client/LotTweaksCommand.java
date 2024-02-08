@@ -6,9 +6,10 @@ import com.github.lotqwerty.lottweaks.LotTweaks;
 import com.github.lotqwerty.lottweaks.client.RotationHelper.Group;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.commands.CommandRuntimeException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.world.entity.player.Inventory;
@@ -16,6 +17,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.commands.GiveCommand;
 import net.minecraft.ChatFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -25,6 +27,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 @OnlyIn(Dist.CLIENT)
 public class LotTweaksCommand extends LiteralArgumentBuilder<CommandSourceStack> {
+
+	private static final DynamicCommandExceptionType ERROR_NO_ACTION_PERFORMED = new DynamicCommandExceptionType((obj) -> { return (Component)obj; });
 
 	protected LotTweaksCommand() {
 		super(LotTweaks.MODID);
@@ -50,7 +54,8 @@ public class LotTweaksCommand extends LiteralArgumentBuilder<CommandSourceStack>
 		event.getDispatcher().register(builder);
 	}
 
-	private void executeAdd(Group group) throws CommandRuntimeException {
+	private void executeAdd(Group group) throws CommandSyntaxException {
+		GiveCommand a;
 		Minecraft mc = Minecraft.getInstance();
 		StringJoiner stringJoiner = new StringJoiner(",");
 		int count = 0;
@@ -61,18 +66,18 @@ public class LotTweaksCommand extends LiteralArgumentBuilder<CommandSourceStack>
 			}
 			Item item = itemStack.getItem();
 			if (item == Items.AIR) {
-				throw new CommandRuntimeException(Component.literal(String.format("Failed to get item instance. (%d)", i + 1)));
+				throw ERROR_NO_ACTION_PERFORMED.create(Component.literal(String.format("Failed to get item instance. (%d)", i + 1)));
 			}
 			String name = ForgeRegistries.ITEMS.getKey(item).toString();
 			if (RotationHelper.canRotate(itemStack, group)) {
-				throw new CommandRuntimeException(Component.literal(String.format("'%s' already exists (slot %d)", name, i + 1)));
+				throw ERROR_NO_ACTION_PERFORMED.create(Component.literal(String.format("'%s' already exists (slot %d)", name, i + 1)));
 			}
 			stringJoiner.add(name);
 			count++;
 		}
 		String line = stringJoiner.toString();
 		if (line.isEmpty()) {
-			throw new CommandRuntimeException(Component.literal(String.format("Hotbar is empty.")));
+			throw ERROR_NO_ACTION_PERFORMED.create(Component.literal(String.format("Hotbar is empty.")));
 		}
 		LotTweaks.LOGGER.debug("adding a new block/item-group from /lottweaks command");
 		LotTweaks.LOGGER.debug(line);
@@ -84,18 +89,24 @@ public class LotTweaksCommand extends LiteralArgumentBuilder<CommandSourceStack>
 		}
 	}
 
-	private void executeReload() throws CommandRuntimeException {
+	private void executeReload() {
 		try {
 			boolean f;
 			f = RotationHelper.loadAllFromFile();
-			if (!f) throw new CommandRuntimeException(Component.literal("LotTweaks: failed to reload config file"));
+			if (!f) throw new LotTweaksCommandRuntimeException("LotTweaks: failed to reload config file");
 			f = RotationHelper.loadAllItemGroupFromStrArray();
-			if (!f) throw new CommandRuntimeException(Component.literal("LotTweaks: failed to reload blocks"));
+			if (!f) throw new LotTweaksCommandRuntimeException("LotTweaks: failed to reload blocks");
 			displayMessage(Component.literal("LotTweaks: reload succeeded!"));
-		} catch (CommandRuntimeException e) {
+		} catch (LotTweaksCommandRuntimeException e) {
 			displayMessage(Component.literal(ChatFormatting.RED + e.getMessage()));
 		}
 		LotTweaksClient.showErrorLogToChat();
+	}
+
+	private static final class LotTweaksCommandRuntimeException extends RuntimeException {
+		public LotTweaksCommandRuntimeException(String message) {
+	        super(message);
+	    }
 	}
 
 }
