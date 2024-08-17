@@ -1,24 +1,16 @@
 package com.github.lotqwerty.lottweaks;
 
-import java.util.UUID;
-
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.event.TickEvent.PlayerTickEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class AdjustRangeHelper {
 
-	private static final UUID _UUID = new UUID(2457550121339451521L, 1595282694073824061L);
-	private static final String NAME = LotTweaks.MODID + "v2";
-
-	@SubscribeEvent
-	public void onLogin(PlayerLoggedInEvent event) {
-		removeOldRangeModifiers(event.getEntity());
-	}
+	private static final ResourceLocation _RESOURCE_LOCATION = ResourceLocation.fromNamespaceAndPath(LotTweaks.MODID, "extension");
 
 	@SubscribeEvent
 	public void onPlayerTick(PlayerTickEvent event) {
@@ -27,25 +19,14 @@ public class AdjustRangeHelper {
 		}
 	}
 
-	//Just remove all of them!
-	public static void removeOldRangeModifiers(Player player) {
-		AttributeInstance instance = player.getAttribute(ForgeMod.BLOCK_REACH.get());
-		for (AttributeModifier modifier: instance.getModifiers()) {
-//			if (modifier.getName().equals(LotTweaks.MODID)) {
-			if (modifier.save().getString("Name").equals(LotTweaks.MODID)) {
-				instance.removeModifier(modifier.getId());
-			}
-		}
-	}
-	
 	private static void clearRangeModifier(Player player) {
-		player.getAttribute(ForgeMod.BLOCK_REACH.get()).removeModifier(_UUID);
+		player.getAttribute(Attributes.BLOCK_INTERACTION_RANGE).removeModifier(_RESOURCE_LOCATION);
 	}
 
 	public static void changeRangeModifier(Player player, double dist) {
 		clearRangeModifier(player);
-		AttributeInstance instance = player.getAttribute(ForgeMod.BLOCK_REACH.get());
-		instance.addPermanentModifier(new AttributeModifier(_UUID, NAME, dist - instance.getBaseValue() + 0.5, AttributeModifier.Operation.ADDITION));
+		AttributeInstance instance = player.getAttribute(Attributes.BLOCK_INTERACTION_RANGE);
+		instance.addPermanentModifier(new AttributeModifier(_RESOURCE_LOCATION, dist - instance.getBaseValue() + 0.5,
+				AttributeModifier.Operation.ADD_VALUE));
 	}
-	
 }
